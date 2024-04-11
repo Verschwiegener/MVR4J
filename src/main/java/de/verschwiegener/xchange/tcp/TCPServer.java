@@ -51,9 +51,9 @@ public class TCPServer {
 	 */
 	public void shutdown() {
 		bindFuture.channel().close();
-		networkEventLoopGroup.close();
-		acceptorEventLoopGroup.close();
-		peerEventLoopGroup.close();
+		networkEventLoopGroup.shutdownGracefully();
+		acceptorEventLoopGroup.shutdownGracefully();
+		peerEventLoopGroup.shutdownGracefully();
 	}
 	
 	

@@ -15,18 +15,19 @@ import javax.xml.namespace.QName;
 
 import de.verschwiegener.mvr.auxData.AddressType;
 import de.verschwiegener.mvr.auxData.AddressesType;
-import de.verschwiegener.mvr.auxData.FixtureType;
-import de.verschwiegener.mvr.auxData.GeometriesType;
-import de.verschwiegener.mvr.auxData.LayerType;
-import de.verschwiegener.mvr.auxData.LayersType;
-import de.verschwiegener.mvr.auxData.SceneObjectType;
-import de.verschwiegener.mvr.auxData.SceneType;
-import de.verschwiegener.mvr.auxData.SymbolType;
+import de.verschwiegener.mvr.auxData.SymdefType;
 import de.verschwiegener.mvr.layer.AUXDataType;
 import de.verschwiegener.mvr.layer.ChildListType;
 import de.verschwiegener.mvr.layer.ClassType;
-import de.verschwiegener.mvr.layer.Geometry3DType;
-import de.verschwiegener.mvr.layer.SymdefType;
+import de.verschwiegener.mvr.layer.LayerType;
+import de.verschwiegener.mvr.layer.LayersType;
+import de.verschwiegener.mvr.layer.type.Fixture;
+import de.verschwiegener.mvr.layer.type.SceneObject;
+import de.verschwiegener.mvr.nodes.GeometriesType;
+import de.verschwiegener.mvr.nodes.Geometry3DType;
+import de.verschwiegener.mvr.nodes.Matrix;
+import de.verschwiegener.mvr.nodes.Network;
+import de.verschwiegener.mvr.nodes.SymbolType;
 
 
 /**
@@ -41,6 +42,9 @@ import de.verschwiegener.mvr.layer.SymdefType;
  * type definitions, element declarations and model 
  * groups.  Factory methods for each of these are 
  * provided in this class.
+ * 
+ * 
+ *TODO add Factory methods for all other new Classes
  * 
  */
 @XmlRegistry
@@ -62,6 +66,8 @@ public class ObjectFactory {
     private final static QName _FixtureTypeCastShadow_QNAME = new QName("", "CastShadow");
     private final static QName _FixtureTypeMappings_QNAME = new QName("", "Mappings");
     private final static QName _FixtureTypeGeometries_QNAME = new QName("", "Geometries");
+    private final static QName _AddressesTypeAddress_QNAME = new QName("", "Address");
+    private final static QName _AddressesTypeNetwork_QNAME = new QName("", "Network");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: de.verschwiegener.mvr
@@ -79,11 +85,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SceneObjectType }
+     * Create an instance of {@link SceneObject }
      * 
      */
-    public SceneObjectType createSceneObjectType() {
-        return new SceneObjectType();
+    public SceneObject createSceneObjectType() {
+        return new SceneObject();
     }
 
     /**
@@ -119,11 +125,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FixtureType }
+     * Create an instance of {@link Fixture }
      * 
      */
-    public FixtureType createFixtureType() {
-        return new FixtureType();
+    public Fixture createFixtureType() {
+        return new Fixture();
     }
 
     /**
@@ -204,7 +210,7 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Matrix }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
@@ -212,34 +218,61 @@ public class ObjectFactory {
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
     @XmlElementDecl(namespace = "", name = "Matrix", scope = Geometry3DType.class)
-    public JAXBElement<String> createGeometry3DTypeMatrix(String value) {
-        return new JAXBElement<String>(_Geometry3DTypeMatrix_QNAME, String.class, Geometry3DType.class, value);
+    public JAXBElement<Matrix> createGeometry3DTypeMatrix(Matrix value) {
+        return new JAXBElement<Matrix>(_Geometry3DTypeMatrix_QNAME, Matrix.class, Geometry3DType.class, value);
     }
-
+    
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link SceneObjectType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddressType }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link SceneObjectType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link AddressType }{@code >}
+     */
+    @XmlElementDecl(namespace = "", name = "Address", scope = AddressesType.class)
+    public JAXBElement<AddressType> createAddressesTypeAddress(AddressType value) {
+        return new JAXBElement<AddressType>(_AddressesTypeAddress_QNAME, AddressType.class, AddressesType.class, value);
+    }
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Network }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Network }{@code >}
+     */
+    @XmlElementDecl(namespace = "", name = "Network", scope = AddressesType.class)
+    public JAXBElement<Network> createAddressesTypeNetwork(Network value) {
+        return new JAXBElement<Network>(_AddressesTypeNetwork_QNAME, Network.class, AddressesType.class, value);
+    }
+    
+    
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SceneObject }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link SceneObject }{@code >}
      */
     @XmlElementDecl(namespace = "", name = "SceneObject", scope = ChildListType.class)
-    public JAXBElement<SceneObjectType> createChildListTypeSceneObject(SceneObjectType value) {
-        return new JAXBElement<SceneObjectType>(_ChildListTypeSceneObject_QNAME, SceneObjectType.class, ChildListType.class, value);
+    public JAXBElement<SceneObject> createChildListTypeSceneObject(SceneObject value) {
+        return new JAXBElement<SceneObject>(_ChildListTypeSceneObject_QNAME, SceneObject.class, ChildListType.class, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FixtureType }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Fixture }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link FixtureType }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link Fixture }{@code >}
      */
     @XmlElementDecl(namespace = "", name = "Fixture", scope = ChildListType.class)
-    public JAXBElement<FixtureType> createChildListTypeFixture(FixtureType value) {
-        return new JAXBElement<FixtureType>(_ChildListTypeFixture_QNAME, FixtureType.class, ChildListType.class, value);
+    public JAXBElement<Fixture> createChildListTypeFixture(Fixture value) {
+        return new JAXBElement<Fixture>(_ChildListTypeFixture_QNAME, Fixture.class, ChildListType.class, value);
     }
 
     /**
@@ -263,9 +296,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Matrix", scope = FixtureType.class)
-    public JAXBElement<String> createFixtureTypeMatrix(String value) {
-        return new JAXBElement<String>(_Geometry3DTypeMatrix_QNAME, String.class, FixtureType.class, value);
+    @XmlElementDecl(namespace = "", name = "Matrix", scope = Fixture.class)
+    public JAXBElement<Matrix> createFixtureTypeMatrix(Matrix value) {
+        return new JAXBElement<Matrix>(_Geometry3DTypeMatrix_QNAME, Matrix.class, Fixture.class, value);
     }
 
     /**
@@ -276,9 +309,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "GDTFSpec", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "GDTFSpec", scope = Fixture.class)
     public JAXBElement<String> createFixtureTypeGDTFSpec(String value) {
-        return new JAXBElement<String>(_FixtureTypeGDTFSpec_QNAME, String.class, FixtureType.class, value);
+        return new JAXBElement<String>(_FixtureTypeGDTFSpec_QNAME, String.class, Fixture.class, value);
     }
 
     /**
@@ -289,9 +322,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "GDTFMode", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "GDTFMode", scope = Fixture.class)
     public JAXBElement<String> createFixtureTypeGDTFMode(String value) {
-        return new JAXBElement<String>(_FixtureTypeGDTFMode_QNAME, String.class, FixtureType.class, value);
+        return new JAXBElement<String>(_FixtureTypeGDTFMode_QNAME, String.class, Fixture.class, value);
     }
 
     /**
@@ -302,9 +335,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link AddressesType }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Addresses", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "Addresses", scope = Fixture.class)
     public JAXBElement<AddressesType> createFixtureTypeAddresses(AddressesType value) {
-        return new JAXBElement<AddressesType>(_FixtureTypeAddresses_QNAME, AddressesType.class, FixtureType.class, value);
+        return new JAXBElement<AddressesType>(_FixtureTypeAddresses_QNAME, AddressesType.class, Fixture.class, value);
     }
 
     /**
@@ -315,9 +348,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Byte }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "FixtureID", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "FixtureID", scope = Fixture.class)
     public JAXBElement<Byte> createFixtureTypeFixtureID(Byte value) {
-        return new JAXBElement<Byte>(_FixtureTypeFixtureID_QNAME, Byte.class, FixtureType.class, value);
+        return new JAXBElement<Byte>(_FixtureTypeFixtureID_QNAME, Byte.class, Fixture.class, value);
     }
 
     /**
@@ -328,9 +361,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Byte }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "UnitNumber", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "UnitNumber", scope = Fixture.class)
     public JAXBElement<Byte> createFixtureTypeUnitNumber(Byte value) {
-        return new JAXBElement<Byte>(_FixtureTypeUnitNumber_QNAME, Byte.class, FixtureType.class, value);
+        return new JAXBElement<Byte>(_FixtureTypeUnitNumber_QNAME, Byte.class, Fixture.class, value);
     }
 
     /**
@@ -341,9 +374,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Byte }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "FixtureTypeId", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "FixtureTypeId", scope = Fixture.class)
     public JAXBElement<Byte> createFixtureTypeFixtureTypeId(Byte value) {
-        return new JAXBElement<Byte>(_FixtureTypeFixtureTypeId_QNAME, Byte.class, FixtureType.class, value);
+        return new JAXBElement<Byte>(_FixtureTypeFixtureTypeId_QNAME, Byte.class, Fixture.class, value);
     }
 
     /**
@@ -354,9 +387,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Byte }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "CustomId", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "CustomId", scope = Fixture.class)
     public JAXBElement<Byte> createFixtureTypeCustomId(Byte value) {
-        return new JAXBElement<Byte>(_FixtureTypeCustomId_QNAME, Byte.class, FixtureType.class, value);
+        return new JAXBElement<Byte>(_FixtureTypeCustomId_QNAME, Byte.class, Fixture.class, value);
     }
 
     /**
@@ -367,9 +400,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Color", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "Color", scope = Fixture.class)
     public JAXBElement<String> createFixtureTypeColor(String value) {
-        return new JAXBElement<String>(_FixtureTypeColor_QNAME, String.class, FixtureType.class, value);
+        return new JAXBElement<String>(_FixtureTypeColor_QNAME, String.class, Fixture.class, value);
     }
 
     /**
@@ -380,9 +413,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "CastShadow", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "CastShadow", scope = Fixture.class)
     public JAXBElement<String> createFixtureTypeCastShadow(String value) {
-        return new JAXBElement<String>(_FixtureTypeCastShadow_QNAME, String.class, FixtureType.class, value);
+        return new JAXBElement<String>(_FixtureTypeCastShadow_QNAME, String.class, Fixture.class, value);
     }
 
     /**
@@ -393,9 +426,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Mappings", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "Mappings", scope = Fixture.class)
     public JAXBElement<String> createFixtureTypeMappings(String value) {
-        return new JAXBElement<String>(_FixtureTypeMappings_QNAME, String.class, FixtureType.class, value);
+        return new JAXBElement<String>(_FixtureTypeMappings_QNAME, String.class, Fixture.class, value);
     }
 
     /**
@@ -406,9 +439,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link GeometriesType }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Geometries", scope = FixtureType.class)
+    @XmlElementDecl(namespace = "", name = "Geometries", scope = Fixture.class)
     public JAXBElement<GeometriesType> createFixtureTypeGeometries(GeometriesType value) {
-        return new JAXBElement<GeometriesType>(_FixtureTypeGeometries_QNAME, GeometriesType.class, FixtureType.class, value);
+        return new JAXBElement<GeometriesType>(_FixtureTypeGeometries_QNAME, GeometriesType.class, Fixture.class, value);
     }
 
     /**
@@ -419,9 +452,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Matrix", scope = SceneObjectType.class)
-    public JAXBElement<String> createSceneObjectTypeMatrix(String value) {
-        return new JAXBElement<String>(_Geometry3DTypeMatrix_QNAME, String.class, SceneObjectType.class, value);
+    @XmlElementDecl(namespace = "", name = "Matrix", scope = SceneObject.class)
+    public JAXBElement<Matrix> createSceneObjectTypeMatrix(Matrix value) {
+        return new JAXBElement<Matrix>(_Geometry3DTypeMatrix_QNAME, Matrix.class, SceneObject.class, value);
     }
 
     /**
@@ -432,9 +465,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link GeometriesType }{@code >}
      */
-    @XmlElementDecl(namespace = "", name = "Geometries", scope = SceneObjectType.class)
+    @XmlElementDecl(namespace = "", name = "Geometries", scope = SceneObject.class)
     public JAXBElement<GeometriesType> createSceneObjectTypeGeometries(GeometriesType value) {
-        return new JAXBElement<GeometriesType>(_FixtureTypeGeometries_QNAME, GeometriesType.class, SceneObjectType.class, value);
+        return new JAXBElement<GeometriesType>(_FixtureTypeGeometries_QNAME, GeometriesType.class, SceneObject.class, value);
     }
 
 }

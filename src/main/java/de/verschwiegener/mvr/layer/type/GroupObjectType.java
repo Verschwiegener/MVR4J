@@ -6,7 +6,7 @@
 //
 
 
-package de.verschwiegener.mvr.auxData;
+package de.verschwiegener.mvr.layer.type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,6 +19,9 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
+
+import de.verschwiegener.mvr.auxData.AddressesType;
+import de.verschwiegener.mvr.nodes.GeometriesType;
 
 
 /**
@@ -57,21 +60,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "FixtureType", propOrder = {
     "content"
 })
-public class FixtureType {
+public class GroupObjectType {
 
     @XmlElementRefs({
         @XmlElementRef(name = "Matrix", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "GDTFSpec", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "GDTFMode", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Addresses", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "FixtureID", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "UnitNumber", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "FixtureTypeId", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "CustomId", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Color", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "CastShadow", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Mappings", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Geometries", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "Classing", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "ChildList", type = JAXBElement.class, required = false)
     })
     @XmlMixed
     protected List<Serializable> content;

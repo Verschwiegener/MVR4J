@@ -6,18 +6,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class MVRParser {
 	
@@ -26,19 +32,51 @@ public class MVRParser {
 	
 	public MVRParser() throws SAXException, FileNotFoundException {
 		schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schema = schemaFactory.newSchema(new StreamSource(getClass().getResourceAsStream("xsd/mvr.xsd")));
+		schemaFactory.setErrorHandler(new ErrorHandler() {
+			
+			@Override
+			public void warning(SAXParseException arg0) throws SAXException {
+				System.out.println("Warning: " + arg0);
+				
+			}
+			
+			@Override
+			public void fatalError(SAXParseException arg0) throws SAXException {
+				System.out.println("FError: " + arg0);
+				
+			}
+			
+			@Override
+			public void error(SAXParseException arg0) throws SAXException {
+			System.out.println("Error : " + arg0);
+				
+			}
+		});
+		schema = schemaFactory.newSchema(new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream("xsd/mvr.xsd")));
 	}
 
-	public GeneralSceneDescriptionType parseGDTF(File mvrFile, File mvrOutputFolder) throws Exception {
+	public GeneralSceneDescriptionType parseMVR(File mvrFile, File mvrOutputFolder) throws Exception {
+		mvrOutputFolder.mkdirs();
 		mvrOutputFolder = new File(mvrOutputFolder, mvrFile.getName().split("\\.")[0]);
-		unzipFile(mvrFile, mvrOutputFolder);
+		//unzipFile(mvrFile, mvrOutputFolder);
 
-		Unmarshaller unmarshaller = JAXBContext.newInstance(GeneralSceneDescriptionType.class).createUnmarshaller();
+		//https://bugs.openjdk.org/browse/JDK-8204933
+		Locale.setDefault(Locale.ENGLISH); 
+		JAXBContext context = JAXBContext.newInstance("de.verschwiegener.mvr");
+		Unmarshaller unmarshaller = context.createUnmarshaller();
 		unmarshaller.setSchema(schema);
+		unmarshaller.setEventHandler(new ValidationEventHandler() {
+			
+			@Override
+			public boolean handleEvent(ValidationEvent event) {
+				System.out.println("Event: " + event.getMessage() + " / " + event.getLocator().getLineNumber());
+				return false;
+			}
+		});
 
-		GeneralSceneDescriptionType root = (GeneralSceneDescriptionType) unmarshaller
-				.unmarshal(new InputSource(new FileReader(new File(mvrOutputFolder, "description.xml"))));
-		return root;
+		JAXBElement<?> root = (JAXBElement<?>) unmarshaller
+				.unmarshal(new InputSource(new FileReader(new File(mvrOutputFolder, "GeneralSceneDescription.xml"))));
+		return (GeneralSceneDescriptionType) root.getValue();
 	}
 
 	private void unzipFile(File gdtfFile, File gdtfFolder) throws IOException {

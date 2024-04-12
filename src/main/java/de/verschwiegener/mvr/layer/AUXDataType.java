@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.auxData.SymdefType;
+
 
 /**
  * <p>Java-Klasse für AUXDataType complex type.

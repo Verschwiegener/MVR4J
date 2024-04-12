@@ -5,7 +5,7 @@
 // Generiert: 2024.03.26 um 11:42:03 PM CET 
 //
 
-package de.verschwiegener.mvr.auxData;
+package de.verschwiegener.mvr.nodes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,14 +47,11 @@ import de.verschwiegener.mvr.nodes.Geometry3DType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AddressesType", propOrder = { "content" })
-public class AddressesType {
+@XmlType(name = "Alignments", propOrder = { "content" })
+public class Alignments {
 
-	@XmlElementRefs({ 
-	@XmlElementRef(name = "Address", type = JAXBElement.class, required = false),
-	@XmlElementRef(name = "Network", type = JAXBElement.class, required = false), })
-	@XmlMixed
-	protected List<Serializable> content;
+	@XmlElement(name = "Alignment", required = true)
+	protected List<Alignment> content;
 
 	/**
 	 * Gets the value of the content property.
@@ -81,9 +78,9 @@ public class AddressesType {
 	 * 
 	 * 
 	 */
-	public List<Serializable> getContent() {
+	public List<Alignment> getContent() {
 		if (content == null) {
-			content = new ArrayList<Serializable>();
+			content = new ArrayList<Alignment>();
 		}
 		return this.content;
 	}

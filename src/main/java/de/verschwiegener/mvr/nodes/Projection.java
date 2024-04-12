@@ -6,7 +6,7 @@
 //
 
 
-package de.verschwiegener.mvr.layer;
+package de.verschwiegener.mvr.nodes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,15 +49,14 @@ import de.verschwiegener.mvr.nodes.Geometry3DType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ChildListType", propOrder = {
+@XmlType(name = "Projection", propOrder = {
     "content"
 })
-public class ChildListType {
+public class Projection {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "SceneObject", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Fixture", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Geometry3D", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "Source", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "ScaleHandling", type = JAXBElement.class, required = false),
     })
     @XmlMixed
     protected List<Serializable> content;
@@ -92,27 +91,6 @@ public class ChildListType {
             content = new ArrayList<Serializable>();
         }
         return this.content;
-    }
-    
-    public List<SceneObject> getSceneObjects() {
-    	return MVRUtil.getObject("SceneObject", getContent());
-    }
-    public List<Fixture> getFixtures() {
-    	return MVRUtil.getObject("Fixture", getContent());
-    }
-    public List<GroupObjectType> getGroupObject() {
-    	return MVRUtil.getObject("GroupObject", getContent());
-    }
-    public List<FocusPoint> getFocusPoint() {
-    	return MVRUtil.getObject("FocusPoint", getContent());
-    }
-    
-    /**
-     * Returns Geometry3D Type, only for AUXData
-     * @return
-     */
-    public List<Geometry3DType> getGeometry3D() {
-    	return MVRUtil.getObject("Geometry3D", getContent());
     }
 
 }

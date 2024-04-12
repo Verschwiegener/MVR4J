@@ -12,9 +12,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import de.verschwiegener.mvr.auxData.SceneType;
 
 
 /**
@@ -40,10 +39,11 @@ import de.verschwiegener.mvr.auxData.SceneType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GeneralSceneDescriptionType", propOrder = {
+@XmlType(name = "", propOrder = {
     "userData",
     "scene"
 })
+@XmlRootElement(name = "GeneralSceneDescriptionType")
 public class GeneralSceneDescriptionType {
 
     @XmlElement(name = "UserData", required = true)

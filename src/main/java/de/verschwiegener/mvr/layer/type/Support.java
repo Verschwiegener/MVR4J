@@ -6,7 +6,7 @@
 //
 
 
-package de.verschwiegener.mvr.auxData;
+package de.verschwiegener.mvr.layer.type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,18 +20,31 @@ import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.auxData.AddressesType;
+import de.verschwiegener.mvr.nodes.GeometriesType;
+
 
 /**
- * <p>Java-Klasse für SceneObjectType complex type.
+ * <p>Java-Klasse für FixtureType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="SceneObjectType"&gt;
+ * &lt;complexType name="FixtureType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="Matrix" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="GDTFSpec" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="GDTFMode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Addresses" type="{}AddressesType" minOccurs="0"/&gt;
+ *         &lt;element name="FixtureID" type="{http://www.w3.org/2001/XMLSchema}byte" minOccurs="0"/&gt;
+ *         &lt;element name="UnitNumber" type="{http://www.w3.org/2001/XMLSchema}byte" minOccurs="0"/&gt;
+ *         &lt;element name="FixtureTypeId" type="{http://www.w3.org/2001/XMLSchema}byte" minOccurs="0"/&gt;
+ *         &lt;element name="CustomId" type="{http://www.w3.org/2001/XMLSchema}byte" minOccurs="0"/&gt;
+ *         &lt;element name="Color" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="CastShadow" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="Mappings" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="Geometries" type="{}GeometriesType" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -44,14 +57,32 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SceneObjectType", propOrder = {
+@XmlType(name = "Support", propOrder = {
     "content"
 })
-public class SceneObjectType {
+public class Support {
 
     @XmlElementRefs({
         @XmlElementRef(name = "Matrix", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Geometries", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "Classing", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Position", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Geometries", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Function", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "ChainLength", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "GDTFSpec", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "GDTFMode", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CastShadow", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Addresses", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Alignments", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CustomCommands", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Overwrites", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Connections", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "FixtureID", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "FixtureIDNumeric", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "UnitNumber", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CustomIdType", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "CustomId", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "ChildList", type = JAXBElement.class, required = false),
     })
     @XmlMixed
     protected List<Serializable> content;
@@ -78,6 +109,16 @@ public class SceneObjectType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link AddressesType }{@code >}
+     * {@link JAXBElement }{@code <}{@link Byte }{@code >}
+     * {@link JAXBElement }{@code <}{@link Byte }{@code >}
+     * {@link JAXBElement }{@code <}{@link Byte }{@code >}
+     * {@link JAXBElement }{@code <}{@link Byte }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link GeometriesType }{@code >}
      * {@link String }

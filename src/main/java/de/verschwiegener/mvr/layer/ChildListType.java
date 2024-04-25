@@ -5,7 +5,6 @@
 // Generiert: 2024.03.26 um 11:42:03 PM CET 
 //
 
-
 package de.verschwiegener.mvr.layer;
 
 import java.io.Serializable;
@@ -19,7 +18,7 @@ import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.MVRUtil;
+import static de.verschwiegener.mvr.MVRUtil.*;
 import de.verschwiegener.mvr.layer.type.Fixture;
 import de.verschwiegener.mvr.layer.type.FocusPoint;
 import de.verschwiegener.mvr.layer.type.GroupObjectType;
@@ -95,16 +94,16 @@ public class ChildListType {
     }
     
     public List<SceneObject> getSceneObjects() {
-    	return MVRUtil.getObject("SceneObject", getContent());
+    	return getObject(MVR_SCENEOBJECT, getContent());
     }
     public List<Fixture> getFixtures() {
-    	return MVRUtil.getObject("Fixture", getContent());
+    	return getObject(MVR_FIXTURE, getContent());
     }
     public List<GroupObjectType> getGroupObject() {
-    	return MVRUtil.getObject("GroupObject", getContent());
+    	return getObject(MVR_GROUPOBJECT, getContent());
     }
     public List<FocusPoint> getFocusPoint() {
-    	return MVRUtil.getObject("FocusPoint", getContent());
+    	return getObject(MVR_FOCUSPOINT, getContent());
     }
     
     /**
@@ -112,7 +111,7 @@ public class ChildListType {
      * @return
      */
     public List<Geometry3DType> getGeometry3D() {
-    	return MVRUtil.getObject("Geometry3D", getContent());
+    	return getObject(MVR_GEOMETRY3D, getContent());
     }
 
 }

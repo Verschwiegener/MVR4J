@@ -13,6 +13,11 @@ public class MVRUtil {
 	 */
 	public static String MVR_MATRIX = "Matrix";
 	public static String MVR_CLASSING = "Classing";
+	public static String MVR_SCENEOBJECT = "SceneObject";
+	public static String MVR_FIXTURE = "Fixture";
+	public static String MVR_GROUPOBJECT = "GroupObject";
+	public static String MVR_FOCUSPOINT = "FocusPoint";
+	public static String MVR_GEOMETRY3D = "Geometry3D";
 	
 	/**
 	 * Fixture Values
@@ -58,7 +63,7 @@ public class MVRUtil {
     	
     	content.forEach(s -> {
     		if(s instanceof JAXBElement<?> element) {
-    			if(element.getName().getLocalPart().equalsIgnoreCase(objectName))
+    			if(element.getName().getLocalPart().equals(objectName))
     				sceneObjects.add((T) element.getValue());
     		}
     	});

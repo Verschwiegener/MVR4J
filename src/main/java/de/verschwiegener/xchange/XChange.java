@@ -182,6 +182,7 @@ public class XChange {
 
 			MDNSService.addServiceListener(getServiceString(), listener);
 
+			//TODO make Async
 			// Search for 20 Seconds
 			try {
 				Thread.sleep(20000);

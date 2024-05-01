@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 
 public class Version {
 	
+	public static Version MVR_LATEST = new Version(1, 6);
+	
 	private final int major, minor;
 	
 	public Version(int major, int minor) {

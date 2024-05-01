@@ -41,10 +41,10 @@ public class XChange {
 	public ProtocolMode mode;
 
 	/**
-	 * Metadata of the File currently being received
+	 * Metadata of the File currently being received, is being set in MVR_REQUEST Packet
 	 */
-	public MVRFile currentSendFile;
-
+	public MVRFile currentReceiveFile;
+	
 	public int serverPort;
 	
 	public XChangeListener listener;
@@ -93,7 +93,7 @@ public class XChange {
 		this.serverPort = serverPort;
 		this.mode = mode;
 		this.mvrGroup = mvrGroup;
-		station = new Station(stationUUID, stationName, provider, new Version(1, 6), null);
+		station = new Station(stationUUID, stationName, provider, Version.MVR_LATEST, null);
 		this.mvrWorkingDirectory = mvrWorkingDirectory;
 	}
 

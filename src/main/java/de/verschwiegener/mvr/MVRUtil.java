@@ -58,6 +58,7 @@ public class MVRUtil {
 	 * @param content
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> List<T> getObject(String objectName, List<Serializable> content) {
     	List<T> sceneObjects = new ArrayList<>();
     	

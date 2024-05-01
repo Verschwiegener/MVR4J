@@ -62,8 +62,8 @@ public class C04PacketRequest extends UTF8Packet {
 
 	@Override
 	public ByteBuf writePacket() {
-		//Set CurrentSendFile to requested MVR File
-		XChange.instance.currentSendFile = file;
+		//Set CurrentReceiveFile to requested MVR File
+		XChange.instance.currentReceiveFile = file;
 		return Util.jsonToByteBuf(writeJson());
 	}
 

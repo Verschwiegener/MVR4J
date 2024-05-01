@@ -1,5 +1,6 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.google.common.io.Files;
@@ -9,11 +10,21 @@ import de.verschwiegener.xchange.packet.FilePacket;
 import io.netty.buffer.ByteBuf;
 
 public class MVRFilePacket extends FilePacket{
-
+	//TODO Support Streaming the MVR File Data directly into file and not save it first into a buffer
+	
 	@Override
 	public void parsePacket(ByteBuf buffer) {
 		try {
-			Files.write(buffer.array(), XChange.instance.currentSendFile.getFilesystemLocation());
+			Files.write(buffer.array(), XChange.instance.currentReceiveFile.getFilesystemLocation());
+			
+			
+			/**
+			 * Appends Data to File
+			 */
+			/**FileOutputStream stream = new FileOutputStream(XChange.instance.currentReceiveFile.getFilesystemLocation(), true);
+			stream.write(buffer.array());
+			stream.flush();
+			stream.close();*/
 		} catch (IOException e) {
 			e.printStackTrace();
 			//TODO Send S04 Error packet

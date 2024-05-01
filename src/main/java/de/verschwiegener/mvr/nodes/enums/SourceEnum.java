@@ -14,37 +14,35 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Transmission_enum.
+ * <p>Java-Klasse für SourceEnum.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * <p>
  * <pre>
- * &lt;simpleType name="Transmission_enum"&gt;
+ * &lt;simpleType name="SourceEnum"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="Unicast"/&gt;
- *     &lt;enumeration value="Multicast"/&gt;
- *     &lt;enumeration value="Broadcast"/&gt;
- *     &lt;enumeration value="Anycast"/&gt;
+ *     &lt;enumeration value="NDI"/&gt;
+ *     &lt;enumeration value="File"/&gt;
+ *     &lt;enumeration value="CITP"/&gt;
+ *     &lt;enumeration value="CaptureDevice"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
  * 
  */
-@XmlType(name = "Transmission_enum")
+@XmlType(name = "SourceEnum")
 @XmlEnum
-public enum TransmissionEnum {
+public enum SourceEnum {
 
-    @XmlEnumValue("Unicast")
-    UNICAST("Unicast"),
-    @XmlEnumValue("Multicast")
-    MULTICAST("Multicast"),
-    @XmlEnumValue("Broadcast")
-    BROADCAST("Broadcast"),
-    @XmlEnumValue("Anycast")
-    ANYCAST("Anycast");
+    NDI("NDI"),
+    @XmlEnumValue("File")
+    FILE("File"),
+    CITP("CITP"),
+    @XmlEnumValue("CaptureDevice")
+    CAPTURE_DEVICE("CaptureDevice");
     private final String value;
 
-    TransmissionEnum(String v) {
+    SourceEnum(String v) {
         value = v;
     }
 
@@ -52,8 +50,8 @@ public enum TransmissionEnum {
         return value;
     }
 
-    public static TransmissionEnum fromValue(String v) {
-        for (TransmissionEnum c: TransmissionEnum.values()) {
+    public static SourceEnum fromValue(String v) {
+        for (SourceEnum c: SourceEnum.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

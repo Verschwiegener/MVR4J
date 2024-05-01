@@ -15,16 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Overwrite complex type.
+ * <p>Java-Klasse für Data complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Overwrite"&gt;
+ * &lt;complexType name="Data"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="universal" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *       &lt;attribute name="provider" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="ver" type="{http://www.w3.org/2001/XMLSchema}string" default="1" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,64 +33,64 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Overwrite")
-public class Overwrite {
+@XmlType(name = "Data")
+public class Data {
 
-    @XmlAttribute(name = "universal", required = true)
-    protected String universal;
-    @XmlAttribute(name = "target")
-    protected String target;
+    @XmlAttribute(name = "provider", required = true)
+    protected String provider;
+    @XmlAttribute(name = "ver")
+    protected String ver;
 
     /**
-     * Ruft den Wert der universal-Eigenschaft ab.
+     * Ruft den Wert der provider-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUniversal() {
-        return universal;
+    public String getProvider() {
+        return provider;
     }
 
     /**
-     * Legt den Wert der universal-Eigenschaft fest.
+     * Legt den Wert der provider-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUniversal(String value) {
-        this.universal = value;
+    public void setProvider(String value) {
+        this.provider = value;
     }
 
     /**
-     * Ruft den Wert der target-Eigenschaft ab.
+     * Ruft den Wert der ver-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTarget() {
-        if (target == null) {
-            return "";
+    public String getVer() {
+        if (ver == null) {
+            return "1";
         } else {
-            return target;
+            return ver;
         }
     }
 
     /**
-     * Legt den Wert der target-Eigenschaft fest.
+     * Legt den Wert der ver-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTarget(String value) {
-        this.target = value;
+    public void setVer(String value) {
+        this.ver = value;
     }
 
 }

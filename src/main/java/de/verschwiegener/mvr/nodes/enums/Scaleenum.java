@@ -14,37 +14,34 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Transmission_enum.
+ * <p>Java-Klasse für scaleenum.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * <p>
  * <pre>
- * &lt;simpleType name="Transmission_enum"&gt;
+ * &lt;simpleType name="scaleenum"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="Unicast"/&gt;
- *     &lt;enumeration value="Multicast"/&gt;
- *     &lt;enumeration value="Broadcast"/&gt;
- *     &lt;enumeration value="Anycast"/&gt;
+ *     &lt;enumeration value="ScaleKeepRatio"/&gt;
+ *     &lt;enumeration value="ScaleIgnoreRatio"/&gt;
+ *     &lt;enumeration value="KeepSizeCenter"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
  * 
  */
-@XmlType(name = "Transmission_enum")
+@XmlType(name = "scaleenum")
 @XmlEnum
-public enum TransmissionEnum {
+public enum Scaleenum {
 
-    @XmlEnumValue("Unicast")
-    UNICAST("Unicast"),
-    @XmlEnumValue("Multicast")
-    MULTICAST("Multicast"),
-    @XmlEnumValue("Broadcast")
-    BROADCAST("Broadcast"),
-    @XmlEnumValue("Anycast")
-    ANYCAST("Anycast");
+    @XmlEnumValue("ScaleKeepRatio")
+    SCALE_KEEP_RATIO("ScaleKeepRatio"),
+    @XmlEnumValue("ScaleIgnoreRatio")
+    SCALE_IGNORE_RATIO("ScaleIgnoreRatio"),
+    @XmlEnumValue("KeepSizeCenter")
+    KEEP_SIZE_CENTER("KeepSizeCenter");
     private final String value;
 
-    TransmissionEnum(String v) {
+    Scaleenum(String v) {
         value = v;
     }
 
@@ -52,8 +49,8 @@ public enum TransmissionEnum {
         return value;
     }
 
-    public static TransmissionEnum fromValue(String v) {
-        for (TransmissionEnum c: TransmissionEnum.values()) {
+    public static Scaleenum fromValue(String v) {
+        for (Scaleenum c: Scaleenum.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

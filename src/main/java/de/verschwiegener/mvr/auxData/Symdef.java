@@ -6,7 +6,7 @@
 //
 
 
-package de.verschwiegener.mvr.layer.type;
+package de.verschwiegener.mvr.auxData;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,22 +14,22 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.nodes.Geometries;
+import de.verschwiegener.mvr.nodes.Geometry3D;
+import de.verschwiegener.mvr.nodes.Symbol;
 
 
 /**
- * <p>Java-Klasse für FocusPoint complex type.
+ * <p>Java-Klasse für Symdef complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="FocusPoint"&gt;
+ * &lt;complexType name="Symdef"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="Matrix" type="{}matrixtype" minOccurs="0"/&gt;
- *         &lt;element name="Classing" type="{}guidtype" minOccurs="0"/&gt;
- *         &lt;element name="Geometries" type="{}Geometries"/&gt;
+ *         &lt;element name="Geometry3D" type="{}Geometry3D"/&gt;
+ *         &lt;element name="Symbol" type="{}Symbol"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="uuid" use="required" type="{}guidtype" /&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
@@ -41,94 +41,67 @@ import de.verschwiegener.mvr.nodes.Geometries;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FocusPoint", propOrder = {
-    "matrix",
-    "classing",
-    "geometries"
+@XmlType(name = "Symdef", propOrder = {
+    "geometry3D",
+    "symbol"
 })
-public class FocusPoint {
+public class Symdef {
 
-    @XmlElement(name = "Matrix")
-    protected String matrix;
-    @XmlElement(name = "Classing")
-    protected String classing;
-    @XmlElement(name = "Geometries", required = true)
-    protected Geometries geometries;
+    @XmlElement(name = "Geometry3D", required = true)
+    protected Geometry3D geometry3D;
+    @XmlElement(name = "Symbol", required = true)
+    protected Symbol symbol;
     @XmlAttribute(name = "uuid", required = true)
     protected String uuid;
     @XmlAttribute(name = "name")
     protected String name;
 
     /**
-     * Ruft den Wert der matrix-Eigenschaft ab.
+     * Ruft den Wert der geometry3D-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Geometry3D }
      *     
      */
-    public String getMatrix() {
-        return matrix;
+    public Geometry3D getGeometry3D() {
+        return geometry3D;
     }
 
     /**
-     * Legt den Wert der matrix-Eigenschaft fest.
+     * Legt den Wert der geometry3D-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Geometry3D }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setGeometry3D(Geometry3D value) {
+        this.geometry3D = value;
     }
 
     /**
-     * Ruft den Wert der classing-Eigenschaft ab.
+     * Ruft den Wert der symbol-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Symbol }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public Symbol getSymbol() {
+        return symbol;
     }
 
     /**
-     * Legt den Wert der classing-Eigenschaft fest.
+     * Legt den Wert der symbol-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Symbol }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
-    }
-
-    /**
-     * Ruft den Wert der geometries-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Geometries }
-     *     
-     */
-    public Geometries getGeometries() {
-        return geometries;
-    }
-
-    /**
-     * Legt den Wert der geometries-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Geometries }
-     *     
-     */
-    public void setGeometries(Geometries value) {
-        this.geometries = value;
+    public void setSymbol(Symbol value) {
+        this.symbol = value;
     }
 
     /**

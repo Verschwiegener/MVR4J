@@ -2,39 +2,34 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.3.2 generiert 
 // Siehe <a href="https://javaee.github.io/jaxb-v2/">https://javaee.github.io/jaxb-v2/</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2024.03.26 um 11:42:03 PM CET 
+// Generiert: 2024.05.02 um 12:46:28 AM CEST 
 //
 
-package de.verschwiegener.mvr.nodes;
 
-import java.util.ArrayList;
-import java.util.List;
+package de.verschwiegener.mvr.nodes;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.layer.LayerType;
+import de.verschwiegener.mvr.nodes.enums.TransmissionEnum;
+
 
 /**
- * <p>
- * Java-Klasse für LayerType complex type.
+ * <p>Java-Klasse für Protocol complex type.
  * 
- * <p>
- * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser
- * Klasse enthalten ist.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="LayerType"&gt;
+ * &lt;complexType name="Protocol"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="ChildList" type="{}ChildListType"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="uuid" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="geometry" type="{http://www.w3.org/2001/XMLSchema}string" default="NetworkInOut_1" /&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *       &lt;attribute name="version" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *       &lt;attribute name="transmission" type="{}Transmission_enum" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,66 +38,154 @@ import de.verschwiegener.mvr.layer.LayerType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Network", propOrder = { "protocols" })
+@XmlType(name = "Protocol")
 public class Protocol {
-	
-	//TODO get predefined Values
 
-	@XmlAttribute(name = "geometry")
-	protected String geometry;
+    @XmlAttribute(name = "geometry")
+    protected String geometry;
+    @XmlAttribute(name = "name")
+    protected String name;
+    @XmlAttribute(name = "type")
+    protected String type;
+    @XmlAttribute(name = "version")
+    protected String version;
+    @XmlAttribute(name = "transmission")
+    protected TransmissionEnum transmission;
 
-	@XmlAttribute(name = "name")
-	protected String name;
+    /**
+     * Ruft den Wert der geometry-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGeometry() {
+        if (geometry == null) {
+            return "NetworkInOut_1";
+        } else {
+            return geometry;
+        }
+    }
 
-	@XmlAttribute(name = "subnetypetmask")
-	protected String type;
+    /**
+     * Legt den Wert der geometry-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGeometry(String value) {
+        this.geometry = value;
+    }
 
-	@XmlAttribute(name = "version")
-	protected String version;
+    /**
+     * Ruft den Wert der name-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        if (name == null) {
+            return "";
+        } else {
+            return name;
+        }
+    }
 
-	@XmlAttribute(name = "transmission")
-	protected boolean dhcp;
+    /**
+     * Legt den Wert der name-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
+    }
 
-	public String getGeometry() {
-		return geometry;
-	}
+    /**
+     * Ruft den Wert der type-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        if (type == null) {
+            return "";
+        } else {
+            return type;
+        }
+    }
 
-	public void setGeometry(String geometry) {
-		this.geometry = geometry;
-	}
+    /**
+     * Legt den Wert der type-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
+    }
 
-	public String getName() {
-		return name;
-	}
+    /**
+     * Ruft den Wert der version-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersion() {
+        if (version == null) {
+            return "";
+        } else {
+            return version;
+        }
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Legt den Wert der version-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersion(String value) {
+        this.version = value;
+    }
 
-	public String getType() {
-		return type;
-	}
+    /**
+     * Ruft den Wert der transmission-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TransmissionEnum }
+     *     
+     */
+    public TransmissionEnum getTransmission() {
+        return transmission;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public boolean isDhcp() {
-		return dhcp;
-	}
-
-	public void setDhcp(boolean dhcp) {
-		this.dhcp = dhcp;
-	}
-
-	
+    /**
+     * Legt den Wert der transmission-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TransmissionEnum }
+     *     
+     */
+    public void setTransmission(TransmissionEnum value) {
+        this.transmission = value;
+    }
 
 }

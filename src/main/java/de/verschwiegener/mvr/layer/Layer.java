@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.3.2 generiert 
 // Siehe <a href="https://javaee.github.io/jaxb-v2/">https://javaee.github.io/jaxb-v2/</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2024.03.26 um 11:42:03 PM CET 
+// Generiert: 2024.05.02 um 12:46:28 AM CEST 
 //
 
 
@@ -16,19 +16,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für LayerType complex type.
+ * <p>Java-Klasse für Layer complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="LayerType"&gt;
+ * &lt;complexType name="Layer"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="ChildList" type="{}ChildListType"/&gt;
+ *         &lt;element name="Matrix" type="{}matrixtype" minOccurs="0"/&gt;
+ *         &lt;element name="ChildList" type="{}ChildList"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="uuid" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="uuid" use="required" type="{}guidtype" /&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,27 +38,54 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "LayerType", propOrder = {
+@XmlType(name = "Layer", propOrder = {
+    "matrix",
     "childList"
 })
-public class LayerType {
+public class Layer {
 
+    @XmlElement(name = "Matrix")
+    protected String matrix;
     @XmlElement(name = "ChildList", required = true)
-    protected ChildListType childList;
+    protected ChildList childList;
+    @XmlAttribute(name = "uuid", required = true)
+    protected String uuid;
     @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "uuid")
-    protected String uuid;
+
+    /**
+     * Ruft den Wert der matrix-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMatrix() {
+        return matrix;
+    }
+
+    /**
+     * Legt den Wert der matrix-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMatrix(String value) {
+        this.matrix = value;
+    }
 
     /**
      * Ruft den Wert der childList-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link ChildListType }
+     *     {@link ChildList }
      *     
      */
-    public ChildListType getChildList() {
+    public ChildList getChildList() {
         return childList;
     }
 
@@ -66,35 +94,11 @@ public class LayerType {
      * 
      * @param value
      *     allowed object is
-     *     {@link ChildListType }
+     *     {@link ChildList }
      *     
      */
-    public void setChildList(ChildListType value) {
+    public void setChildList(ChildList value) {
         this.childList = value;
-    }
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Legt den Wert der name-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
     }
 
     /**
@@ -119,6 +123,34 @@ public class LayerType {
      */
     public void setUuid(String value) {
         this.uuid = value;
+    }
+
+    /**
+     * Ruft den Wert der name-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        if (name == null) {
+            return "";
+        } else {
+            return name;
+        }
+    }
+
+    /**
+     * Legt den Wert der name-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

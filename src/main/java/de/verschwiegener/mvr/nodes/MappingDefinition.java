@@ -6,30 +6,30 @@
 //
 
 
-package de.verschwiegener.mvr.layer.type;
+package de.verschwiegener.mvr.nodes;
 
+import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.nodes.Geometries;
-
 
 /**
- * <p>Java-Klasse für FocusPoint complex type.
+ * <p>Java-Klasse für MappingDefinition complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="FocusPoint"&gt;
+ * &lt;complexType name="MappingDefinition"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="Matrix" type="{}matrixtype" minOccurs="0"/&gt;
- *         &lt;element name="Classing" type="{}guidtype" minOccurs="0"/&gt;
- *         &lt;element name="Geometries" type="{}Geometries"/&gt;
+ *         &lt;element name="SizeX" type="{http://www.w3.org/2001/XMLSchema}integer"/&gt;
+ *         &lt;element name="SizeY" type="{http://www.w3.org/2001/XMLSchema}integer"/&gt;
+ *         &lt;element name="Source" type="{}Source"/&gt;
+ *         &lt;element name="ScaleHandeling" type="{}ScaleHandeling" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="uuid" use="required" type="{}guidtype" /&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
@@ -41,94 +41,121 @@ import de.verschwiegener.mvr.nodes.Geometries;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FocusPoint", propOrder = {
-    "matrix",
-    "classing",
-    "geometries"
+@XmlType(name = "MappingDefinition", propOrder = {
+    "sizeX",
+    "sizeY",
+    "source",
+    "scaleHandeling"
 })
-public class FocusPoint {
+public class MappingDefinition {
 
-    @XmlElement(name = "Matrix")
-    protected String matrix;
-    @XmlElement(name = "Classing")
-    protected String classing;
-    @XmlElement(name = "Geometries", required = true)
-    protected Geometries geometries;
+    @XmlElement(name = "SizeX", required = true)
+    protected BigInteger sizeX;
+    @XmlElement(name = "SizeY", required = true)
+    protected BigInteger sizeY;
+    @XmlElement(name = "Source", required = true)
+    protected Source source;
+    @XmlElement(name = "ScaleHandeling")
+    protected ScaleHandeling scaleHandeling;
     @XmlAttribute(name = "uuid", required = true)
     protected String uuid;
     @XmlAttribute(name = "name")
     protected String name;
 
     /**
-     * Ruft den Wert der matrix-Eigenschaft ab.
+     * Ruft den Wert der sizeX-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link BigInteger }
      *     
      */
-    public String getMatrix() {
-        return matrix;
+    public BigInteger getSizeX() {
+        return sizeX;
     }
 
     /**
-     * Legt den Wert der matrix-Eigenschaft fest.
+     * Legt den Wert der sizeX-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link BigInteger }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setSizeX(BigInteger value) {
+        this.sizeX = value;
     }
 
     /**
-     * Ruft den Wert der classing-Eigenschaft ab.
+     * Ruft den Wert der sizeY-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link BigInteger }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public BigInteger getSizeY() {
+        return sizeY;
     }
 
     /**
-     * Legt den Wert der classing-Eigenschaft fest.
+     * Legt den Wert der sizeY-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link BigInteger }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setSizeY(BigInteger value) {
+        this.sizeY = value;
     }
 
     /**
-     * Ruft den Wert der geometries-Eigenschaft ab.
+     * Ruft den Wert der source-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link Geometries }
+     *     {@link Source }
      *     
      */
-    public Geometries getGeometries() {
-        return geometries;
+    public Source getSource() {
+        return source;
     }
 
     /**
-     * Legt den Wert der geometries-Eigenschaft fest.
+     * Legt den Wert der source-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link Geometries }
+     *     {@link Source }
      *     
      */
-    public void setGeometries(Geometries value) {
-        this.geometries = value;
+    public void setSource(Source value) {
+        this.source = value;
+    }
+
+    /**
+     * Ruft den Wert der scaleHandeling-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ScaleHandeling }
+     *     
+     */
+    public ScaleHandeling getScaleHandeling() {
+        return scaleHandeling;
+    }
+
+    /**
+     * Legt den Wert der scaleHandeling-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ScaleHandeling }
+     *     
+     */
+    public void setScaleHandeling(ScaleHandeling value) {
+        this.scaleHandeling = value;
     }
 
     /**

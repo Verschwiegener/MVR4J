@@ -15,16 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Overwrite complex type.
+ * <p>Java-Klasse für Position complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Overwrite"&gt;
+ * &lt;complexType name="Position"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="universal" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *       &lt;attribute name="uuid" use="required" type="{}guidtype" /&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,64 +33,64 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Overwrite")
-public class Overwrite {
+@XmlType(name = "Position")
+public class Position {
 
-    @XmlAttribute(name = "universal", required = true)
-    protected String universal;
-    @XmlAttribute(name = "target")
-    protected String target;
+    @XmlAttribute(name = "uuid", required = true)
+    protected String uuid;
+    @XmlAttribute(name = "name")
+    protected String name;
 
     /**
-     * Ruft den Wert der universal-Eigenschaft ab.
+     * Ruft den Wert der uuid-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUniversal() {
-        return universal;
+    public String getUuid() {
+        return uuid;
     }
 
     /**
-     * Legt den Wert der universal-Eigenschaft fest.
+     * Legt den Wert der uuid-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUniversal(String value) {
-        this.universal = value;
+    public void setUuid(String value) {
+        this.uuid = value;
     }
 
     /**
-     * Ruft den Wert der target-Eigenschaft ab.
+     * Ruft den Wert der name-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTarget() {
-        if (target == null) {
+    public String getName() {
+        if (name == null) {
             return "";
         } else {
-            return target;
+            return name;
         }
     }
 
     /**
-     * Legt den Wert der target-Eigenschaft fest.
+     * Legt den Wert der name-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTarget(String value) {
-        this.target = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

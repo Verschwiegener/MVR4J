@@ -17,17 +17,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Projection complex type.
+ * <p>Java-Klasse für Geometries complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Projection"&gt;
+ * &lt;complexType name="Geometries"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="Source" type="{}Source" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="ScaleHandeling" type="{}ScaleHandeling" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Geometry3D" type="{}Geometry3D" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Symbol" type="{}Symbol" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -37,73 +37,73 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Projection", propOrder = {
-    "source",
-    "scaleHandeling"
+@XmlType(name = "Geometries", propOrder = {
+    "geometry3D",
+    "symbol"
 })
-public class Projection {
+public class Geometries {
 
-    @XmlElement(name = "Source")
-    protected List<Source> source;
-    @XmlElement(name = "ScaleHandeling")
-    protected List<ScaleHandeling> scaleHandeling;
+    @XmlElement(name = "Geometry3D")
+    protected List<Geometry3D> geometry3D;
+    @XmlElement(name = "Symbol")
+    protected List<Symbol> symbol;
 
     /**
-     * Gets the value of the source property.
+     * Gets the value of the geometry3D property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the source property.
+     * This is why there is not a <CODE>set</CODE> method for the geometry3D property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSource().add(newItem);
+     *    getGeometry3D().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Source }
+     * {@link Geometry3D }
      * 
      * 
      */
-    public List<Source> getSource() {
-        if (source == null) {
-            source = new ArrayList<Source>();
+    public List<Geometry3D> getGeometry3D() {
+        if (geometry3D == null) {
+            geometry3D = new ArrayList<Geometry3D>();
         }
-        return this.source;
+        return this.geometry3D;
     }
 
     /**
-     * Gets the value of the scaleHandeling property.
+     * Gets the value of the symbol property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the scaleHandeling property.
+     * This is why there is not a <CODE>set</CODE> method for the symbol property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getScaleHandeling().add(newItem);
+     *    getSymbol().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ScaleHandeling }
+     * {@link Symbol }
      * 
      * 
      */
-    public List<ScaleHandeling> getScaleHandeling() {
-        if (scaleHandeling == null) {
-            scaleHandeling = new ArrayList<ScaleHandeling>();
+    public List<Symbol> getSymbol() {
+        if (symbol == null) {
+            symbol = new ArrayList<Symbol>();
         }
-        return this.scaleHandeling;
+        return this.symbol;
     }
 
 }

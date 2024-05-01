@@ -55,7 +55,7 @@ public class MVRParser {
 		schema = schemaFactory.newSchema(new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream("xsd/mvr.xsd")));
 	}
 
-	public GeneralSceneDescriptionType parseMVR(File mvrFile, File mvrOutputFolder) throws Exception {
+	public GeneralSceneDescription parseMVR(File mvrFile, File mvrOutputFolder) throws Exception {
 		mvrOutputFolder.mkdirs();
 		mvrOutputFolder = new File(mvrOutputFolder, mvrFile.getName().split("\\.")[0]);
 		//unzipFile(mvrFile, mvrOutputFolder);
@@ -76,7 +76,7 @@ public class MVRParser {
 
 		JAXBElement<?> root = (JAXBElement<?>) unmarshaller
 				.unmarshal(new InputSource(new FileReader(new File(mvrOutputFolder, "GeneralSceneDescription.xml"))));
-		return (GeneralSceneDescriptionType) root.getValue();
+		return (GeneralSceneDescription) root.getValue();
 	}
 
 	private void unzipFile(File gdtfFile, File gdtfFolder) throws IOException {

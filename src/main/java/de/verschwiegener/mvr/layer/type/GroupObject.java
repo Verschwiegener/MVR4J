@@ -14,22 +14,22 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.nodes.Geometries;
+import de.verschwiegener.mvr.layer.ChildList;
 
 
 /**
- * <p>Java-Klasse für FocusPoint complex type.
+ * <p>Java-Klasse für GroupObject complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="FocusPoint"&gt;
+ * &lt;complexType name="GroupObject"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="Matrix" type="{}matrixtype" minOccurs="0"/&gt;
  *         &lt;element name="Classing" type="{}guidtype" minOccurs="0"/&gt;
- *         &lt;element name="Geometries" type="{}Geometries"/&gt;
+ *         &lt;element name="ChildList" type="{}ChildList"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="uuid" use="required" type="{}guidtype" /&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
@@ -41,19 +41,19 @@ import de.verschwiegener.mvr.nodes.Geometries;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FocusPoint", propOrder = {
+@XmlType(name = "GroupObject", propOrder = {
     "matrix",
     "classing",
-    "geometries"
+    "childList"
 })
-public class FocusPoint {
+public class GroupObject {
 
     @XmlElement(name = "Matrix")
     protected String matrix;
     @XmlElement(name = "Classing")
     protected String classing;
-    @XmlElement(name = "Geometries", required = true)
-    protected Geometries geometries;
+    @XmlElement(name = "ChildList", required = true)
+    protected ChildList childList;
     @XmlAttribute(name = "uuid", required = true)
     protected String uuid;
     @XmlAttribute(name = "name")
@@ -108,27 +108,27 @@ public class FocusPoint {
     }
 
     /**
-     * Ruft den Wert der geometries-Eigenschaft ab.
+     * Ruft den Wert der childList-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link Geometries }
+     *     {@link ChildList }
      *     
      */
-    public Geometries getGeometries() {
-        return geometries;
+    public ChildList getChildList() {
+        return childList;
     }
 
     /**
-     * Legt den Wert der geometries-Eigenschaft fest.
+     * Legt den Wert der childList-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link Geometries }
+     *     {@link ChildList }
      *     
      */
-    public void setGeometries(Geometries value) {
-        this.geometries = value;
+    public void setChildList(ChildList value) {
+        this.childList = value;
     }
 
     /**

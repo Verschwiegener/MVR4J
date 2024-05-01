@@ -13,17 +13,19 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.nodes.enums.Scaleenum;
+
 
 /**
- * <p>Java-Klasse für Gobo complex type.
+ * <p>Java-Klasse für ScaleHandeling complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Gobo"&gt;
+ * &lt;complexType name="ScaleHandeling"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="rotation" type="{http://www.w3.org/2001/XMLSchema}float" default="0" /&gt;
+ *       &lt;attribute name="Enum" type="{}scaleenum" default="ScaleKeepRatio" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,38 +34,38 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Gobo")
-public class Gobo {
+@XmlType(name = "ScaleHandeling")
+public class ScaleHandeling {
 
-    @XmlAttribute(name = "rotation")
-    protected Float rotation;
+    @XmlAttribute(name = "Enum")
+    protected Scaleenum _enum;
 
     /**
-     * Ruft den Wert der rotation-Eigenschaft ab.
+     * Ruft den Wert der enum-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link Float }
+     *     {@link Scaleenum }
      *     
      */
-    public float getRotation() {
-        if (rotation == null) {
-            return  0.0F;
+    public Scaleenum getEnum() {
+        if (_enum == null) {
+            return Scaleenum.SCALE_KEEP_RATIO;
         } else {
-            return rotation;
+            return _enum;
         }
     }
 
     /**
-     * Legt den Wert der rotation-Eigenschaft fest.
+     * Legt den Wert der enum-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link Float }
+     *     {@link Scaleenum }
      *     
      */
-    public void setRotation(Float value) {
-        this.rotation = value;
+    public void setEnum(Scaleenum value) {
+        this._enum = value;
     }
 
 }

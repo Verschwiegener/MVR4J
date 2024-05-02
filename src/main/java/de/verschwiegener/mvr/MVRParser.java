@@ -74,9 +74,9 @@ public class MVRParser {
 			}
 		});
 
-		JAXBElement<?> root = (JAXBElement<?>) unmarshaller
+		GeneralSceneDescription root = (GeneralSceneDescription) unmarshaller
 				.unmarshal(new InputSource(new FileReader(new File(mvrOutputFolder, "GeneralSceneDescription.xml"))));
-		return (GeneralSceneDescription) root.getValue();
+		return root;
 	}
 
 	private void unzipFile(File gdtfFile, File gdtfFolder) throws IOException {

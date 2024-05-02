@@ -119,7 +119,7 @@ public class Fixture {
     protected Overwrites overwrites;
     @XmlElement(name = "Connections")
     protected Connections connections;
-    @XmlElement(name = "CIEColor")
+    @XmlElement(name = "Color")
     protected String cieColor;
     @XmlElement(name = "CustomIdType")
     protected BigInteger customIdType;

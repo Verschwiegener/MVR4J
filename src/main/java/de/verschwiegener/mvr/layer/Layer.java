@@ -8,11 +8,25 @@
 
 package de.verschwiegener.mvr.layer;
 
+import java.util.List;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import de.verschwiegener.mvr.layer.type.Fixture;
+import de.verschwiegener.mvr.layer.type.FocusPoint;
+import de.verschwiegener.mvr.layer.type.GroupObject;
+import de.verschwiegener.mvr.layer.type.Projector;
+import de.verschwiegener.mvr.layer.type.SceneObject;
+import de.verschwiegener.mvr.layer.type.Support;
+import de.verschwiegener.mvr.layer.type.Truss;
+import de.verschwiegener.mvr.layer.type.VideoScreen;
+import de.verschwiegener.mvr.nodes.Projections;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -64,6 +78,10 @@ public class Layer {
     public String getMatrix() {
         return matrix;
     }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
+    }
 
     /**
      * Legt den Wert der matrix-Eigenschaft fest.
@@ -112,6 +130,14 @@ public class Layer {
     public String getUuid() {
         return uuid;
     }
+    
+    /**
+     * Returns UUID
+     * @return
+     */
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
+    }
 
     /**
      * Legt den Wert der uuid-Eigenschaft fest.
@@ -152,5 +178,36 @@ public class Layer {
     public void setName(String value) {
         this.name = value;
     }
+    
+    public List<SceneObject> getSceneObjects(){
+    	return getChildList().getSceneObject();
+    }
+    
+    public List<GroupObject> getGroupObjects() {
+    	return getChildList().getGroupObject();
+    }
+    
+    public List<FocusPoint> getFocusPoints() {
+		return getChildList().getFocusPoint();
+	}
+    
+    public List<Fixture> getFixtures() {
+		return getChildList().getFixture();
+	}
+    
+    public List<Support> getSupports() {
+    	return getChildList().getSupport();
+    }
+    
+    public List<Truss> getTrusses() {
+    	return getChildList().getTruss();
+    }
+    
+    public List<VideoScreen> getVideoScreens() {
+    	return getChildList().getVideoScreen();
+    }
 
+    public List<Projector> getProjectors() {
+    	return getChildList().getProjector();
+    }
 }

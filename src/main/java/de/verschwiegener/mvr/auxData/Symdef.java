@@ -7,6 +7,8 @@
 
 package de.verschwiegener.mvr.auxData;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -82,6 +84,10 @@ public class Symdef {
 	public String getUuid() {
 		return uuid;
 	}
+	
+	public UUID getUUID() {
+		return UUID.fromString(uuid);
+	}
 
 	/**
 	 * Legt den Wert der uuid-Eigenschaft fest.
@@ -115,6 +121,16 @@ public class Symdef {
 	 */
 	public void setName(String value) {
 		this.name = value;
+	}
+	
+	public Geometry3D getGeometry() {
+		if(getChildList() == null) return null;
+		return getChildList().getGeometry3D();
+	}
+	
+	public Symbol getSymbol() {
+		if(getChildList() == null) return null;
+		return getChildList().getSymbol();
 	}
 
 }

@@ -9,6 +9,8 @@
 package de.verschwiegener.mvr.layer.type;
 
 import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -24,6 +26,7 @@ import de.verschwiegener.mvr.nodes.Gobo;
 import de.verschwiegener.mvr.nodes.Mappings;
 import de.verschwiegener.mvr.nodes.Overwrites;
 import de.verschwiegener.mvr.nodes.Protocols;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -148,6 +151,10 @@ public class Fixture {
      */
     public String getMatrix() {
         return matrix;
+    }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
     }
 
     /**
@@ -772,6 +779,10 @@ public class Fixture {
      */
     public String getUuid() {
         return uuid;
+    }
+    
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**

@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.util.MVRMatrix;
+
 
 /**
  * <p>Java-Klasse für Symbol complex type.
@@ -59,6 +61,10 @@ public class Symbol {
      */
     public String getMatrix() {
         return matrix;
+    }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
     }
 
     /**

@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.nodes.UserData;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -63,7 +66,11 @@ public class GeneralSceneDescription {
     protected String provider;
     @XmlAttribute(name = "providerVersion", required = true)
     protected String providerVersion;
+    
 
+    public GeneralSceneDescription() {
+	}
+    
     /**
      * Ruft den Wert der userData-Eigenschaft ab.
      * 

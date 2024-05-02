@@ -9,6 +9,8 @@
 package de.verschwiegener.mvr.nodes;
 
 import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -168,6 +170,10 @@ public class MappingDefinition {
      */
     public String getUuid() {
         return uuid;
+    }
+    
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**

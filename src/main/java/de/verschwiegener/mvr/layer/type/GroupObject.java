@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.layer.ChildList;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -69,6 +70,10 @@ public class GroupObject {
      */
     public String getMatrix() {
         return matrix;
+    }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
     }
 
     /**

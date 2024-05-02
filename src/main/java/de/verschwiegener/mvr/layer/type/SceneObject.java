@@ -9,6 +9,8 @@
 package de.verschwiegener.mvr.layer.type;
 
 import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -22,6 +24,7 @@ import de.verschwiegener.mvr.nodes.Connections;
 import de.verschwiegener.mvr.nodes.CustomCommands;
 import de.verschwiegener.mvr.nodes.Geometries;
 import de.verschwiegener.mvr.nodes.Overwrites;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -125,6 +128,10 @@ public class SceneObject {
     public String getMatrix() {
         return matrix;
     }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
+    }
 
     /**
      * Legt den Wert der matrix-Eigenschaft fest.
@@ -148,6 +155,10 @@ public class SceneObject {
      */
     public String getClassing() {
         return classing;
+    }
+    
+    public UUID classing() {
+    	return UUID.fromString(classing);
     }
 
     /**

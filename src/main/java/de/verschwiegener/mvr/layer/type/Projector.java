@@ -23,6 +23,7 @@ import de.verschwiegener.mvr.nodes.CustomCommands;
 import de.verschwiegener.mvr.nodes.Geometries;
 import de.verschwiegener.mvr.nodes.Overwrites;
 import de.verschwiegener.mvr.nodes.Projections;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -136,6 +137,10 @@ public class Projector {
      */
     public String getMatrix() {
         return matrix;
+    }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
     }
 
     /**

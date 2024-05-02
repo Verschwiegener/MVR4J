@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.util.MVRMatrix;
+
 
 /**
  * <p>Java-Klasse für Geometry3D complex type.
@@ -56,6 +58,10 @@ public class Geometry3D {
      */
     public String getMatrix() {
         return matrix;
+    }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
     }
 
     /**

@@ -29,26 +29,21 @@ public class Util {
 		}catch(Exception e) {
 			//e.printStackTrace();
 		}
-		System.out.println("ReturnBuffer");
 		return buffer;
 	}
 	
 	public static ByteBuf packetBuilder(ByteBuf data, int packageType) {
-		System.out.println("DataBuffer: " + data);
 		ByteBuf buffer = Unpooled.buffer(28);
-		System.out.println("Buf: " + buffer);
 		buffer.writeInt(MVR_PACKAGE_HEADER);
 		buffer.writeInt(MVR_PACKAGE_VERSION);
 		buffer.writeInt(0);
 		buffer.writeInt(0);
 		buffer.writeInt(packageType);
 		buffer.writeLong(data.readableBytes());
-		System.out.println("Header Size: " + buffer + " / " +  data.readableBytes());
 		buffer.writeBytes(data);
 		data.clear();
 		
 		buffer.resetReaderIndex();
-		System.out.println("PacketBuffer: " + buffer);
 		return buffer;
 		
 	}

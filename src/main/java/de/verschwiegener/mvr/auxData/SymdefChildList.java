@@ -103,5 +103,9 @@ public class SymdefChildList {
 	public void setSymbol(Symbol value) {
 		this.symbol = value;
 	}
+	
+	public boolean hasChildren() {
+		return getGeometry3D() != null || getSymbol() != null;
+	}
 
 }

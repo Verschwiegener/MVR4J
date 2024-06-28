@@ -60,6 +60,11 @@ public class Geometry3D {
         return matrix;
     }
     
+    /**
+     *  Considered identity when missing
+     *  
+     * @return
+     */
     public MVRMatrix matrix() {
     	return new MVRMatrix(matrix);
     }

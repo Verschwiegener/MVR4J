@@ -312,5 +312,9 @@ public class ChildList {
         }
         return this.projector;
     }
+    
+    public boolean hasChildren() {
+    	return !getSceneObject().isEmpty() || !getGroupObject().isEmpty() || !getFocusPoint().isEmpty() || !getFixture().isEmpty() || !getSupport().isEmpty() || !getVideoScreen().isEmpty() || !getProjector().isEmpty();
+    }
 
 }

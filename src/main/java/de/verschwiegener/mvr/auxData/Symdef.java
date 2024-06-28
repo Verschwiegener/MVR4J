@@ -64,6 +64,10 @@ public class Symdef {
 	public SymdefChildList getChildList() {
 		return childList;
 	}
+	
+	public boolean hasChildren() {
+    	return getChildList() != null && getChildList().hasChildren();
+    }
 
 	/**
 	 * Legt den Wert der childList-Eigenschaft fest.
@@ -85,7 +89,7 @@ public class Symdef {
 		return uuid;
 	}
 	
-	public UUID getUUID() {
+	public UUID uuid() {
 		return UUID.fromString(uuid);
 	}
 

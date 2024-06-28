@@ -781,7 +781,7 @@ public class Fixture {
         return uuid;
     }
     
-    public UUID getUUID() {
+    public UUID uuid() {
     	return UUID.fromString(uuid);
     }
 

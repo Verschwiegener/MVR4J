@@ -8,6 +8,8 @@
 
 package de.verschwiegener.mvr.nodes;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -90,6 +92,10 @@ public class Symbol {
     public String getUuid() {
         return uuid;
     }
+    
+    public UUID uuid() {
+    	return UUID.fromString(uuid);
+    }
 
     /**
      * Legt den Wert der uuid-Eigenschaft fest.
@@ -114,6 +120,10 @@ public class Symbol {
     public String getSymdef() {
         return symdef;
     }
+    
+    public UUID symdef() {
+    	return UUID.fromString(symdef);
+    }
 
     /**
      * Legt den Wert der symdef-Eigenschaft fest.
@@ -126,5 +136,6 @@ public class Symbol {
     public void setSymdef(String value) {
         this.symdef = value;
     }
+    
 
 }

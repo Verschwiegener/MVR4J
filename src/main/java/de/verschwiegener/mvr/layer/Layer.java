@@ -118,6 +118,10 @@ public class Layer {
     public void setChildList(ChildList value) {
         this.childList = value;
     }
+    
+    public boolean hasChildren() {
+    	return getChildList() != null && getChildList().hasChildren();
+    }
 
     /**
      * Ruft den Wert der uuid-Eigenschaft ab.
@@ -135,7 +139,7 @@ public class Layer {
      * Returns UUID
      * @return
      */
-    public UUID getUUID() {
+    public UUID uuid() {
     	return UUID.fromString(uuid);
     }
 

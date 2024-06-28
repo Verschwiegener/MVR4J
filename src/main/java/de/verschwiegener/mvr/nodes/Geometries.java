@@ -105,5 +105,9 @@ public class Geometries {
         }
         return this.symbol;
     }
+    
+    public boolean hasChildren() {
+    	return !getGeometry3D().isEmpty() || !getSymbol().isEmpty();
+    }
 
 }

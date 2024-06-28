@@ -65,14 +65,6 @@ public class MVRParser {
 		JAXBContext context = JAXBContext.newInstance("de.verschwiegener.mvr");
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		unmarshaller.setSchema(schema);
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-			
-			@Override
-			public boolean handleEvent(ValidationEvent event) {
-				System.out.println("Event: " + event.getMessage() + " / " + event.getLocator().getLineNumber());
-				return false;
-			}
-		});
 
 		GeneralSceneDescription root = (GeneralSceneDescription) unmarshaller
 				.unmarshal(new InputSource(new FileReader(new File(mvrOutputFolder, "GeneralSceneDescription.xml"))));

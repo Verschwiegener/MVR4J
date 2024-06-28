@@ -184,6 +184,15 @@ public class SceneObject {
     public Geometries getGeometries() {
         return geometries;
     }
+    
+    /**
+     * Checks if SceneObject has Geometries Attribute, and the Geometries Attribute has Children
+     * 
+     * @return
+     */
+    public boolean hasGeometries() {
+    	return getGeometries() != null && getGeometries().hasChildren();
+    }
 
     /**
      * Legt den Wert der geometries-Eigenschaft fest.
@@ -495,6 +504,10 @@ public class SceneObject {
      */
     public String getUuid() {
         return uuid;
+    }
+    
+    public UUID uuid() {
+    	return UUID.fromString(uuid);
     }
 
     /**

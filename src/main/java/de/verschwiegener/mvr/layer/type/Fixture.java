@@ -26,6 +26,7 @@ import de.verschwiegener.mvr.nodes.Gobo;
 import de.verschwiegener.mvr.nodes.Mappings;
 import de.verschwiegener.mvr.nodes.Overwrites;
 import de.verschwiegener.mvr.nodes.Protocols;
+import de.verschwiegener.mvr.util.MVRColor;
 import de.verschwiegener.mvr.util.MVRMatrix;
 
 
@@ -170,11 +171,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -182,11 +183,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**
@@ -626,11 +627,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRColor }
      *     
      */
-    public String getCIEColor() {
-        return cieColor;
+    public MVRColor getCIEColor() {
+        return MVRColor.fromMVR(cieColor);
     }
 
     /**
@@ -638,11 +639,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRColor }
      *     
      */
-    public void setCIEColor(String value) {
-        this.cieColor = value;
+    public void setCIEColor(MVRColor value) {
+        this.cieColor = value.toMVR();
     }
 
     /**
@@ -822,15 +823,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getMultipatch() {
-        if (multipatch == null) {
-            return "";
-        } else {
-            return multipatch;
-        }
+    public UUID getMultipatch() {
+        return UUID.fromString(multipatch);
     }
 
     /**
@@ -838,11 +835,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setMultipatch(String value) {
-        this.multipatch = value;
+    public void setMultipatch(UUID value) {
+        this.multipatch = value.toString();
     }
     
     public enum CustomIDType {

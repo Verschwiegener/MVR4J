@@ -162,11 +162,11 @@ public class VideoScreen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -174,11 +174,11 @@ public class VideoScreen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**
@@ -622,15 +622,11 @@ public class VideoScreen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getMultipatch() {
-        if (multipatch == null) {
-            return "";
-        } else {
-            return multipatch;
-        }
+    public UUID getMultipatch() {
+        return UUID.fromString(multipatch);
     }
 
     /**
@@ -638,11 +634,11 @@ public class VideoScreen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setMultipatch(String value) {
-        this.multipatch = value;
+    public void setMultipatch(UUID value) {
+        this.multipatch = value.toString();
     }
 
 }

@@ -145,15 +145,11 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
-    }
-    
-    public UUID classing() {
-    	return UUID.fromString(classing);
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -161,11 +157,11 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**

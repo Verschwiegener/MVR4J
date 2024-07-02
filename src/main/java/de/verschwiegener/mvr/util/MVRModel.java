@@ -9,8 +9,6 @@ public class MVRModel {
 	
 	private MVRMatrix transformationMatrix;
 	
-	
-	
 	public MVRModel(File modelFile, MVRMatrix transformationMatrix) {
 		this.modelFile = modelFile;
 		this.transformationMatrix = transformationMatrix;
@@ -56,8 +54,8 @@ public class MVRModel {
 			transformationMatrix.m22 = transformationMatrix.m22 * other.m22;
 		}
 		if(!ignoreRotation) {
-		float[] otherRotation = other.getRotationAngles();
-		float[] thisRotation = transformationMatrix.getRotationAngles();
+		double[] otherRotation = other.getRotationAngles();
+		double[] thisRotation = transformationMatrix.getRotationAngles();
 		
 		transformationMatrix.setRotationXYZ((float) Math.toRadians(otherRotation[0] + thisRotation[0]), (float) Math.toRadians(otherRotation[1] + thisRotation[1]),
 				(float) Math.toRadians(otherRotation[2] + thisRotation[2]));

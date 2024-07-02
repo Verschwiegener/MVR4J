@@ -10,10 +10,10 @@ import org.joml.Runtime;
 
 public class MVRMatrix {
 
-	float m00, m01, m02;
-	float m10, m11, m12;
-	float m20, m21, m22;
-	float m30, m31, m32;
+	double m00, m01, m02;
+	double m10, m11, m12;
+	double m20, m21, m22;
+	double m30, m31, m32;
 
 	/**
 	 * Returns Identity Matrix
@@ -40,21 +40,21 @@ public class MVRMatrix {
 		String[] wValues = substrings[2].split(",");
 		String[] oValues = substrings[3].split(",");
 
-		m00 = Float.valueOf(uValues[0]);
-		m01 = Float.valueOf(uValues[1]);
-		m02 = Float.valueOf(uValues[2]);
+		m00 = Double.valueOf(uValues[0]);
+		m01 = Double.valueOf(uValues[1]);
+		m02 = Double.valueOf(uValues[2]);
 
-		m10 = Float.valueOf(vValues[0]);
-		m11 = Float.valueOf(vValues[1]);
-		m12 = Float.valueOf(vValues[2]);
+		m10 = Double.valueOf(vValues[0]);
+		m11 = Double.valueOf(vValues[1]);
+		m12 = Double.valueOf(vValues[2]);
 
-		m20 = Float.valueOf(wValues[0]);
-		m21 = Float.valueOf(wValues[1]);
-		m22 = Float.valueOf(wValues[2]);
+		m20 = Double.valueOf(wValues[0]);
+		m21 = Double.valueOf(wValues[1]);
+		m22 = Double.valueOf(wValues[2]);
 
-		m30 = Float.valueOf(oValues[0]);
-		m31 = Float.valueOf(oValues[1]);
-		m32 = Float.valueOf(oValues[2]);
+		m30 = Double.valueOf(oValues[0]);
+		m31 = Double.valueOf(oValues[1]);
+		m32 = Double.valueOf(oValues[2]);
 
 	}
 
@@ -80,11 +80,11 @@ public class MVRMatrix {
 	 * 
 	 * @return
 	 */
-	public float[] getScale() {
-		float[] scale = new float[3];
-		scale[0] = (float) Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
-		scale[1] = (float) Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
-		scale[2] = (float) Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
+	public double[] getScale() {
+		double[] scale = new double[3];
+		scale[0] = Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
+		scale[1] = Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
+		scale[2] = Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
 		return scale;
 	}
 	
@@ -95,14 +95,14 @@ public class MVRMatrix {
 	 * @param y
 	 * @param z
 	 */
-	public void setScale(float x, float y, float z) {
+	public void setScale(double x, double y, double z) {
 		m00 = x;
         m11 = y;
         m22 = z;
 	}
 
-	public float[] getTranslation() {
-		float[] translation = new float[3];
+	public double[] getTranslation() {
+		double[] translation = new double[3];
 		translation[0] = m30;
 		translation[1] = m31;
 		translation[2] = m32;
@@ -115,40 +115,40 @@ public class MVRMatrix {
 	 * scaleFactor 1 = Millimeter
 	 * @return
 	 */
-	public float[] getTranslation(float scaleFactor) {
-		float[] translation = new float[3];
+	public double[] getTranslation(double scaleFactor) {
+		double[] translation = new double[3];
 		translation[0] = m30 / 100;
 		translation[1] = m31 / 100;
 		translation[2] = m32 / 100;
 		return translation;
 	}
 	
-	public void translate(float[] offset) {
+	public void translate(double[] offset) {
         m30 = m30 + offset[0];
         m31 = m31 + offset[1];
         m32 = m32 + offset[2];
 	}
 	
-	public void setRotationXYZ(float angleX, float angleY, float angleZ) {		
-		float sinX = (float) Math.sin(angleX);
-        float cosX = (float) Math.sin(angleX + (Math.PI * 0.5));
-        float sinY = (float) Math.sin(angleY);
-        float cosY = (float) Math.sin(angleY + (Math.PI * 0.5));
-        float sinZ = (float) Math.sin(angleZ);
-        float cosZ = (float) Math.sin(angleZ + (Math.PI * 0.5));
-        float m_sinX = -sinX;
-        float m_sinY = -sinY;
-        float m_sinZ = -sinZ;
+	public void setRotationXYZ(double angleX, double angleY, double angleZ) {		
+		double sinX = Math.sin(angleX);
+        double cosX = Math.sin(angleX + (Math.PI * 0.5));
+        double sinY = Math.sin(angleY);
+        double cosY = Math.sin(angleY + (Math.PI * 0.5));
+        double sinZ = Math.sin(angleZ);
+        double cosZ = Math.sin(angleZ + (Math.PI * 0.5));
+        double m_sinX = -sinX;
+        double m_sinY = -sinY;
+        double m_sinZ = -sinZ;
 
         // rotateX
-        float nm11 = cosX;
-        float nm12 = sinX;
-        float nm21 = m_sinX;
-        float nm22 = cosX;
+        double nm11 = cosX;
+        double nm12 = sinX;
+        double nm21 = m_sinX;
+        double nm22 = cosX;
         // rotateY
-        float nm00 = cosY;
-        float nm01 = nm21 * m_sinY;
-        float nm02 = nm22 * m_sinY;
+        double nm00 = cosY;
+        double nm01 = nm21 * m_sinY;
+        double nm02 = nm22 * m_sinY;
         m20 = sinY;
         m21 = nm21 * cosY;
         m22 = nm22 * cosY;
@@ -161,15 +161,15 @@ public class MVRMatrix {
         m12 = nm02 * m_sinZ + nm12 * cosZ;
 	}
 
-	public float[] getRotation() {
-		float[] rotation = new float[4];
+	public double[] getRotation() {
+		double[] rotation = new double[4];
 
-		float nm00 = m00, nm01 = m01, nm02 = m02;
-		float nm10 = m10, nm11 = m11, nm12 = m12;
-		float nm20 = m20, nm21 = m21, nm22 = m22;
-		float lenX = 1.0f / (float) Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
-		float lenY = 1.0f / (float) Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
-		float lenZ = 1.0f / (float) Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
+		double nm00 = m00, nm01 = m01, nm02 = m02;
+		double nm10 = m10, nm11 = m11, nm12 = m12;
+		double nm20 = m20, nm21 = m21, nm22 = m22;
+		double lenX = 1.0f / Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
+		double lenY = 1.0f / Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
+		double lenZ = 1.0f / Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
 		nm00 *= lenX;
 		nm01 *= lenX;
 		nm02 *= lenX;
@@ -179,7 +179,7 @@ public class MVRMatrix {
 		nm20 *= lenZ;
 		nm21 *= lenZ;
 		nm22 *= lenZ;
-		float epsilon = 1E-4f, epsilon2 = 1E-3f;
+		double epsilon = 1E-4f, epsilon2 = 1E-3f;
 		if (Math.abs(nm10 - nm01) < epsilon && Math.abs(nm20 - nm02) < epsilon && Math.abs(nm21 - nm12) < epsilon) {
 			if (Math.abs(nm10 + nm01) < epsilon2 && Math.abs(nm20 + nm02) < epsilon2 && Math.abs(nm21 + nm12) < epsilon2
 					&& Math.abs(nm00 + nm11 + nm22 - 3) < epsilon2) {
@@ -189,29 +189,29 @@ public class MVRMatrix {
 				rotation[3] = 0f;
 				return rotation;
 			}
-			rotation[3] = (float) Math.PI;
-			float xx = (nm00 + 1) / 2;
-			float yy = (nm11 + 1) / 2;
-			float zz = (nm22 + 1) / 2;
-			float xy = (nm10 + nm01) / 4;
-			float xz = (nm20 + nm02) / 4;
-			float yz = (nm21 + nm12) / 4;
+			rotation[3] = Math.PI;
+			double xx = (nm00 + 1) / 2;
+			double yy = (nm11 + 1) / 2;
+			double zz = (nm22 + 1) / 2;
+			double xy = (nm10 + nm01) / 4;
+			double xz = (nm20 + nm02) / 4;
+			double yz = (nm21 + nm12) / 4;
 			if ((xx > yy) && (xx > zz)) {
-				rotation[0] = (float) Math.sqrt(xx);
+				rotation[0] = Math.sqrt(xx);
 				rotation[1] = xy / rotation[0];
 				rotation[2] = xz / rotation[0];
 			} else if (yy > zz) {
-				rotation[1] = (float) Math.sqrt(yy);
+				rotation[1] = Math.sqrt(yy);
 				rotation[0] = xy / rotation[1];
 				rotation[2] = yz / rotation[1];
 			} else {
-				rotation[2] = (float) Math.sqrt(zz);
+				rotation[2] = Math.sqrt(zz);
 				rotation[0] = xz / rotation[2];
 				rotation[1] = yz / rotation[2];
 			}
 			return rotation;
 		}
-		float s = (float) Math
+		double s = Math
 				.sqrt((nm12 - nm21) * (nm12 - nm21) + (nm20 - nm02) * (nm20 - nm02) + (nm01 - nm10) * (nm01 - nm10));
 		rotation[3] = safeAcos((nm00 + nm11 + nm22 - 1) / 2);
 		rotation[0] = (nm12 - nm21) / s;
@@ -224,73 +224,73 @@ public class MVRMatrix {
 	 * Returns the Matrix Rotation as Radian
 	 * @return
 	 */
-	public float[] getRotationRadians() {
+	public double[] getRotationRadians() {
 		//https://stackoverflow.com/a/15029416
-		float x = (float) Math.atan2(m21,m22);
-		float y = (float) Math.atan2(-m20, Math.sqrt(Math.pow(m21, 2) + Math.pow(m22, 2)));
-		float z = (float) Math.atan2(m10, m00);
-		return new float[] {x, y, z};
+		double x = Math.atan2(m21,m22);
+		double y = Math.atan2(-m20, Math.sqrt(Math.pow(m21, 2) + Math.pow(m22, 2)));
+		double z = Math.atan2(m10, m00);
+		return new double[] {x, y, z};
 	}
-	public float[] getRotationAngles() {
-		float[] radians = getRotationRadians();
-		return new float[] {(float) Math.toDegrees(radians[0]), (float) Math.toDegrees(radians[1]), (float) Math.toDegrees(radians[2])};
+	public double[] getRotationAngles() {
+		double[] radians = getRotationRadians();
+		return new double[] {Math.toDegrees(radians[0]), Math.toDegrees(radians[1]), Math.toDegrees(radians[2])};
 	}
 
-	public float m00() {
+	public double m00() {
 		return m00;
 	}
 
-	public float m01() {
+	public double m01() {
 		return m01;
 	}
 
-	public float m02() {
+	public double m02() {
 		return m02;
 	}
 
-	public float m10() {
+	public double m10() {
 		return m10;
 	}
 
-	public float m11() {
+	public double m11() {
 		return m11;
 	}
 
-	public float m12() {
+	public double m12() {
 		return m12;
 	}
 
-	public float m20() {
+	public double m20() {
 		return m20;
 	}
 
-	public float m21() {
+	public double m21() {
 		return m21;
 	}
 
-	public float m22() {
+	public double m22() {
 		return m22;
 	}
 
-	public float m30() {
+	public double m30() {
 		return m30;
 	}
 
-	public float m31() {
+	public double m31() {
 		return m31;
 	}
 
-	public float m32() {
+	public double m32() {
 		return m32;
 	}
 
-	private float safeAcos(float v) {
+	private double safeAcos(double v) {
 		if (v < -1.0f)
-			return (float) Math.PI;
+			return Math.PI;
 		else if (v > +1.0f)
 			return 0.0f;
 		else
-			return (float) Math.acos(v);
+			return Math.acos(v);
 	}
 
 	/**
@@ -333,6 +333,14 @@ public class MVRMatrix {
 			}
 		}
 		return null;
+	}
+	
+	public String toMVR() {
+		DecimalFormat decimalFormat = new DecimalFormat("0.000000");
+		return "{" + decimalFormat.format(m00) + "," + decimalFormat.format(m10) + "," + decimalFormat.format(m20) + ","
+				+ decimalFormat.format(m30) + "}{" + decimalFormat.format(m01) + "," + decimalFormat.format(m11) + ","
+				+ decimalFormat.format(m21) + "," + decimalFormat.format(m31) + "}{" + decimalFormat.format(m02) + ","
+				+ decimalFormat.format(m12) + "," + decimalFormat.format(m22) + "," + decimalFormat.format(m32) + "}";
 	}
 	
 	/**

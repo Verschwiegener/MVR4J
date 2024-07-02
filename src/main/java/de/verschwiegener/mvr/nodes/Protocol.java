@@ -116,12 +116,8 @@ public class Protocol {
      *     {@link String }
      *     
      */
-    public String getType() {
-        if (type == null) {
-            return "";
-        } else {
-            return type;
-        }
+    public ProtocolType getType() {
+        return ProtocolType.getType(type);
     }
 
     /**
@@ -132,8 +128,8 @@ public class Protocol {
      *     {@link String }
      *     
      */
-    public void setType(String value) {
-        this.type = value;
+    public void setType(ProtocolType value) {
+        this.type = value.type;
     }
 
     /**
@@ -187,5 +183,33 @@ public class Protocol {
     public void setTransmission(TransmissionEnum value) {
         this.transmission = value;
     }
+    
+    public enum ProtocolType {
+    	
+    	NONE(""),
+    	RDMNet("RDMNet"),
+    	ArtNet("Art-Net"),
+    	sACN("sACN"),
+    	PosiStageNet("PosiStageNet"),
+    	OpenSoundControl("OpenSoundControl"),
+    	CITP("CITP"),
+    	NDI("NDI");
+    	
+    	private final String type;
+    	private ProtocolType(String type) {
+			this.type = type;
+		}
+    	
+    	public static ProtocolType getType(String type) {
+    		if(type == null)
+    			return NONE;
+    		for(ProtocolType pt : ProtocolType.values()) {
+    			if(pt.type.equals(type)) 
+    				return pt;
+    		}
+			return null;
+    	}
+    }
+    
 
 }

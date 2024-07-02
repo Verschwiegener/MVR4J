@@ -146,15 +146,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public String getMatrix() {
-        return matrix;
-    }
-    
-    public MVRMatrix matrix() {
-    	return new MVRMatrix(matrix);
+    public MVRMatrix getMatrix() {
+        return new MVRMatrix(matrix);
     }
 
     /**
@@ -162,11 +158,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(MVRMatrix value) {
+        this.matrix = value.toMVR();
     }
 
     /**
@@ -768,20 +764,16 @@ public class Fixture {
     public void setChildList(ChildList value) {
         this.childList = value;
     }
-
+    
     /**
      * Ruft den Wert der uuid-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getUuid() {
-        return uuid;
-    }
-    
-    public UUID uuid() {
+    public UUID getUUID() {
     	return UUID.fromString(uuid);
     }
 
@@ -790,11 +782,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setUUID(UUID value) {
+        this.uuid = value.toString();
     }
 
     /**

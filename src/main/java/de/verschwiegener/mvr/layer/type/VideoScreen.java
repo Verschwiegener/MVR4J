@@ -9,6 +9,8 @@
 package de.verschwiegener.mvr.layer.type;
 
 import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -136,15 +138,11 @@ public class VideoScreen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public String getMatrix() {
-        return matrix;
-    }
-    
-    public MVRMatrix matrix() {
-    	return new MVRMatrix(matrix);
+    public MVRMatrix getMatrix() {
+        return new MVRMatrix(matrix);
     }
 
     /**
@@ -152,11 +150,11 @@ public class VideoScreen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(MVRMatrix value) {
+        this.matrix = value.toMVR();
     }
 
     /**
@@ -572,11 +570,11 @@ public class VideoScreen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getUuid() {
-        return uuid;
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**
@@ -584,11 +582,11 @@ public class VideoScreen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setUUID(UUID value) {
+        this.uuid = value.toString();
     }
 
     /**

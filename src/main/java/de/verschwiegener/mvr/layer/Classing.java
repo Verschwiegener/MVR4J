@@ -55,7 +55,7 @@ public class Classing {
         return uuid;
     }
     
-    public UUID getUUID() {
+    public UUID uuid() {
     	return UUID.fromString(uuid);
     }
 

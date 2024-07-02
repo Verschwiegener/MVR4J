@@ -105,9 +105,9 @@ public class Fixture {
     @XmlElement(name = "FixtureID", required = true)
     protected String fixtureID;
     @XmlElement(name = "FixtureIDNumeric", required = true)
-    protected BigInteger fixtureIDNumeric;
+    protected int fixtureIDNumeric;
     @XmlElement(name = "UnitNumber", required = true)
-    protected BigInteger unitNumber;
+    protected int unitNumber;
     @XmlElement(name = "ChildPosition")
     protected String childPosition;
     @XmlElement(name = "Addresses")
@@ -125,9 +125,9 @@ public class Fixture {
     @XmlElement(name = "Color")
     protected String cieColor;
     @XmlElement(name = "CustomIdType")
-    protected BigInteger customIdType;
+    protected int customIdType;
     @XmlElement(name = "CustomId")
-    protected BigInteger customId;
+    protected int customId;
     @XmlElement(name = "Mappings")
     protected Mappings mappings;
     @XmlElement(name = "Gobo")
@@ -417,7 +417,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getFixtureIDNumeric() {
+    public int getFixtureIDNumeric() {
         return fixtureIDNumeric;
     }
 
@@ -429,7 +429,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setFixtureIDNumeric(BigInteger value) {
+    public void setFixtureIDNumeric(int value) {
         this.fixtureIDNumeric = value;
     }
 
@@ -441,7 +441,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getUnitNumber() {
+    public int getUnitNumber() {
         return unitNumber;
     }
 
@@ -453,7 +453,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setUnitNumber(BigInteger value) {
+    public void setUnitNumber(int value) {
         this.unitNumber = value;
     }
 
@@ -657,8 +657,8 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getCustomIdType() {
-        return customIdType;
+    public CustomIDType getCustomIdType() {
+        return CustomIDType.getType(customIdType);
     }
 
     /**
@@ -669,8 +669,8 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setCustomIdType(BigInteger value) {
-        this.customIdType = value;
+    public void setCustomIdType(CustomIDType value) {
+        this.customIdType = value.id;
     }
 
     /**
@@ -681,7 +681,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getCustomId() {
+    public int getCustomId() {
         return customId;
     }
 
@@ -693,7 +693,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setCustomId(BigInteger value) {
+    public void setCustomId(int value) {
         this.customId = value;
     }
 
@@ -851,6 +851,36 @@ public class Fixture {
      */
     public void setMultipatch(String value) {
         this.multipatch = value;
+    }
+    
+    public enum CustomIDType {
+    	
+    	UNDEFINED(0),
+    	FIXTURE(1),
+    	CHANNEL(2),
+    	HOUSELIGHTS(4),
+    	NONDIM(5),
+    	MEDIA(6),
+    	FOG(7),
+    	EFFECT(8),
+    	PYRO(9),
+    	MARKER(10);
+    	
+    	private final int id;
+    	
+    	CustomIDType(int id) {
+    		this.id = id;
+    	}
+    	
+    	public static CustomIDType getType(int customIDType) {
+    		for(CustomIDType type : CustomIDType.values()) {
+    			if(type.id == customIDType) {
+    				return type;
+    			}
+    		}
+			return null;
+    	}
+    	
     }
 
 }

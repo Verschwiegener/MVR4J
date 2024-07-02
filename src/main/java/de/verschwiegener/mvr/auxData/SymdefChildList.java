@@ -58,11 +58,11 @@ import de.verschwiegener.mvr.nodes.Symbol;
 @XmlType(name = "SymdefChildList", propOrder = { "geometry3D", "symbol" })
 public class SymdefChildList {
 
-	@XmlElement(name = "Geometry3D", required = true)
-	protected Geometry3D geometry3D;
+	@XmlElement(name = "Geometry3D")
+	protected List<Geometry3D> geometry3D;
 	
-	@XmlElement(name = "Symbol", required = true)
-	protected Symbol symbol;
+	@XmlElement(name = "Symbol")
+	protected List<Symbol> symbol;
 
 	/**
 	 * Ruft den Wert der geometry3D-Eigenschaft ab.
@@ -70,18 +70,11 @@ public class SymdefChildList {
 	 * @return possible object is {@link Geometry3D }
 	 * 
 	 */
-	public Geometry3D getGeometry3D() {
+	public List<Geometry3D> getGeometry3D() {
+		if (geometry3D == null) {
+			geometry3D = new ArrayList<Geometry3D>();
+		}
 		return geometry3D;
-	}
-
-	/**
-	 * Legt den Wert der geometry3D-Eigenschaft fest.
-	 * 
-	 * @param value allowed object is {@link Geometry3D }
-	 * 
-	 */
-	public void setGeometry3D(Geometry3D value) {
-		this.geometry3D = value;
 	}
 
 	/**
@@ -90,22 +83,16 @@ public class SymdefChildList {
 	 * @return possible object is {@link Symbol }
 	 * 
 	 */
-	public Symbol getSymbol() {
+	public List<Symbol> getSymbol() {
+		if (symbol == null) {
+			symbol = new ArrayList<Symbol>();
+		}
 		return symbol;
 	}
 
-	/**
-	 * Legt den Wert der symbol-Eigenschaft fest.
-	 * 
-	 * @param value allowed object is {@link Symbol }
-	 * 
-	 */
-	public void setSymbol(Symbol value) {
-		this.symbol = value;
-	}
 	
 	public boolean hasChildren() {
-		return getGeometry3D() != null || getSymbol() != null;
+		return getGeometry3D().isEmpty() || getSymbol().isEmpty();
 	}
 
 }

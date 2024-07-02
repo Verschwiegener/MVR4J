@@ -126,15 +126,5 @@ public class Symdef {
 	public void setName(String value) {
 		this.name = value;
 	}
-	
-	public Geometry3D getGeometry() {
-		if(getChildList() == null) return null;
-		return getChildList().getGeometry3D();
-	}
-	
-	public Symbol getSymbol() {
-		if(getChildList() == null) return null;
-		return getChildList().getSymbol();
-	}
 
 }

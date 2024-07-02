@@ -93,7 +93,7 @@ public class MVRColor {
 		g = normalizeXYZtoRGB(g);
 		b = normalizeXYZtoRGB(b);
 
-		return new double[] { (r < 0) ? 0 : r, (g < 0) ? 0 : g, (b < 0) ? 0 : b };
+		return new double[] { (r < 0) ? 0 : (r > 1) ? 1 : r, (g < 0) ? 0 : (g > 1) ? 1 : g, (b < 0) ? 0 : (b > 1) ? 1 : b };
 	}
 
 	/**

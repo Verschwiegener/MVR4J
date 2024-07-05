@@ -381,7 +381,7 @@
 	<xs:attribute name="ipv4" type="Ipv4_Adress"/>
 	<xs:attribute name="subnetmask" type="Ipv4_Adress"/>
 	<xs:attribute name="ipv6" type="Ipv6_Adress"/>
-	<xs:attribute name="dhcp" type="xs:boolean" default="false"/>
+	<xs:attribute name="dhcp" type="xs:string"/>
 	<xs:attribute name="hostname" type="xs:string"/>
   </xs:complexType>
   <xs:complexType name="Protocols">

@@ -78,6 +78,10 @@ public class Addresses {
         }
         return this.address;
     }
+    
+    public boolean hasAddresses() {
+    	return !getAddress().isEmpty();
+    }
 
     /**
      * Gets the value of the network property.
@@ -106,6 +110,10 @@ public class Addresses {
             network = new ArrayList<Network>();
         }
         return this.network;
+    }
+    
+    public boolean hasNetworks() {
+    	return !getNetwork().isEmpty();
     }
 
 }

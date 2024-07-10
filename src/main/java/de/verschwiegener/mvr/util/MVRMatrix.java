@@ -4,7 +4,12 @@ import java.lang.Math;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
-
+/**
+ * Matrix Class for simple Matrix Math
+ * 
+ * @author julius
+ *
+ */
 public class MVRMatrix {
 
 	double m00, m01, m02;
@@ -54,7 +59,9 @@ public class MVRMatrix {
 		m32 = Double.valueOf(oValues[2]);
 
 	}
-
+	/**
+	 * Resets the Matrix to an Identity matrix
+	 */
 	public void identity() {
 		m00 = 1.0f;
 		m01 = 0.0f;
@@ -74,8 +81,9 @@ public class MVRMatrix {
 	}
 
 	/**
+	 * Returns Scale of the Matrix
 	 * 
-	 * @return
+	 * @return double[] {scaleX, scaleY, scaleZ}
 	 */
 	public double[] getScale() {
 		double[] scale = new double[3];
@@ -97,7 +105,12 @@ public class MVRMatrix {
         m11 = y;
         m22 = z;
 	}
-
+	
+	/**
+	 * Returns the Translation of the Matrix 
+	 * 
+	 * @return double[] {posX, posY, posZ}
+	 */
 	public double[] getTranslation() {
 		double[] translation = new double[3];
 		translation[0] = m30;
@@ -107,6 +120,7 @@ public class MVRMatrix {
 	}
 	
 	/**
+	 * Returns the Translation of the Matrix divided by scaleFactor
 	 * 
 	 * @param scaleFactor Scales the Position to whatever Unit is wanted
 	 * scaleFactor 1 = Millimeter
@@ -120,19 +134,30 @@ public class MVRMatrix {
 		return translation;
 	}
 	
-	public void translate(double[] offset) {
+	/**
+	 * Offsets the Position by the given Offset
+	 * 
+	 * @param offset
+	 */
+	public void offsetPos(double[] offset) {
         m30 = m30 + offset[0];
         m31 = m31 + offset[1];
         m32 = m32 + offset[2];
 	}
-	
-	public void setRotationXYZ(double angleX, double angleY, double angleZ) {		
-		double sinX = Math.sin(angleX);
-        double cosX = Math.sin(angleX + (Math.PI * 0.5));
-        double sinY = Math.sin(angleY);
-        double cosY = Math.sin(angleY + (Math.PI * 0.5));
-        double sinZ = Math.sin(angleZ);
-        double cosZ = Math.sin(angleZ + (Math.PI * 0.5));
+	/**
+	 * Sets the Rotation of this matrix 
+	 * 
+	 * @param radianX
+	 * @param radianY
+	 * @param radianZ
+	 */
+	public void setRotationXYZ(double radianX, double radianY, double radianZ) {		
+		double sinX = Math.sin(radianX);
+        double cosX = Math.sin(radianX + (Math.PI * 0.5));
+        double sinY = Math.sin(radianY);
+        double cosY = Math.sin(radianY + (Math.PI * 0.5));
+        double sinZ = Math.sin(radianZ);
+        double cosZ = Math.sin(radianZ + (Math.PI * 0.5));
         double m_sinX = -sinX;
         double m_sinY = -sinY;
         double m_sinZ = -sinZ;
@@ -219,6 +244,7 @@ public class MVRMatrix {
 	
 	/**
 	 * Returns the Matrix Rotation as Radian
+	 * 
 	 * @return
 	 */
 	public double[] getRotationRadians() {
@@ -228,6 +254,11 @@ public class MVRMatrix {
 		double z = Math.atan2(m10, m00);
 		return new double[] {x, y, z};
 	}
+	/**
+	 * Returns the Rotation as Angle
+	 * 
+	 * @return
+	 */
 	public double[] getRotationAngles() {
 		double[] radians = getRotationRadians();
 		return new double[] {Math.toDegrees(radians[0]), Math.toDegrees(radians[1]), Math.toDegrees(radians[2])};

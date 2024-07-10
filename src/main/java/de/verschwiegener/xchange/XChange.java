@@ -23,12 +23,18 @@ import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Version;
 
+/**
+ * Class Managing all XChange related things
+ * 
+ * @author julius
+ *
+ */
 public class XChange {
 
 	public static XChange instance;
 
 	/**
-	 * Directory to save and load MVR Files to and from
+	 * Parent Folder into which all received MVR Files get saved
 	 */
 	public File mvrWorkingDirectory;
 
@@ -70,9 +76,9 @@ public class XChange {
 	/**
 	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection 
 	 * 
-	 * @param mode
-	 * @param stationName
-	 * @param mvrWorkingDirectory
+	 * @param mode Network Protocol to use
+	 * @param stationName Name of the Station and mDNS
+	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files get saved
 	 */
 	public XChange(ProtocolMode mode, String stationName, File mvrWorkingDirectory) {
 		this(mode, 4568, stationName, "MVR4J", "", UUID.randomUUID(), mvrWorkingDirectory);
@@ -80,13 +86,13 @@ public class XChange {
 	/**
 	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection 
 	 * 
-	 * @param mode
-	 * @param serverPort
-	 * @param stationName
-	 * @param provider
-	 * @param mvrGroup
-	 * @param stationUUID
-	 * @param mvrWorkingDirectory
+	 * @param mode Network Protocol to use
+	 * @param serverPort Port the Server should use
+	 * @param stationName Name of the Station and mDNS
+	 * @param provider Name of the XChange Provider
+	 * @param mvrGroup Name of the XChange Group to join
+	 * @param stationUUID UUID of the Station, should be persistent across multiple start-ups of the same software on the same computer
+	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files get saved
 	 */
 	public XChange(ProtocolMode mode, int serverPort, String stationName, String provider, String mvrGroup,
 			UUID stationUUID, File mvrWorkingDirectory) {
@@ -99,6 +105,13 @@ public class XChange {
 		this.mvrWorkingDirectory = mvrWorkingDirectory;
 	}
 
+	/**
+	 * Starts XChange Server 
+	 * 
+	 * @param xchangeListener 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void start(XChangeListener xchangeListener) throws IOException, InterruptedException {
 		this.listener = xchangeListener;
 		if (mode == ProtocolMode.TCP) {

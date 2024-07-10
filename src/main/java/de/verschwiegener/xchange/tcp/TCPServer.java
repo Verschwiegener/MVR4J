@@ -15,6 +15,8 @@ import io.netty.handler.logging.LoggingHandler;
 
 /**
  * TCP Server receiving all Packets
+ * 
+ * @author julius
  */
 public class TCPServer {
 
@@ -28,7 +30,12 @@ public class TCPServer {
 
 	public TCPServer() {
 	}
-
+	
+	/**
+	 * Starts Netty TCP Server
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void start() throws InterruptedException {
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)

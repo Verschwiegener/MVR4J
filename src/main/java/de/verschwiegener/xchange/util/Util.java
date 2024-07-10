@@ -10,6 +10,11 @@ import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+/**
+ * 
+ * @author julius
+ *
+ */
 public class Util {
 	
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

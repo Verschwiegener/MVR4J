@@ -1,6 +1,5 @@
 package de.verschwiegener.xchange.tcp;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import com.google.gson.JsonObject;
@@ -16,6 +15,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
  * Netty PacketHandler decoding and parsing incoming Packets from all Peers
+ * 
+ * @author julius
  */
 public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 

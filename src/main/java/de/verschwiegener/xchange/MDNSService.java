@@ -11,7 +11,12 @@ import java.util.function.Predicate;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-
+/**
+ * MDNS Wrapper Class
+ * 
+ * @author julius
+ *
+ */
 public class MDNSService {
 
 	private static JmDNS mDns;
@@ -27,8 +32,6 @@ public class MDNSService {
 
 	public static ServiceInfo registerMDNS(MDNSServiceData data) throws IOException {
 		InetAddress netInterface = getInetAddress();
-
-		System.out.println("NetInterface: " + netInterface);
 
 		byte[] hardwareAddress = NetworkInterface.getByInetAddress(netInterface).getHardwareAddress();
 

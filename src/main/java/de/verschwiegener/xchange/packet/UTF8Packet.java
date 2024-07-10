@@ -4,6 +4,11 @@ import com.google.gson.JsonObject;
 
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * 
+ * @author julius
+ *
+ */
 public abstract class UTF8Packet implements Packet {
 
 	protected final String packetType;
@@ -20,12 +25,22 @@ public abstract class UTF8Packet implements Packet {
 
 	public abstract JsonObject writeJson();
 
-	protected JsonObject responceMessage(boolean error, String message) {
+	/**
+	 * Creates Response Message as JsonObject
+	 * @param error
+	 * @param message
+	 * @return
+	 */
+	protected JsonObject responseMessage(boolean error, String message) {
 		JsonObject object = new JsonObject();
 		object.addProperty("OK", error);
 		object.addProperty("Message", message);
 		return object;
 	}
+	/**
+	 * Creates Message with PacketType as JsonObject
+	 * @return
+	 */
 	protected JsonObject message() {
 		JsonObject object = new JsonObject();
 		object.addProperty("Type", packetType);

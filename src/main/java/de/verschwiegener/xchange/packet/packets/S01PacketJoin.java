@@ -58,7 +58,7 @@ public class S01PacketJoin extends UTF8Packet{
 
 	@Override
 	public JsonObject writeJson() {
-		JsonObject object = responceMessage(ok, message);
+		JsonObject object = responseMessage(ok, message);
 		XChange.instance.station.writeToJson(object);
 
 		// Create Commits Array with all local Files

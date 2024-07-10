@@ -3,6 +3,11 @@ package de.verschwiegener.xchange;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 
+/**
+ * 
+ * @author julius
+ *
+ */
 public interface XChangeListener {
 	
 	

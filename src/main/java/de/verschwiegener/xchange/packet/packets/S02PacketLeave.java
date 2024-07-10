@@ -35,7 +35,7 @@ public class S02PacketLeave extends UTF8Packet{
 
 	@Override
 	public JsonObject writeJson() {
-		return responceMessage(ok, message);
+		return responseMessage(ok, message);
 	}
 
 }

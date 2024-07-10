@@ -11,6 +11,12 @@ import de.verschwiegener.mvr.util.MVRUtil;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.packets.C04PacketRequest;
 
+/**
+ * Class containing MVR File Data as well as logic to request the file
+ * 
+ * @author julius
+ *
+ */
 public class MVRFile {
 
 	private int fileSize;

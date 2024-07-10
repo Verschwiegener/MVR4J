@@ -21,6 +21,8 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * Netty Client connecting to Peers Server
+ * 
+ * @author julius
  */
 public class Connection {
 
@@ -49,6 +51,7 @@ public class Connection {
 		connectFuture.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
+					//Connection is established
 					channel = future.channel();
 					futureToNotify.complete(null);
 					sendPacket(new C01PacketJoin());

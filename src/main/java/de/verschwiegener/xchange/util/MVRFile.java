@@ -30,6 +30,14 @@ public class MVRFile {
 	 * UUIDs of Stations containing the File
 	 */
 	private ArrayList<UUID> stationUUID = new ArrayList<UUID>();
+	
+	public MVRFile(File mvrFile, String comment) {
+		this.filesystemLocation = mvrFile;
+		this.comment = comment;
+		this.fileName = mvrFile.getName();
+		this.fileSize = (int) mvrFile.length();
+		uuid = UUID.nameUUIDFromBytes(mvrFile.getName().getBytes());
+	}
 
 	public MVRFile(JsonObject object) {
 		fileSize = object.get("FileSize").getAsInt();

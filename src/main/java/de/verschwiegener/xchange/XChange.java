@@ -15,6 +15,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
+import de.verschwiegener.xchange.packet.packets.C03PacketCommit;
 import de.verschwiegener.xchange.tcp.TCPServer;
 import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
@@ -170,9 +171,9 @@ public class XChange {
 					if (stationUUID == null)
 						return;
 					// Removes Station if mDns Service is Removed
-					//Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
-					//stationToRemove.getConnection().shutdown();
-					//removeStation(stationToRemove);
+					Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
+					stationToRemove.getConnection().shutdown();
+					removeStation(stationToRemove);
 				}
 
 				@Override
@@ -181,21 +182,8 @@ public class XChange {
 			};
 
 			MDNSService.addServiceListener(getServiceString(), listener);
-
-			//TODO make Async
-			// Search for 20 Seconds
-			try {
-				Thread.sleep(20000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			MDNSService.removeServiceListener(getServiceString(), listener);
-
-			System.out.println("Removed Listener");
-
 		}
-		//TODO API to interface with xchange with
+		
 	}
 
 	/**
@@ -255,13 +243,23 @@ public class XChange {
 	public MVRFile getFileByName(String name) {
 		return files.stream().filter(files -> files.getFileName().equals(name)).findFirst().orElse(null);
 	}
+	
+	/**
+	 * Commits new File to all Connected XChange Clients
+	 * 
+	 * @param file
+	 */
+	public void commitFile(MVRFile file) {
+		files.add(file);
+		stations.forEach(station -> station.getConnection().sendPacket(new C03PacketCommit(file, new Station[] {})));
+	}
 
 	/**
 	 * Checks if File is already known, if not add to known files
 	 * 
 	 * @param file
 	 */
-	public void addFile(MVRFile file) {
+	public void registerFile(MVRFile file) {
 		MVRFile testFile = getFileByUUID(file.getUuid());
 		if (testFile != null) {
 			testFile.getStationUUID().addAll(file.getStationUUID());
@@ -303,6 +301,7 @@ public class XChange {
 				
 			}
 		});
+		
 
 //		Thread.sleep(10000);
 

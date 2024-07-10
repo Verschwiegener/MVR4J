@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
 
+import de.verschwiegener.mvr.util.MVRUtil;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.packets.C04PacketRequest;
 
@@ -24,7 +25,7 @@ public class MVRFile {
 	/**
 	 * Location of the File on the Device File System
 	 */
-	private File filesystemLocation;
+	private File fileSystemLocation;
 
 	/**
 	 * UUIDs of Stations containing the File
@@ -44,25 +45,6 @@ public class MVRFile {
 		uuid = UUID.fromString(object.get("FileUUID").getAsString());
 		fileName = object.get("FileName").getAsString();
 		comment = object.get("Comment").getAsString();
-	}
-
-	public void writeToJson(JsonObject object) {
-		object.addProperty("FileSize", fileSize);
-		object.addProperty("FileUUID", uuid.toString());
-		object.addProperty("FileName", fileName);
-		object.addProperty("Comment", comment);
-	}
-
-	public UUID getUuid() {
-		return uuid;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public boolean isFilePresent() {
-		return getFilesystemLocation().exists();
 	}
 
 	/**
@@ -90,15 +72,46 @@ public class MVRFile {
 		}
 
 	}
-
+	/**
+	 * Returns File System Location of this MVR File
+	 * @return
+	 */
 	public File getFilesystemLocation() {
-		if (filesystemLocation == null)
-			filesystemLocation = new File(XChange.instance.mvrWorkingDirectory, fileName);
-		return filesystemLocation;
+		if (fileSystemLocation == null)
+			fileSystemLocation = new File(XChange.instance.mvrWorkingDirectory, fileName);
+		return fileSystemLocation;
+	}
+	
+	/**
+	 * Creates MVR Code representation to be parsed
+	 * 
+	 * @return
+	 */
+	public MVRUtil getAsMVR() {
+		return new MVRUtil(fileSystemLocation);
 	}
 
 	public ArrayList<UUID> getStationUUID() {
 		return stationUUID;
 	}
+	
+	public UUID getUuid() {
+		return uuid;
+	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public boolean isFilePresent() {
+		return getFilesystemLocation().exists();
+	}
+
+	public void writeToJson(JsonObject object) {
+		object.addProperty("FileSize", fileSize);
+		object.addProperty("FileUUID", uuid.toString());
+		object.addProperty("FileName", fileName);
+		object.addProperty("Comment", comment);
+	}
+	
 }

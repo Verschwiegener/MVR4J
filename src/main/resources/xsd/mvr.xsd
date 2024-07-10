@@ -41,11 +41,16 @@
   </xs:complexType>
   <xs:complexType name="Symdef">
     <xs:sequence>
-      <xs:element name="Geometry3D" type="Geometry3D"/>
-      <xs:element name="Symbol" type="Symbol"/>
+      <xs:element name="ChildList" type="SymdefChildList"/>
     </xs:sequence>
     <xs:attribute name="uuid" type="guidtype" use="required"/>
     <xs:attribute name="name" type="xs:string" default=""/>
+  </xs:complexType>
+  <xs:complexType name="SymdefChildList">
+    <xs:sequence>
+      <xs:element name="Geometry3D" type="Geometry3D"/>
+      <xs:element name="Symbol" type="Symbol"/>
+    </xs:sequence>
   </xs:complexType>
   <xs:complexType name="Position">
     <xs:attribute name="uuid" type="guidtype" use="required"/>
@@ -135,7 +140,7 @@
       <xs:element name="CustomCommands" type="CustomCommands" minOccurs="0"/>
       <xs:element name="Overwrites" type="Overwrites" minOccurs="0"/>
       <xs:element name="Connections" type="Connections" minOccurs="0"/>
-      <xs:element name="CIEColor" type="ciecolortype" minOccurs="0" />
+      <xs:element name="Color" type="ciecolortype" minOccurs="0" />
       <xs:element name="CustomIdType" type="xs:integer" minOccurs="0" />
       <xs:element name="CustomId" type="xs:integer" minOccurs="0" />      
       <xs:element name="Mappings" type="Mappings" minOccurs="0" />
@@ -376,7 +381,7 @@
 	<xs:attribute name="ipv4" type="Ipv4_Adress"/>
 	<xs:attribute name="subnetmask" type="Ipv4_Adress"/>
 	<xs:attribute name="ipv6" type="Ipv6_Adress"/>
-	<xs:attribute name="dhcp" type="xs:boolean" default="false"/>
+	<xs:attribute name="dhcp" type="xs:string"/>
 	<xs:attribute name="hostname" type="xs:string"/>
   </xs:complexType>
   <xs:complexType name="Protocols">

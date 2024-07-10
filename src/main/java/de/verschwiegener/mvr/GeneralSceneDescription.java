@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.nodes.UserData;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -56,14 +59,18 @@ public class GeneralSceneDescription {
     @XmlElement(name = "Scene", required = true)
     protected Scene scene;
     @XmlAttribute(name = "verMajor", required = true)
-    protected BigInteger verMajor;
+    protected int verMajor;
     @XmlAttribute(name = "verMinor", required = true)
-    protected BigInteger verMinor;
+    protected int verMinor;
     @XmlAttribute(name = "provider", required = true)
     protected String provider;
     @XmlAttribute(name = "providerVersion", required = true)
     protected String providerVersion;
+    
 
+    public GeneralSceneDescription() {
+	}
+    
     /**
      * Ruft den Wert der userData-Eigenschaft ab.
      * 
@@ -120,7 +127,7 @@ public class GeneralSceneDescription {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getVerMajor() {
+    public int getVerMajor() {
         return verMajor;
     }
 
@@ -132,7 +139,7 @@ public class GeneralSceneDescription {
      *     {@link BigInteger }
      *     
      */
-    public void setVerMajor(BigInteger value) {
+    public void setVerMajor(int value) {
         this.verMajor = value;
     }
 
@@ -144,7 +151,7 @@ public class GeneralSceneDescription {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getVerMinor() {
+    public int getVerMinor() {
         return verMinor;
     }
 
@@ -156,7 +163,7 @@ public class GeneralSceneDescription {
      *     {@link BigInteger }
      *     
      */
-    public void setVerMinor(BigInteger value) {
+    public void setVerMinor(int value) {
         this.verMinor = value;
     }
 

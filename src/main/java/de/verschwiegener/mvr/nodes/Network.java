@@ -8,6 +8,9 @@
 
 package de.verschwiegener.mvr.nodes;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -49,7 +52,7 @@ public class Network {
     @XmlAttribute(name = "ipv6")
     protected String ipv6;
     @XmlAttribute(name = "dhcp")
-    protected Boolean dhcp;
+    protected String dhcp;
     @XmlAttribute(name = "hostname")
     protected String hostname;
 
@@ -82,11 +85,14 @@ public class Network {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link InetAddress }
+     * @throws UnknownHostException 
      *     
      */
-    public String getIpv4() {
-        return ipv4;
+    public InetAddress getIpv4() throws UnknownHostException {
+    	if(ipv4 == null)
+    		return null;
+        return InetAddress.getByName(ipv4);
     }
 
     /**
@@ -94,11 +100,11 @@ public class Network {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link InetAddress }
      *     
      */
-    public void setIpv4(String value) {
-        this.ipv4 = value;
+    public void setIpv4(InetAddress value) {
+        this.ipv4 = value.getHostName();
     }
 
     /**
@@ -106,11 +112,14 @@ public class Network {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link InetAddress }
+     * @throws UnknownHostException 
      *     
      */
-    public String getSubnetmask() {
-        return subnetmask;
+    public InetAddress getSubnetmask() throws UnknownHostException {
+    	if(subnetmask == null)
+    		return null;
+        return InetAddress.getByName(subnetmask);
     }
 
     /**
@@ -118,11 +127,11 @@ public class Network {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link InetAddress }
      *     
      */
-    public void setSubnetmask(String value) {
-        this.subnetmask = value;
+    public void setSubnetmask(InetAddress value) {
+        this.subnetmask = value.getHostName();
     }
 
     /**
@@ -130,11 +139,14 @@ public class Network {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link InetAddress }
+     * @throws UnknownHostException 
      *     
      */
-    public String getIpv6() {
-        return ipv6;
+    public InetAddress getIpv6() throws UnknownHostException {
+    	if(ipv6 == null)
+    		return null;
+        return InetAddress.getByName(ipv6);
     }
 
     /**
@@ -142,11 +154,11 @@ public class Network {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link InetAddress }
      *     
      */
-    public void setIpv6(String value) {
-        this.ipv6 = value;
+    public void setIpv6(InetAddress value) {
+        this.ipv6 = value.getHostName();
     }
 
     /**
@@ -157,12 +169,10 @@ public class Network {
      *     {@link Boolean }
      *     
      */
-    public boolean isDhcp() {
-        if (dhcp == null) {
-            return false;
-        } else {
-            return dhcp;
-        }
+    public boolean isDHCP() {
+    	if(dhcp == null)
+    		return false;
+       return dhcp.equals("on");
     }
 
     /**
@@ -173,8 +183,8 @@ public class Network {
      *     {@link Boolean }
      *     
      */
-    public void setDhcp(Boolean value) {
-        this.dhcp = value;
+    public void setDHCP(boolean value) {
+        this.dhcp = value ? "on" : "off";
     }
 
     /**

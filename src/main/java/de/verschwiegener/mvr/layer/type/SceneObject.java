@@ -8,7 +8,8 @@
 
 package de.verschwiegener.mvr.layer.type;
 
-import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -22,6 +23,7 @@ import de.verschwiegener.mvr.nodes.Connections;
 import de.verschwiegener.mvr.nodes.CustomCommands;
 import de.verschwiegener.mvr.nodes.Geometries;
 import de.verschwiegener.mvr.nodes.Overwrites;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -102,11 +104,11 @@ public class SceneObject {
     @XmlElement(name = "FixtureID", required = true)
     protected String fixtureID;
     @XmlElement(name = "FixtureIDNumeric", required = true)
-    protected BigInteger fixtureIDNumeric;
+    protected int fixtureIDNumeric;
     @XmlElement(name = "UnitNumber")
-    protected BigInteger unitNumber;
+    protected int unitNumber;
     @XmlElement(name = "CustomId")
-    protected BigInteger customId;
+    protected int customId;
     @XmlElement(name = "ChildList", required = true)
     protected ChildList childList;
     @XmlAttribute(name = "uuid", required = true)
@@ -119,11 +121,11 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public String getMatrix() {
-        return matrix;
+    public MVRMatrix getMatrix() {
+        return new MVRMatrix(matrix);
     }
 
     /**
@@ -131,11 +133,11 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(MVRMatrix value) {
+        this.matrix = value.toMVR();
     }
 
     /**
@@ -143,11 +145,11 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -155,11 +157,11 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**
@@ -172,6 +174,15 @@ public class SceneObject {
      */
     public Geometries getGeometries() {
         return geometries;
+    }
+    
+    /**
+     * Checks if SceneObject has Geometries Attribute, and the Geometries Attribute has Children
+     * 
+     * @return
+     */
+    public boolean hasGeometries() {
+    	return getGeometries() != null && getGeometries().hasChildren();
     }
 
     /**
@@ -383,10 +394,10 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getFixtureIDNumeric() {
+    public int getFixtureIDNumeric() {
         return fixtureIDNumeric;
     }
 
@@ -395,10 +406,10 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setFixtureIDNumeric(BigInteger value) {
+    public void setFixtureIDNumeric(int value) {
         this.fixtureIDNumeric = value;
     }
 
@@ -407,10 +418,10 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getUnitNumber() {
+    public int getUnitNumber() {
         return unitNumber;
     }
 
@@ -419,10 +430,10 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setUnitNumber(BigInteger value) {
+    public void setUnitNumber(int value) {
         this.unitNumber = value;
     }
 
@@ -431,10 +442,10 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public BigInteger getCustomId() {
+    public int getCustomId() {
         return customId;
     }
 
@@ -443,10 +454,10 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link int }
      *     
      */
-    public void setCustomId(BigInteger value) {
+    public void setCustomId(int value) {
         this.customId = value;
     }
 
@@ -479,11 +490,11 @@ public class SceneObject {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getUuid() {
-        return uuid;
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**
@@ -491,11 +502,11 @@ public class SceneObject {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setUUID(UUID value) {
+        this.uuid = value.toString();
     }
 
     /**

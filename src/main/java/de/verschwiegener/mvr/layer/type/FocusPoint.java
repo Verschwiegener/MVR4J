@@ -8,6 +8,8 @@
 
 package de.verschwiegener.mvr.layer.type;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -15,6 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.nodes.Geometries;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -64,11 +67,11 @@ public class FocusPoint {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public String getMatrix() {
-        return matrix;
+    public MVRMatrix getMatrix() {
+        return new MVRMatrix(matrix);
     }
 
     /**
@@ -76,11 +79,11 @@ public class FocusPoint {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(MVRMatrix value) {
+        this.matrix = value.toMVR();
     }
 
     /**
@@ -88,11 +91,11 @@ public class FocusPoint {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -100,11 +103,11 @@ public class FocusPoint {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**
@@ -136,11 +139,11 @@ public class FocusPoint {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getUuid() {
-        return uuid;
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**
@@ -148,12 +151,13 @@ public class FocusPoint {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setUUID(UUID value) {
+        this.uuid = value.toString();
     }
+    
 
     /**
      * Ruft den Wert der name-Eigenschaft ab.

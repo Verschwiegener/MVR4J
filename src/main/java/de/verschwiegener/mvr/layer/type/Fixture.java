@@ -9,6 +9,8 @@
 package de.verschwiegener.mvr.layer.type;
 
 import java.math.BigInteger;
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -24,6 +26,8 @@ import de.verschwiegener.mvr.nodes.Gobo;
 import de.verschwiegener.mvr.nodes.Mappings;
 import de.verschwiegener.mvr.nodes.Overwrites;
 import de.verschwiegener.mvr.nodes.Protocols;
+import de.verschwiegener.mvr.util.MVRColor;
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -102,9 +106,9 @@ public class Fixture {
     @XmlElement(name = "FixtureID", required = true)
     protected String fixtureID;
     @XmlElement(name = "FixtureIDNumeric", required = true)
-    protected BigInteger fixtureIDNumeric;
+    protected int fixtureIDNumeric;
     @XmlElement(name = "UnitNumber", required = true)
-    protected BigInteger unitNumber;
+    protected int unitNumber;
     @XmlElement(name = "ChildPosition")
     protected String childPosition;
     @XmlElement(name = "Addresses")
@@ -119,12 +123,12 @@ public class Fixture {
     protected Overwrites overwrites;
     @XmlElement(name = "Connections")
     protected Connections connections;
-    @XmlElement(name = "CIEColor")
+    @XmlElement(name = "Color")
     protected String cieColor;
     @XmlElement(name = "CustomIdType")
-    protected BigInteger customIdType;
+    protected int customIdType;
     @XmlElement(name = "CustomId")
-    protected BigInteger customId;
+    protected int customId;
     @XmlElement(name = "Mappings")
     protected Mappings mappings;
     @XmlElement(name = "Gobo")
@@ -143,11 +147,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public String getMatrix() {
-        return matrix;
+    public MVRMatrix getMatrix() {
+        return new MVRMatrix(matrix);
     }
 
     /**
@@ -155,11 +159,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRMatrix }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(MVRMatrix value) {
+        this.matrix = value.toMVR();
     }
 
     /**
@@ -167,11 +171,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getClassing() {
-        return classing;
+    public UUID getClassing() {
+        return UUID.fromString(classing);
     }
 
     /**
@@ -179,11 +183,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setClassing(String value) {
-        this.classing = value;
+    public void setClassing(UUID value) {
+        this.classing = value.toString();
     }
 
     /**
@@ -410,7 +414,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getFixtureIDNumeric() {
+    public int getFixtureIDNumeric() {
         return fixtureIDNumeric;
     }
 
@@ -422,7 +426,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setFixtureIDNumeric(BigInteger value) {
+    public void setFixtureIDNumeric(int value) {
         this.fixtureIDNumeric = value;
     }
 
@@ -434,7 +438,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getUnitNumber() {
+    public int getUnitNumber() {
         return unitNumber;
     }
 
@@ -446,7 +450,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setUnitNumber(BigInteger value) {
+    public void setUnitNumber(int value) {
         this.unitNumber = value;
     }
 
@@ -623,11 +627,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MVRColor }
      *     
      */
-    public String getCIEColor() {
-        return cieColor;
+    public MVRColor getCIEColor() {
+        return MVRColor.fromMVR(cieColor);
     }
 
     /**
@@ -635,11 +639,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MVRColor }
      *     
      */
-    public void setCIEColor(String value) {
-        this.cieColor = value;
+    public void setCIEColor(MVRColor value) {
+        this.cieColor = value.toMVR();
     }
 
     /**
@@ -650,8 +654,8 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getCustomIdType() {
-        return customIdType;
+    public CustomIDType getCustomIdType() {
+        return CustomIDType.getType(customIdType);
     }
 
     /**
@@ -662,8 +666,8 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setCustomIdType(BigInteger value) {
-        this.customIdType = value;
+    public void setCustomIdType(CustomIDType value) {
+        this.customIdType = value.id;
     }
 
     /**
@@ -674,7 +678,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getCustomId() {
+    public int getCustomId() {
         return customId;
     }
 
@@ -686,7 +690,7 @@ public class Fixture {
      *     {@link BigInteger }
      *     
      */
-    public void setCustomId(BigInteger value) {
+    public void setCustomId(int value) {
         this.customId = value;
     }
 
@@ -761,17 +765,17 @@ public class Fixture {
     public void setChildList(ChildList value) {
         this.childList = value;
     }
-
+    
     /**
      * Ruft den Wert der uuid-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getUuid() {
-        return uuid;
+    public UUID getUUID() {
+    	return UUID.fromString(uuid);
     }
 
     /**
@@ -779,11 +783,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setUuid(String value) {
-        this.uuid = value;
+    public void setUUID(UUID value) {
+        this.uuid = value.toString();
     }
 
     /**
@@ -819,15 +823,11 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getMultipatch() {
-        if (multipatch == null) {
-            return "";
-        } else {
-            return multipatch;
-        }
+    public UUID getMultipatch() {
+        return UUID.fromString(multipatch);
     }
 
     /**
@@ -835,11 +835,41 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setMultipatch(String value) {
-        this.multipatch = value;
+    public void setMultipatch(UUID value) {
+        this.multipatch = value.toString();
+    }
+    
+    public enum CustomIDType {
+    	
+    	UNDEFINED(0),
+    	FIXTURE(1),
+    	CHANNEL(2),
+    	HOUSELIGHTS(4),
+    	NONDIM(5),
+    	MEDIA(6),
+    	FOG(7),
+    	EFFECT(8),
+    	PYRO(9),
+    	MARKER(10);
+    	
+    	private final int id;
+    	
+    	CustomIDType(int id) {
+    		this.id = id;
+    	}
+    	
+    	public static CustomIDType getType(int customIDType) {
+    		for(CustomIDType type : CustomIDType.values()) {
+    			if(type.id == customIDType) {
+    				return type;
+    			}
+    		}
+			return null;
+    	}
+    	
     }
 
 }

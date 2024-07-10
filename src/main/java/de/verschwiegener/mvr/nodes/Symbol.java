@@ -8,11 +8,15 @@
 
 package de.verschwiegener.mvr.nodes;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import de.verschwiegener.mvr.util.MVRMatrix;
 
 
 /**
@@ -60,6 +64,10 @@ public class Symbol {
     public String getMatrix() {
         return matrix;
     }
+    
+    public MVRMatrix matrix() {
+    	return new MVRMatrix(matrix);
+    }
 
     /**
      * Legt den Wert der matrix-Eigenschaft fest.
@@ -83,6 +91,10 @@ public class Symbol {
      */
     public String getUuid() {
         return uuid;
+    }
+    
+    public UUID uuid() {
+    	return UUID.fromString(uuid);
     }
 
     /**
@@ -108,6 +120,10 @@ public class Symbol {
     public String getSymdef() {
         return symdef;
     }
+    
+    public UUID symdef() {
+    	return UUID.fromString(symdef);
+    }
 
     /**
      * Legt den Wert der symdef-Eigenschaft fest.
@@ -120,5 +136,6 @@ public class Symbol {
     public void setSymdef(String value) {
         this.symdef = value;
     }
+    
 
 }

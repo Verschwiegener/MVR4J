@@ -40,9 +40,9 @@ import javax.xml.bind.annotation.XmlValue;
 public class Address {
 
     @XmlValue
-    protected BigInteger value;
+    protected String value;
     @XmlAttribute(name = "break")
-    protected BigInteger _break;
+    protected int _break;
 
     /**
      * Ruft den Wert der value-Eigenschaft ab.
@@ -52,7 +52,7 @@ public class Address {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -64,7 +64,7 @@ public class Address {
      *     {@link BigInteger }
      *     
      */
-    public void setValue(BigInteger value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -76,12 +76,8 @@ public class Address {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getBreak() {
-        if (_break == null) {
-            return new BigInteger("0");
-        } else {
-            return _break;
-        }
+    public int getBreak() {
+        return _break;
     }
 
     /**
@@ -92,7 +88,7 @@ public class Address {
      *     {@link BigInteger }
      *     
      */
-    public void setBreak(BigInteger value) {
+    public void setBreak(int value) {
         this._break = value;
     }
 

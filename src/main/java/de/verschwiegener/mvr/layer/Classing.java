@@ -8,6 +8,8 @@
 
 package de.verschwiegener.mvr.layer;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -51,6 +53,10 @@ public class Classing {
      */
     public String getUuid() {
         return uuid;
+    }
+    
+    public UUID uuid() {
+    	return UUID.fromString(uuid);
     }
 
     /**

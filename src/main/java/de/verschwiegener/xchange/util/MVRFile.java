@@ -33,7 +33,7 @@ public class MVRFile {
 	private ArrayList<UUID> stationUUID = new ArrayList<UUID>();
 	
 	public MVRFile(File mvrFile, String comment) {
-		this.filesystemLocation = mvrFile;
+		this.fileSystemLocation = mvrFile;
 		this.comment = comment;
 		this.fileName = mvrFile.getName();
 		this.fileSize = (int) mvrFile.length();

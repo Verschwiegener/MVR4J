@@ -5,9 +5,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
-import org.joml.Options;
-import org.joml.Runtime;
-
 public class MVRMatrix {
 
 	double m00, m01, m02;
@@ -351,7 +348,7 @@ public class MVRMatrix {
     * @return the string representation
     */
    public String toString() {
-       String str = toString(Options.NUMBER_FORMAT);
+       String str = toString(decimalFormat());
        StringBuffer res = new StringBuffer();
        int eIndex = Integer.MIN_VALUE;
        for (int i = 0; i < str.length(); i++) {
@@ -378,9 +375,35 @@ public class MVRMatrix {
     * @return the string representation
     */
    public String toString(NumberFormat formatter) {
-       return Runtime.format(m00, formatter) + " " + Runtime.format(m10, formatter) + " " + Runtime.format(m20, formatter) + " " + Runtime.format(m30, formatter) + "\n"
-            + Runtime.format(m01, formatter) + " " + Runtime.format(m11, formatter) + " " + Runtime.format(m21, formatter) + " " + Runtime.format(m31, formatter) + "\n"
-            + Runtime.format(m02, formatter) + " " + Runtime.format(m12, formatter) + " " + Runtime.format(m22, formatter) + " " + Runtime.format(m32, formatter) + "\n";
+       return format(m00, formatter) + " " + format(m10, formatter) + " " + format(m20, formatter) + " " + format(m30, formatter) + "\n"
+            + format(m01, formatter) + " " + format(m11, formatter) + " " + format(m21, formatter) + " " + format(m31, formatter) + "\n"
+            + format(m02, formatter) + " " + format(m12, formatter) + " " + format(m22, formatter) + " " + format(m32, formatter) + "\n";
+   }
+   
+   public static String format(double number, NumberFormat format) {
+       if (Double.isNaN(number)) {
+           return padLeft(format, " NaN");
+       } else if (Double.isInfinite(number)) {
+           return padLeft(format, number > 0.0 ? " +Inf" : " -Inf");
+       }
+       return format.format(number);
+   }
+   
+   private static String padLeft(NumberFormat format, String str) {
+       int len = format.format(0.0).length();
+       StringBuffer sb = new StringBuffer();
+       for (int i = 0; i < len - str.length() + 1; i++) {
+           sb.append(" ");
+       }
+       return sb.append(str).toString();
+   }
+   
+   private static NumberFormat decimalFormat() {
+       NumberFormat df;
+       char[] prec = new char[3];
+       Arrays.fill(prec, '0');
+       df = new DecimalFormat(" 0." + new String(prec) + "E0;-");
+       return df;
    }
 
 }

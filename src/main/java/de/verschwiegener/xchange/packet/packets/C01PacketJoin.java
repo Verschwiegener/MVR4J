@@ -14,6 +14,17 @@ import de.verschwiegener.xchange.util.Version;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * When a MVR-xchange client connects with another MVR-xchange client, the first
+ * MVR-xchange client needs to send a MVR_JOIN message.
+ * 
+ * NOTE A MVR-xchange client can send multiple MVR_JOIN messages to the same
+ * server during the same connection to update its name or get the latest MVR
+ * file list.
+ * 
+ * @author julius
+ *
+ */
 public class C01PacketJoin extends UTF8Packet {
 
 	public C01PacketJoin() {

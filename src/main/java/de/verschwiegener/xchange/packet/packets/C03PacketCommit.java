@@ -15,6 +15,19 @@ import de.verschwiegener.xchange.util.Version;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * The MVR commit message informs all connected stations that there is a new MVR
+ * commit. This message only informs the stations about the existence of the new
+ * file. Stations needs to request the MVR file with a MVR_REQUEST message.
+ * 
+ * Each MVR commit represents one revision of the project. Therefore an array of
+ * MVR commits, as found in the MVR_JOIN message, represents the working history
+ * of the project. It is up to the client how many commits are kept in store at
+ * any time.
+ * 
+ * @author julius
+ *
+ */
 public class C03PacketCommit extends UTF8Packet {
 
 	private MVRFile file;
@@ -55,11 +68,11 @@ public class C03PacketCommit extends UTF8Packet {
 
 		Station sourceStation = XChange.instance
 				.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		
+
 		MVRFile file = new MVRFile(object);
 		file.getStationUUID().add(sourceStation.getUuid());
-		
-		XChange.instance.addFile(file);
+
+		XChange.instance.registerFile(file);
 
 		if (version.getMajor() == 0 && version.getMinor() == 0)
 			return;
@@ -74,12 +87,11 @@ public class C03PacketCommit extends UTF8Packet {
 			if (!isTarget)
 				return;
 		}
-		
-		
+
 		XChange.instance.listener.newMVRFile(file);
 
 		sourceStation.getConnection().sendPacket(new S03PacketCommit());
-		
+
 		// TODO Call API that a new file is available
 	}
 

@@ -14,6 +14,16 @@ import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * This packet requests a MVR file from a station. You either can request a
+ * specific MVR via its UUID or get the last available MVR File by leaving the
+ * field empty. The underlying software will then generate a file based on the
+ * current state. This also triggers a MVR_COMMIT message to other connected
+ * stations.
+ * 
+ * @author julius
+ *
+ */
 public class C04PacketRequest extends UTF8Packet {
 
 	private MVRFile file;
@@ -36,14 +46,13 @@ public class C04PacketRequest extends UTF8Packet {
 			return;
 
 		MVRFile file;
-		if(object.get("FileUUID") != null) {
+		if (object.get("FileUUID") != null) {
 			file = XChange.instance.getFileByUUID(UUID.fromString(object.get("FileUUID").getAsString()));
 		} else {
-			//TODO get latest File
+			// TODO get latest File
 		}
 		// TODO Send MVRFile to requesting station
-		
-		
+
 		Packet packet = new S04PacketRequest();
 		ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 
@@ -62,7 +71,7 @@ public class C04PacketRequest extends UTF8Packet {
 
 	@Override
 	public ByteBuf writePacket() {
-		//Set CurrentReceiveFile to requested MVR File
+		// Set CurrentReceiveFile to requested MVR File
 		XChange.instance.currentReceiveFile = file;
 		return Util.jsonToByteBuf(writeJson());
 	}

@@ -58,10 +58,13 @@ public class MVRFile {
 	 * 
 	 * @param future CompletableFuture, future if request was send without exception
 	 */
-	public void requestFile(CompletableFuture<Void> future) {
+	public CompletableFuture<Void> requestFile() {
+		//TODO Future complete only when the File has been received
+		CompletableFuture<Void> future = new CompletableFuture<Void>();
+		
 		if (isFilePresent()) {
 			future.complete(null);
-			return;
+			return future;
 		}
 
 		for (UUID uuid : getStationUUID()) {
@@ -76,6 +79,7 @@ public class MVRFile {
 						future.complete(null);
 					});
 		}
+		return future;
 
 	}
 	/**

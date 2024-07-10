@@ -167,14 +167,13 @@ public class XChange {
 
 					InetAddress address = info.getInet4Addresses()[0];
 
-					CompletableFuture<Void> future = new CompletableFuture<Void>();
-
 					// Connect To Peer
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
-					connection.connectTo(future);
+					CompletableFuture<Void> future = connection.connectTo();
 
 					future.whenComplete((result, ex) -> {
-						addStation(new Station(uuid, stationName, null, null, connection));
+						if(ex == null)
+							addStation(new Station(uuid, stationName, null, null, connection));
 					});
 
 				}

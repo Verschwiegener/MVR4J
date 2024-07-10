@@ -34,7 +34,9 @@ public class Connection {
 		this.remoteAddress = address;
 	}
 
-	public void connectTo(CompletableFuture<Void> futureToNotify) {
+	public CompletableFuture<Void> connectTo() {
+		CompletableFuture<Void> connectionFuture = new CompletableFuture<Void>();
+		
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
 				.option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
@@ -53,13 +55,14 @@ public class Connection {
 				if (future.isSuccess()) {
 					//Connection is established
 					channel = future.channel();
-					futureToNotify.complete(null);
+					connectionFuture.complete(null);
 					sendPacket(new C01PacketJoin());
 				} else {
-					futureToNotify.completeExceptionally(future.cause());
+					connectionFuture.completeExceptionally(future.cause());
 				}
 			}
 		});
+		return connectionFuture;
 	}
 
 	/**

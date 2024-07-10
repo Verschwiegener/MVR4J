@@ -10,11 +10,22 @@ import de.verschwiegener.xchange.util.Station;
  */
 public interface XChangeListener {
 	
-	
+	/**
+	 * New Station joined
+	 * @param station
+	 */
 	public void stationAdded(Station station);
 	
+	/**
+	 * Station Left
+	 * @param station
+	 */
 	public void stationLeave(Station station);
 	
+	/**
+	 * New MVR File available
+	 * @param file
+	 */
 	public void newMVRFile(MVRFile file);
 
 }

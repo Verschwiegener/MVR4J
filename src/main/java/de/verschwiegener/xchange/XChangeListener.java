@@ -27,5 +27,11 @@ public interface XChangeListener {
 	 * @param file
 	 */
 	public void newMVRFile(MVRFile file);
+	
+	/**
+	 * Error occurred in XChange Transmission
+	 * @param message
+	 */
+	public void xChangeError(String packet, String message);
 
 }

@@ -41,6 +41,10 @@ public class XChangeDemo {
 				//Parse File
 				MVRUtil mvr = file.getAsMVR();
 			}
+
+			@Override
+			public void xChangeError(String packet, String message) {
+			}
 		});
 		
 		

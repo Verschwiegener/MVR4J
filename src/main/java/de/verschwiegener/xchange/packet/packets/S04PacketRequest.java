@@ -24,11 +24,10 @@ public class S04PacketRequest extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		boolean ok = object.get("OK").getAsBoolean();
-		String message = object.get("Message").getAsString();
-		if(!ok)
+		if(!parseError(object))
 			return;
-		// TODO Call Error API
+		
+		//TODO parse Packet
 
 	}
 

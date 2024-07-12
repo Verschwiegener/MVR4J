@@ -2,6 +2,7 @@ package de.verschwiegener.xchange.packet;
 
 import com.google.gson.JsonObject;
 
+import de.verschwiegener.xchange.XChange;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -47,6 +48,23 @@ public abstract class UTF8Packet implements Packet {
 		object.addProperty("Type", packetType);
 		return object;
 	}
+	
+	/**
+	 * Parses OK and Message Json Attributes and calls xChangeError listener. Returns ok state
+	 * @param object JsonObject to parse Error state from
+	 * @return OK JsonObject as boolean
+	 */
+	protected boolean parseError(JsonObject object) {
+		boolean ok = object.get("OK").getAsBoolean();
+		String message = object.get("Message").getAsString();
+		
+		if(!ok) {
+			XChange.instance.listener.xChangeError(packetType, message);
+		}
+		
+		return ok;
+	}
+	
 	public String getPacketType() {
 		return packetType;
 	}

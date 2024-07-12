@@ -22,9 +22,10 @@ public class S03PacketCommit extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		boolean ok = object.get("OK").getAsBoolean();
-		String message = object.get("Message").getAsString();
-		//TODO Call Error API
+		if(!parseError(object))
+			return;
+		
+		//TODO parse Packet
 	}
 
 	@Override

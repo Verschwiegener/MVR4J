@@ -354,6 +354,11 @@ public class XChange {
 			public void newMVRFile(MVRFile file) {
 				
 			}
+
+			@Override
+			public void xChangeError(String packet, String message) {
+				
+			}
 		});
 		
 

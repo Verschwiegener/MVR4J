@@ -40,13 +40,14 @@ public class C01PacketJoin extends UTF8Packet {
 							+ XChange.instance.station.getVersion().toString()));
 			return;
 		}
-
+		
 		if (station == null)
 			return;
 
 		station.updateValues(object);
 
-		JsonArray files = object.get("Files").getAsJsonArray();
+		
+		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(element -> {
 			// TODO parse MVR_COMMIT
 		});
@@ -68,8 +69,6 @@ public class C01PacketJoin extends UTF8Packet {
 			array.add(new C03PacketCommit(file, null, new Version(0, 0)).writeJson());
 		}
 		object.add("Commits", array);
-
-		System.out.println("Write C01");
 		return object;
 	}
 

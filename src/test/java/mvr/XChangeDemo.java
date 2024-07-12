@@ -2,6 +2,7 @@ package mvr;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -14,7 +15,7 @@ import de.verschwiegener.xchange.util.Station;
 
 public class XChangeDemo {
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 		//Set MVRExtractFolder, if parsing as MVR is needed
 		MVRUtil.mvrExtractFolder = new File("Parent Folder into which mvr files get extracted");
 		

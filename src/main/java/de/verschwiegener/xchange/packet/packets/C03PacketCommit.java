@@ -106,8 +106,11 @@ public class C03PacketCommit extends UTF8Packet {
 
 		// Add Target Stations
 		JsonArray array = new JsonArray();
-		for (Station s : forStation) {
-			array.add(s.getUuid().toString());
+		//If forStation equals null send empty array
+		if(forStation != null) {
+			for (Station s : forStation) {
+				array.add(s.getUuid().toString());
+			}
 		}
 		object.add("FromStationUUID", array);
 

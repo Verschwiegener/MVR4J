@@ -38,6 +38,10 @@ public class S01PacketJoin extends UTF8Packet{
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		boolean ok = object.get("OK").getAsBoolean();
 		String message = object.get("Message").getAsString();
+		
+		if(!ok) {
+			return;
+		}
 		//TODO Call Error API
 		
 		//Add new Station that the Client knows who the sender is
@@ -66,11 +70,10 @@ public class S01PacketJoin extends UTF8Packet{
 		for (MVRFile file : XChange.instance.getFiles()) {
 			array.add(new C03PacketCommit(file, null, new Version(0, 0)).writeJson());
 		}
-		object.add("Commits", object);
+		object.add("Commits", array);
 		
 		
-		
-		return null;
+		return object;
 	}
 
 }

@@ -90,5 +90,9 @@ public class Station {
 	public Connection getConnection() {
 		return connection;
 	}
+	
+	public boolean compareUUID(UUID compare) {
+		return uuid.compareTo(compare) == 0;
+	}
 
 }

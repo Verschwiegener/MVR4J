@@ -32,23 +32,26 @@ public class Util {
 		try {
 			buffer.writeBytes(GSON.toJson(object).getBytes(StandardCharsets.UTF_8));
 		}catch(Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		return buffer;
 	}
 	
 	public static ByteBuf packetBuilder(ByteBuf data, int packageType) {
+		return packetBuilder(data, packageType, 1, 0);
+	}
+	
+	public static ByteBuf packetBuilder(ByteBuf data, int packageType, int packageCount, int packageNumber) {
 		ByteBuf buffer = Unpooled.buffer(28);
 		buffer.writeInt(MVR_PACKAGE_HEADER);
 		buffer.writeInt(MVR_PACKAGE_VERSION);
-		buffer.writeInt(0);
-		buffer.writeInt(0);
+		buffer.writeInt(packageNumber);
+		buffer.writeInt(packageCount);
 		buffer.writeInt(packageType);
 		buffer.writeLong(data.readableBytes());
 		buffer.writeBytes(data);
-		data.clear();
 		
-		buffer.resetReaderIndex();
+		data.clear();
 		return buffer;
 		
 	}

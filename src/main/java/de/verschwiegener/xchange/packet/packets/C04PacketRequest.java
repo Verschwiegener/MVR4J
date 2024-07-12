@@ -1,6 +1,12 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.UUID;
+
+import org.apache.tools.ant.taskdefs.SendEmail;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -12,6 +18,7 @@ import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -42,20 +49,40 @@ public class C04PacketRequest extends UTF8Packet {
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		UUID retrieveUUID = UUID.fromString(object.get("FromStationUUID").getAsString());
-		if (!XChange.instance.station.getUuid().equals(retrieveUUID))
+		if (!XChange.instance.station.compareUUID(retrieveUUID))
 			return;
 
-		MVRFile file;
-		if (object.get("FileUUID") != null) {
+		MVRFile file = null;
+		if (object.get("FileUUID") != null && !object.get("FileUUID").getAsString().isEmpty()) {
+			//Get File
 			file = XChange.instance.getFileByUUID(UUID.fromString(object.get("FileUUID").getAsString()));
-		} else {
-			// TODO get latest File
+		}else {
+			//Get Latest File
+			file = XChange.instance.getFiles().get(XChange.instance.getFiles().size() - 1);
 		}
-		// TODO Send MVRFile to requesting station
-
-		Packet packet = new S04PacketRequest();
-		ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
-
+		
+		//Send File Not available Packet
+		if(file == null) {
+			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
+			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
+			return;
+		}
+		
+		//Send MVRFile to requesting station
+		try {
+			RandomAccessFile stream = new RandomAccessFile(file.getFilesystemLocation(), "r");
+			//Read to Buffer
+			byte[] array = new byte[(int) stream.length()];
+			stream.read(array);
+			ByteBuf buffer = Unpooled.wrappedBuffer(array);
+			//Send Message
+			ctx.writeAndFlush(Util.packetBuilder(buffer, 1, 1, 0));
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
+			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
+		}
 	}
 
 	@Override

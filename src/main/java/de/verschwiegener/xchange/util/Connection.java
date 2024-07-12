@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import de.verschwiegener.xchange.packet.Packet;
@@ -8,9 +9,11 @@ import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
 import de.verschwiegener.xchange.tcp.TCPServer;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -29,36 +32,51 @@ public class Connection {
 	private final InetSocketAddress remoteAddress;
 
 	private Channel channel;
+	private boolean connected = false;
+
+	private NetPacketHandler handler;
 
 	public Connection(InetSocketAddress address) {
 		this.remoteAddress = address;
 	}
 
-	public CompletableFuture<Void> connectTo() {
+	public CompletableFuture<Void> connectTo() throws InterruptedException {
 		CompletableFuture<Void> connectionFuture = new CompletableFuture<Void>();
-		
+
+		handler = new NetPacketHandler();
+
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
-				.option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
+		.option(ChannelOption.SO_KEEPALIVE, true).handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
-						pipeline.addLast(TCPServer.peerEventLoopGroup, new NetPacketHandler());
+						pipeline.addLast(TCPServer.peerEventLoopGroup, handler);
 
 					}
 				});
-		final ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress);
+		
+		//TODO Port in Remote Address does not equal the port on which traffic is beeing received, aka mDns Port is false
+		
+		
+		
+		
+		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
 
+		channel = connectFuture.channel();
+		
+		
 		connectFuture.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
-					//Connection is established
-					channel = future.channel();
+					// Connection is established
+					connected = true;
 					connectionFuture.complete(null);
 					sendPacket(new C01PacketJoin());
 				} else {
 					connectionFuture.completeExceptionally(future.cause());
+					connected = false;
 				}
 			}
 		});
@@ -72,6 +90,10 @@ public class Connection {
 	 */
 	public CompletableFuture<Void> sendPacket(Packet packet) {
 		CompletableFuture<Void> futureToNotify = new CompletableFuture<Void>();
+		if (!connected) {
+			futureToNotify.completeExceptionally(new Throwable());
+			return futureToNotify;
+		}
 		ChannelFuture future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		future.addListener(new GenericFutureListener<Future<? super Void>>() {
 

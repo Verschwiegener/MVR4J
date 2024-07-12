@@ -9,21 +9,25 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class S04PacketRequest extends UTF8Packet {
 
-	private boolean ok = true;
-	private String message = "";
-
-	public S04PacketRequest() {
-		super("MVR_REQUEST_RET");
-	}
+	private boolean ok;
+	private String message;
 
 	public S04PacketRequest(boolean ok, String message) {
-		this();
+		super("MVR_REQUEST_RET");
+		this.ok = ok;
+		this.message = message;
+	}
+
+	public S04PacketRequest() {
+		this(true, "");
 	}
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		boolean ok = object.get("OK").getAsBoolean();
 		String message = object.get("Message").getAsString();
+		if(!ok)
+			return;
 		// TODO Call Error API
 
 	}
@@ -37,5 +41,6 @@ public class S04PacketRequest extends UTF8Packet {
 	public JsonObject writeJson() {
 		return responseMessage(ok, message);
 	}
+	
 
 }

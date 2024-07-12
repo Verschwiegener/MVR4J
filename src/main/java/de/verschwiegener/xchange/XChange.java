@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Version;
+import de.verschwiegener.xchange.websocket.WebsocketServer;
 
 /**
  * Class Managing all XChange related things
@@ -111,8 +113,9 @@ public class XChange {
 	 * @param xchangeListener 
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @throws CertificateException 
 	 */
-	public void start(XChangeListener xchangeListener) throws IOException, InterruptedException {
+	public void start(XChangeListener xchangeListener) throws IOException, InterruptedException, CertificateException {
 		this.listener = xchangeListener;
 		if (mode == ProtocolMode.TCP) {
 
@@ -151,29 +154,44 @@ public class XChange {
 				public void serviceResolved(ServiceEvent event) {
 					ServiceInfo info = event.getInfo();
 
-					if (info.getName().equals(station.getName()))
-						return;
+					//if (info.getName().equals(station.getName()))
+						//return;
 
 					String stationUUID = info.getPropertyString("StationUUID");
 					String stationName = info.getPropertyString("StationName");
 
+					
 					if (stationUUID == null || stationName == null)
 						return;
 
 					UUID uuid = UUID.fromString(stationUUID);
-					// Check if station is known
-					if (getStationByUUID(UUID.fromString(stationUUID)) != null)
+					// Check if station is known, or is this instance
+					if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUuid()) == 0)
 						return;
-
+					
+					
 					InetAddress address = info.getInet4Addresses()[0];
-
-					// Connect To Peer
+					// Create Connection
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
-					CompletableFuture<Void> future = connection.connectTo();
-
+					
+					System.out.println("Port: " + info.getPort());
+					
+					//Add Station directly
+					addStation(new Station(uuid, stationName, null, null, connection));
+					
+					
+					//Check if a Connection can be established 
+					CompletableFuture<Void> future = null;
+					try {
+						future = connection.connectTo();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					future.whenComplete((result, ex) -> {
-						if(ex == null)
-							addStation(new Station(uuid, stationName, null, null, connection));
+						if(ex != null) {
+							//Remove Station if not
+							removeStation(station);
+						}
 					});
 
 				}
@@ -195,7 +213,23 @@ public class XChange {
 			};
 
 			MDNSService.addServiceListener(getServiceString(), listener);
+		}else {
+			
+			WebsocketServer server = new WebsocketServer();
+			server.start();
+			
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				System.out.println("Shutdown");
+				try {
+					shutdown();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		
 	}
 
@@ -217,7 +251,7 @@ public class XChange {
 	 * @param station
 	 */
 	public void addStation(Station station) {
-		if(stations.contains(station))
+		if(getStationByUUID(station.getUuid()) != null)
 			return;
 		stations.add(station);
 		listener.stationAdded(station);
@@ -234,7 +268,7 @@ public class XChange {
 	}
 
 	public Station getStationByUUID(UUID uuid) {
-		return stations.stream().filter(station -> station.getUuid().equals(uuid)).findFirst().orElse(null);
+		return stations.stream().filter(station -> station.getUuid().compareTo(uuid) == 0).findFirst().orElse(null);
 	}
 
 	/**
@@ -264,6 +298,7 @@ public class XChange {
 	 */
 	public void commitFile(MVRFile file) {
 		files.add(file);
+		System.out.println("Stations: " + stations);
 		stations.forEach(station -> station.getConnection().sendPacket(new C03PacketCommit(file, new Station[] {})));
 	}
 
@@ -294,11 +329,15 @@ public class XChange {
 		return stations;
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 		
 		MVRUtil.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
-		XChange xchange = new XChange(ProtocolMode.TCP, "Test45", null);
+		XChange xchange = new XChange(ProtocolMode.TCP, "MVR4J XChange", null);
 
+		System.out.println("UUID: " + xchange.station.getUuid());
+		
+		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Basic GDTF"));
+		
 		xchange.start(new XChangeListener() {
 			
 			@Override

@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.tcp;
 
 import de.verschwiegener.xchange.XChange;
+import de.verschwiegener.xchange.XChangeServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -18,7 +19,7 @@ import io.netty.handler.logging.LoggingHandler;
  * 
  * @author julius
  */
-public class TCPServer {
+public class TCPServer implements XChangeServer{
 
 	private final EventLoopGroup acceptorEventLoopGroup = new NioEventLoopGroup(1);
 

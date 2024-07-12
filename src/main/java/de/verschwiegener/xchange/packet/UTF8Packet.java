@@ -33,6 +33,7 @@ public abstract class UTF8Packet implements Packet {
 	 */
 	protected JsonObject responseMessage(boolean error, String message) {
 		JsonObject object = new JsonObject();
+		object.addProperty("Type", packetType);
 		object.addProperty("OK", error);
 		object.addProperty("Message", message);
 		return object;

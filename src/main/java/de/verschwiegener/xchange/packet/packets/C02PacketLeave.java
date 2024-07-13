@@ -30,7 +30,7 @@ public class C02PacketLeave extends UTF8Packet {
 				.getStationByUUID(UUID.fromString(object.get("FromStationUUID").getAsString()));
 		
 		if (sourceStation == null) {
-			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("FromStationUUID").getAsString() + " not known");
 			return;
 		}
 

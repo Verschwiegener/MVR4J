@@ -115,7 +115,7 @@ public class XChange {
 	 * @throws InterruptedException
 	 * @throws CertificateException 
 	 */
-	public void start(XChangeListener xchangeListener) throws IOException, InterruptedException, CertificateException {
+	public void start(XChangeListener xchangeListener) {
 		
 		//TODO Catch all errors and shut down Server and MDNS if the error is severe enough
 		this.listener = xchangeListener;
@@ -123,44 +123,54 @@ public class XChange {
 
 			//Throws Interrupt Exception
 			server = new TCPServer();
-			server.start();
+			try {
+				server.start();
+			}catch(InterruptedException e) {
+				server.shutdown();
+				e.printStackTrace();
+				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
+				return;
+			}
 
 			
 			//Throws IOException
-			MDNSService.registerMDNS(new MDNSServiceData() {
+			try {
+				MDNSService.registerMDNS(new MDNSServiceData() {
 
-				@Override
-				public String getServiceType(String macAddress) {
-					return getServiceString();
-				}
+					@Override
+					public String getServiceType(String macAddress) {
+						return getServiceString();
+					}
 
-				@Override
-				public int getPort() {
-					return serverPort;
-				}
+					@Override
+					public int getPort() {
+						return serverPort;
+					}
 
-				@Override
-				public String getName(String macAddress) {
-					return station.getName();
-				}
+					@Override
+					public String getName(String macAddress) {
+						return station.getName();
+					}
 
-				@Override
-				public Map<String, String> createProperties(String macAddress) {
-					HashMap<String, String> properties = new HashMap<String, String>();
-					properties.put("StationName", station.getName());
-					properties.put("StationUUID", station.getUuid().toString());
-					return properties;
-				}
-			});
+					@Override
+					public Map<String, String> createProperties(String macAddress) {
+						HashMap<String, String> properties = new HashMap<String, String>();
+						properties.put("StationName", station.getName());
+						properties.put("StationUUID", station.getUuid().toString());
+						return properties;
+					}
+				});
+			}catch(IOException e) {
+				e.printStackTrace();
+				listener.xChangeError("MDNS_STARTUP", "Could not register mDNS Entry");
+				return;
+			}
 
 			ServiceListener listener = new ServiceListener() {
 
 				@Override
 				public void serviceResolved(ServiceEvent event) {
 					ServiceInfo info = event.getInfo();
-
-					//if (info.getName().equals(station.getName()))
-						//return;
 
 					String stationUUID = info.getPropertyString("StationUUID");
 					String stationName = info.getPropertyString("StationName");
@@ -213,7 +223,13 @@ public class XChange {
 			
 			//Throws CertificateException
 			WebsocketServer server = new WebsocketServer();
-			server.start();
+			try {
+				server.start();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
+				return;
+			}
 			
 		}
 		
@@ -259,29 +275,25 @@ public class XChange {
 		
 		listener.stationLeave(station);
 	}
-
+	
+	/**
+	 * Return Station by UUID, null if non found
+	 * 
+	 * @param uuid UUID of Station
+	 * @return
+	 */
 	public Station getStationByUUID(UUID uuid) {
 		return stations.stream().filter(station -> station.getUuid().compareTo(uuid) == 0).findFirst().orElse(null);
 	}
 
 	/**
-	 * Returns MVRFile by UUID
+	 * Returns MVRFile by UUID, null if non found
 	 * 
-	 * @param uuid
+	 * @param uuid UUID of the MVRFile
 	 * @return
 	 */
 	public MVRFile getFileByUUID(UUID uuid) {
 		return files.stream().filter(files -> files.getUuid().equals(uuid)).findFirst().orElse(null);
-	}
-
-	/**
-	 * Returns MVRFile By FileName
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public MVRFile getFileByName(String name) {
-		return files.stream().filter(files -> files.getFileName().equals(name)).findFirst().orElse(null);
 	}
 	
 	/**
@@ -311,10 +323,6 @@ public class XChange {
 		listener.newMVRFile(file);
 	}
 
-	private String getServiceString() {
-		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
-	}
-
 	public ArrayList<MVRFile> getFiles() {
 		return files;
 	}
@@ -322,6 +330,11 @@ public class XChange {
 	public ArrayList<Station> getStations() {
 		return stations;
 	}
+	
+	private String getServiceString() {
+		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
+	}
+
 
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 		

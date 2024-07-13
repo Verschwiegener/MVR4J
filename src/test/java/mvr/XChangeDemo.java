@@ -28,6 +28,8 @@ public class XChangeDemo {
 			
 			@Override
 			public void stationAdded(Station station) {
+				//Connect to Station
+				station.connect();
 			}
 			
 			@Override

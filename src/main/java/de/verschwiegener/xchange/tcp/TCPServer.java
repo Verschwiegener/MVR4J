@@ -41,7 +41,7 @@ public class TCPServer implements XChangeServer{
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-				.option(ChannelOption.SO_BACKLOG, 100).handler(new LoggingHandler(LogLevel.INFO))
+				.option(ChannelOption.SO_BACKLOG, 100).option(ChannelOption.SO_REUSEADDR, true).handler(new LoggingHandler(LogLevel.INFO))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 
 					@Override

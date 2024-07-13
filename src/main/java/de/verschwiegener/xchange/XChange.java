@@ -116,12 +116,17 @@ public class XChange {
 	 * @throws CertificateException 
 	 */
 	public void start(XChangeListener xchangeListener) throws IOException, InterruptedException, CertificateException {
+		
+		//TODO Catch all errors and shut down Server and MDNS if the error is severe enough
 		this.listener = xchangeListener;
 		if (mode == ProtocolMode.TCP) {
 
+			//Throws Interrupt Exception
 			server = new TCPServer();
 			server.start();
 
+			
+			//Throws IOException
 			MDNSService.registerMDNS(new MDNSServiceData() {
 
 				@Override
@@ -176,24 +181,9 @@ public class XChange {
 					
 					System.out.println("Port: " + info.getPort());
 					
-					//Add Station directly
-					addStation(new Station(uuid, stationName, null, null, connection));
 					
-					
-					//Check if a Connection can be established 
-					CompletableFuture<Void> future = null;
-					try {
-						future = connection.connectTo();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					future.whenComplete((result, ex) -> {
-						if(ex != null) {
-							//Remove Station if not
-							removeStation(station);
-						}
-					});
-
+					//Call Listener
+					XChange.instance.listener.stationAdded(new Station(uuid, stationName, null, null, connection));
 				}
 
 				@Override
@@ -201,10 +191,16 @@ public class XChange {
 					String stationUUID = event.getInfo().getPropertyString("StationUUID");
 					if (stationUUID == null)
 						return;
-					// Removes Station if mDns Service is Removed
+					
+					// Potential Station to remove, if not connected
 					Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
-					stationToRemove.getConnection().shutdown();
-					removeStation(stationToRemove);
+					
+					// Remove Station only if no connection to Station exists, otherwise it would be
+					// removed when the Station Leaves
+					if(stationToRemove.getConnection().isConnected()) {
+						stationToRemove.getConnection().shutdown();
+						removeStation(stationToRemove);
+					}
 				}
 
 				@Override
@@ -215,6 +211,7 @@ public class XChange {
 			MDNSService.addServiceListener(getServiceString(), listener);
 		}else {
 			
+			//Throws CertificateException
 			WebsocketServer server = new WebsocketServer();
 			server.start();
 			
@@ -222,12 +219,6 @@ public class XChange {
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
-				System.out.println("Shutdown");
-				try {
-					shutdown();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		});
 		
@@ -239,10 +230,11 @@ public class XChange {
 	 * @throws IOException
 	 */
 	public void shutdown() throws IOException {
-		stations.forEach(station -> station.getConnection().shutdown());
-		server.shutdown();
+		System.out.println("Shutdown");
 		MDNSService.unregisterAllServices();
 		MDNSService.shutdown();
+		stations.forEach(station -> station.getConnection().shutdown());
+		server.shutdown();
 	}
 
 	/**
@@ -254,17 +246,18 @@ public class XChange {
 		if(getStationByUUID(station.getUuid()) != null)
 			return;
 		stations.add(station);
-		listener.stationAdded(station);
 	}
 
 	/**
-	 * Shuts down Station Connection and removes it
+	 * Shuts down Station Connection, Removes it and Calls stationLeave Listener
 	 * 
 	 * @param station
 	 */
 	public void removeStation(Station station) {
 		station.getConnection().shutdown();
 		stations.remove(station);
+		
+		listener.stationLeave(station);
 	}
 
 	public Station getStationByUUID(UUID uuid) {
@@ -298,22 +291,23 @@ public class XChange {
 	 */
 	public void commitFile(MVRFile file) {
 		files.add(file);
-		System.out.println("Stations: " + stations);
 		stations.forEach(station -> station.getConnection().sendPacket(new C03PacketCommit(file, new Station[] {})));
 	}
 
 	/**
-	 * Checks if File is already known, if not add to known files
+	 * Checks if File is already known, if not add to known files. Calls newMVRFile listener if File is new
 	 * 
 	 * @param file
 	 */
 	public void registerFile(MVRFile file) {
-		MVRFile testFile = getFileByUUID(file.getUuid());
-		if (testFile != null) {
-			testFile.getStationUUID().addAll(file.getStationUUID());
+		MVRFile existingFile = getFileByUUID(file.getUuid());
+		//If File Exists add Station UUIDs to existing file, to keep track which stations have the file
+		if (existingFile != null) {
+			existingFile.getStationUUID().addAll(file.getStationUUID());
 			return;
 		}
 		files.add(file);
+		//Call Listener
 		listener.newMVRFile(file);
 	}
 
@@ -333,7 +327,8 @@ public class XChange {
 		
 		MVRUtil.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
 		XChange xchange = new XChange(ProtocolMode.TCP, "MVR4J XChange", null);
-
+		
+		
 		System.out.println("UUID: " + xchange.station.getUuid());
 		
 		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Basic GDTF"));
@@ -347,7 +342,8 @@ public class XChange {
 			
 			@Override
 			public void stationAdded(Station station) {
-				
+				System.out.println("StationAdded: " + station);
+				station.connect();
 			}
 			
 			@Override
@@ -357,12 +353,14 @@ public class XChange {
 
 			@Override
 			public void xChangeError(String packet, String message) {
-				
+				System.out.println("Error: " + packet  + " / " + message);
 			}
 		});
 		
 
-//		Thread.sleep(10000);
+		Thread.sleep(100000);
+		
+		xchange.shutdown();
 
 //		xchange2.start();
 
@@ -372,7 +370,6 @@ public class XChange {
 
 		//Thread.sleep(10000);
 
-		//xchange.shutdown();
 		// xchange2.shutdown();
 		// xchange3.shutdown();
 	}

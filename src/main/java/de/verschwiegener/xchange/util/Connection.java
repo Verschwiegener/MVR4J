@@ -47,7 +47,7 @@ public class Connection {
 
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
-		.option(ChannelOption.SO_KEEPALIVE, true).handler(new ChannelInitializer<SocketChannel>() {
+		.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.SO_REUSEADDR, true).handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
@@ -113,7 +113,16 @@ public class Connection {
 	 * Shuts down Connection to Peer
 	 */
 	public void shutdown() {
+		if(channel == null) 
+			return;
 		channel.close();
+	}
+	
+	public InetSocketAddress getRemoteAddress() {
+		return remoteAddress;
+	}
+	public boolean isConnected() {
+		return connected;
 	}
 
 }

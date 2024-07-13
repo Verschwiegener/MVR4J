@@ -49,19 +49,21 @@ public class C04PacketRequest extends UTF8Packet {
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		UUID retrieveUUID = UUID.fromString(object.get("FromStationUUID").getAsString());
+		
+		//If File should not be retrieved from this Station ignore
 		if (!XChange.instance.station.compareUUID(retrieveUUID))
 			return;
 
 		MVRFile file = null;
 		if (object.get("FileUUID") != null && !object.get("FileUUID").getAsString().isEmpty()) {
-			//Get File
+			//Get Specific File
 			file = XChange.instance.getFileByUUID(UUID.fromString(object.get("FileUUID").getAsString()));
 		}else {
-			//Get Latest File
+			//Get Latest File if FileUUID is empty
 			file = XChange.instance.getFiles().get(XChange.instance.getFiles().size() - 1);
 		}
 		
-		//Send File Not available Packet
+		//File was not found or this Station has no Files, Send File Not available Packet
 		if(file == null) {
 			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
 			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
@@ -77,11 +79,15 @@ public class C04PacketRequest extends UTF8Packet {
 			ByteBuf buffer = Unpooled.wrappedBuffer(array);
 			//Send Message
 			ctx.writeAndFlush(Util.packetBuilder(buffer, 1, 1, 0));
-			
 		}catch(Exception e) {
 			e.printStackTrace();
+			//Send File Not available Packet
 			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
 			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
+			
+			//Call Error Listener
+			XChange.instance.listener.xChangeError(packetType,
+					"Could not send File: " + file.getFileName());
 		}
 	}
 

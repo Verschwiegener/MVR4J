@@ -27,7 +27,7 @@ public class S04PacketRequest extends UTF8Packet {
 		if(!parseError(object))
 			return;
 		
-		//TODO parse Packet
+		//Needs no logic, Packet just Contains Error Codes
 
 	}
 

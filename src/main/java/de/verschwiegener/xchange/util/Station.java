@@ -1,8 +1,11 @@
 package de.verschwiegener.xchange.util;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
+
+import de.verschwiegener.xchange.XChange;
 
 /**
  * Wrapper Class for Peers
@@ -93,6 +96,30 @@ public class Station {
 	
 	public boolean compareUUID(UUID compare) {
 		return uuid.compareTo(compare) == 0;
+	}
+	
+	public void connect() {
+		//Check if a Connection can be established 
+		CompletableFuture<Void> future = null;
+		try {
+			future = connection.connectTo();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		future.whenComplete((result, ex) -> {
+			if(ex != null) {
+				XChange.instance.listener.xChangeError("Initial Connection", "Could not Connect to Station:"
+						+ uuid.toString() + " at Port: " + connection.getRemoteAddress().getPort());
+				ex.printStackTrace();
+				return;
+			}
+			
+			//Add Station
+			XChange.instance.addStation(new Station(uuid, name, null, null, connection));
+		});
+		
+		
+		
 	}
 
 }

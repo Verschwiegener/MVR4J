@@ -28,10 +28,16 @@ public class C02PacketLeave extends UTF8Packet {
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		Station sourceStation = XChange.instance
 				.getStationByUUID(UUID.fromString(object.get("FromStationUUID").getAsString()));
+		
+		if (sourceStation == null) {
+			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+			return;
+		}
 
+		//Remove Station
 		XChange.instance.removeStation(sourceStation);
-		XChange.instance.listener.stationLeave(sourceStation);
 
+		//Send Return Packet
 		sourceStation.getConnection().sendPacket(new S02PacketLeave());
 
 	}

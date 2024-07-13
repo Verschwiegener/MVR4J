@@ -9,15 +9,17 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class S03PacketCommit extends UTF8Packet {
 
-	private boolean ok = true;
-	private String message = "";
-
-	public S03PacketCommit() {
-		super("MVR_COMMIT_RET");
-	}
+	private boolean ok;
+	private String message;
 
 	public S03PacketCommit(boolean ok, String message) {
-		this();
+		super("MVR_COMMIT_RET");
+		this.ok = ok;
+		this.message = message;
+	}
+
+	public S03PacketCommit() {
+		this(true, "");
 	}
 
 	@Override
@@ -25,7 +27,7 @@ public class S03PacketCommit extends UTF8Packet {
 		if(!parseError(object))
 			return;
 		
-		//TODO parse Packet
+		//Needs no logic, Packet just Contains Error Codes
 	}
 
 	@Override

@@ -34,28 +34,38 @@ public class C01PacketJoin extends UTF8Packet {
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		if (!XChange.instance.station.getVersion().checkVersion(new Version(object))) {
-			station.getConnection()
-					.sendPacket(new S01PacketJoin(false, "Version is not Compatible With Server, Server Version: "
-							+ XChange.instance.station.getVersion().toString()));
+		
+		//Check if Station exists
+		if (station == null) {
+			XChange.instance.listener.xChangeError(packetType,
+					packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
 			return;
 		}
 		
-		if (station == null)
+		//Check if Version is Compatible
+		Version stationVersion = new Version(object);
+		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
+			station.getConnection()
+					.sendPacket(new S01PacketJoin(false, "Version is not Compatible With Server, Server Version: "
+							+ XChange.instance.station.getVersion().toString()));
+
+			// Send Error
+			XChange.instance.listener.xChangeError(packetType, "Station " + object.get("StationUUID").getAsString()
+					+ " Version: " + stationVersion + " is not Compatible With Server Version");
 			return;
+		}
+		
+		
 
 		station.updateValues(object);
 
-		
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(element -> {
 			// TODO parse MVR_COMMIT
 		});
 
+		//Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
-
-		// TODO Call Some Kind of API to signal to the user that the station is new(if
-		// XChange.instance.getStaion(station) is null)
 	}
 
 	@Override

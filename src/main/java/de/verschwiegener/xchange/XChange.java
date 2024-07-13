@@ -274,6 +274,8 @@ public class XChange {
 		stations.remove(station);
 		
 		listener.stationLeave(station);
+		
+		//TODO Remove Station from MVRFile station List
 	}
 	
 	/**
@@ -355,7 +357,7 @@ public class XChange {
 			
 			@Override
 			public void stationAdded(Station station) {
-				System.out.println("StationAdded: " + station);
+				System.out.println("StationAdded: " + station.getName());
 				station.connect();
 			}
 			

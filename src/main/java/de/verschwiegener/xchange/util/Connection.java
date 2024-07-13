@@ -47,7 +47,7 @@ public class Connection {
 
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
-		.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.SO_REUSEADDR, true).handler(new ChannelInitializer<SocketChannel>() {
+		.option(ChannelOption.SO_KEEPALIVE, true).handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
@@ -57,12 +57,7 @@ public class Connection {
 					}
 				});
 		
-		//TODO Port in Remote Address does not equal the port on which traffic is beeing received, aka mDns Port is false
-		
-		
-		
-		
-		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
+		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress);
 
 		channel = connectFuture.channel();
 		

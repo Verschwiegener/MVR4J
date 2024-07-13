@@ -109,13 +109,11 @@ public class Station {
 		future.whenComplete((result, ex) -> {
 			if(ex != null) {
 				XChange.instance.listener.xChangeError("Initial Connection", "Could not Connect to Station:"
-						+ uuid.toString() + " at Port: " + connection.getRemoteAddress().getPort());
-				ex.printStackTrace();
+						+ uuid.toString() + "IP: " + connection.getRemoteAddress().getHostString() + " at Port: " + connection.getRemoteAddress().getPort());
 				return;
 			}
-			
 			//Add Station
-			XChange.instance.addStation(new Station(uuid, name, null, null, connection));
+			XChange.instance.addStation(this);
 		});
 		
 		

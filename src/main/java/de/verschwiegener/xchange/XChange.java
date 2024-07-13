@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -185,11 +186,21 @@ public class XChange {
 						return;
 					
 					
-					InetAddress address = info.getInet4Addresses()[0];
+					InetAddress address = null;
+					
+					for(InetAddress ipv4 : info.getInet4Addresses()) {
+						if(!ipv4.isLoopbackAddress())
+							address = ipv4;
+					}
+					
+					//If mDNS Entry does not have a valid IPv4 Address
+					if(address == null)
+						return;
+					
 					// Create Connection
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
 					
-					System.out.println("Port: " + info.getPort());
+					System.out.println("Port: " + info.getPort() + " / " + address);
 					
 					
 					//Call Listener
@@ -346,7 +357,7 @@ public class XChange {
 		
 		System.out.println("UUID: " + xchange.station.getUuid());
 		
-		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Basic GDTF"));
+		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "MA Demostage"));
 		
 		xchange.start(new XChangeListener() {
 			

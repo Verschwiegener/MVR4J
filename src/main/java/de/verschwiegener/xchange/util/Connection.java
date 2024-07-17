@@ -70,6 +70,7 @@ public class Connection {
 					connectionFuture.complete(null);
 					sendPacket(new C01PacketJoin());
 				} else {
+					channel.close();
 					connectionFuture.completeExceptionally(future.cause());
 					connected = false;
 				}

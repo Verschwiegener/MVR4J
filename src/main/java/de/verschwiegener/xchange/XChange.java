@@ -6,11 +6,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -24,7 +22,6 @@ import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Version;
-import de.verschwiegener.xchange.websocket.WebsocketServer;
 
 /**
  * Class Managing all XChange related things
@@ -233,14 +230,14 @@ public class XChange {
 		}else {
 			
 			//Throws CertificateException
-			WebsocketServer server = new WebsocketServer();
+			/*WebsocketServer server = new WebsocketServer();
 			try {
 				server.start();
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
-			}
+			}*/
 			
 		}
 		

@@ -1,12 +1,7 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.util.UUID;
-
-import org.apache.tools.ant.taskdefs.SendEmail;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

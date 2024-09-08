@@ -1,6 +1,5 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.google.common.io.Files;

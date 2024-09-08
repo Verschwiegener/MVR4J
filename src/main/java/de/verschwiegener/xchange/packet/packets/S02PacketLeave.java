@@ -2,7 +2,6 @@ package de.verschwiegener.xchange.packet.packets;
 
 import com.google.gson.JsonObject;
 
-import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;

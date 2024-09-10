@@ -21,42 +21,59 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * Netty Client connecting to Peers Server
+ * 
+ * @author julius
  */
 public class Connection {
 
 	private final InetSocketAddress remoteAddress;
 
 	private Channel channel;
+	private boolean connected = false;
+
+	private NetPacketHandler handler;
 
 	public Connection(InetSocketAddress address) {
 		this.remoteAddress = address;
 	}
 
-	public void connectTo(CompletableFuture<Void> futureToNotify) {
+	public CompletableFuture<Void> connectTo() throws InterruptedException {
+		CompletableFuture<Void> connectionFuture = new CompletableFuture<Void>();
+
+		handler = new NetPacketHandler();
+
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
-				.option(ChannelOption.TCP_NODELAY, true).handler(new ChannelInitializer<SocketChannel>() {
+		.option(ChannelOption.SO_KEEPALIVE, true).handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
-						pipeline.addLast(TCPServer.peerEventLoopGroup, new NetPacketHandler());
+						pipeline.addLast(TCPServer.peerEventLoopGroup, handler);
 
 					}
 				});
-		final ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress);
+		
+		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress);
 
+		channel = connectFuture.channel();
+		
+		
 		connectFuture.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
-					channel = future.channel();
-					futureToNotify.complete(null);
+					// Connection is established
+					connected = true;
+					connectionFuture.complete(null);
 					sendPacket(new C01PacketJoin());
 				} else {
-					futureToNotify.completeExceptionally(future.cause());
+					channel.close();
+					connectionFuture.completeExceptionally(future.cause());
+					connected = false;
 				}
 			}
 		});
+		return connectionFuture;
 	}
 
 	/**
@@ -66,6 +83,10 @@ public class Connection {
 	 */
 	public CompletableFuture<Void> sendPacket(Packet packet) {
 		CompletableFuture<Void> futureToNotify = new CompletableFuture<Void>();
+		if (!connected) {
+			futureToNotify.completeExceptionally(new Throwable());
+			return futureToNotify;
+		}
 		ChannelFuture future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		future.addListener(new GenericFutureListener<Future<? super Void>>() {
 
@@ -85,7 +106,16 @@ public class Connection {
 	 * Shuts down Connection to Peer
 	 */
 	public void shutdown() {
+		if(channel == null) 
+			return;
 		channel.close();
+	}
+	
+	public InetSocketAddress getRemoteAddress() {
+		return remoteAddress;
+	}
+	public boolean isConnected() {
+		return connected;
 	}
 
 }

@@ -2,6 +2,12 @@ package de.verschwiegener.mvr.util;
 
 import java.text.DecimalFormat;
 
+/**
+ * MVRColor utility for Converting between different Formats
+ * 
+ * @author julius
+ *
+ */
 public class MVRColor {
 
 	private double X;
@@ -22,7 +28,13 @@ public class MVRColor {
 		Y = fY;
 		Z = (1 - x - y) * (fY / y);
 	}
-
+	/**
+	 * Loads CIE 1931 XYZ Color Coordinates
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public MVRColor(double x, double y, double z) {
 		this.X = x;
 		this.Y = y;
@@ -144,7 +156,11 @@ public class MVRColor {
 
 		return new double[] { x, y, Y };
 	}
-
+	/**
+	 * Returns Color in MVR String Format
+	 * 
+	 * @return
+	 */
 	public String toMVR() {
 		double[] xyY = toxyY();
 		DecimalFormat decimalFormat = new DecimalFormat("0.000000");

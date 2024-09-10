@@ -10,22 +10,23 @@ import io.netty.channel.ChannelHandlerContext;
 public class S02PacketLeave extends UTF8Packet{
 
 	
-	private boolean ok = true;
-	private String message = "";
+	private boolean ok;
+	private String message;
 	
-	public S02PacketLeave() {
+	public S02PacketLeave(boolean ok, String message) {
 		super("MVR_LEAVE_RET");
 	}
 	
-	public S02PacketLeave(boolean ok, String message) {
-		this();
+	public S02PacketLeave() {
+		this(true, "");
 	}
 	
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		boolean ok = object.get("OK").getAsBoolean();
-		String message = object.get("Message").getAsString();
-		//TODO Call Error API
+		if(!parseError(object))
+			return;
+		
+		//Needs no logic, Packet just Contains Error Codes
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class S02PacketLeave extends UTF8Packet{
 
 	@Override
 	public JsonObject writeJson() {
-		return responceMessage(ok, message);
+		return responseMessage(ok, message);
 	}
 
 }

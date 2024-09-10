@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.tcp;
 
 import de.verschwiegener.xchange.XChange;
+import de.verschwiegener.xchange.XChangeServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -15,8 +16,10 @@ import io.netty.handler.logging.LoggingHandler;
 
 /**
  * TCP Server receiving all Packets
+ * 
+ * @author julius
  */
-public class TCPServer {
+public class TCPServer implements XChangeServer{
 
 	private final EventLoopGroup acceptorEventLoopGroup = new NioEventLoopGroup(1);
 
@@ -28,12 +31,17 @@ public class TCPServer {
 
 	public TCPServer() {
 	}
-
+	
+	/**
+	 * Starts Netty TCP Server
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void start() throws InterruptedException {
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-				.option(ChannelOption.SO_BACKLOG, 100).handler(new LoggingHandler(LogLevel.INFO))
+				.option(ChannelOption.SO_BACKLOG, 100).option(ChannelOption.SO_REUSEADDR, true).handler(new LoggingHandler(LogLevel.INFO))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 
 					@Override

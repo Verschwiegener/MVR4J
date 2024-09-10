@@ -15,6 +15,19 @@ import de.verschwiegener.xchange.util.Version;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * The MVR commit message informs all connected stations that there is a new MVR
+ * commit. This message only informs the stations about the existence of the new
+ * file. Stations needs to request the MVR file with a MVR_REQUEST message.
+ * 
+ * Each MVR commit represents one revision of the project. Therefore an array of
+ * MVR commits, as found in the MVR_JOIN message, represents the working history
+ * of the project. It is up to the client how many commits are kept in store at
+ * any time.
+ * 
+ * @author julius
+ *
+ */
 public class C03PacketCommit extends UTF8Packet {
 
 	private MVRFile file;
@@ -51,36 +64,58 @@ public class C03PacketCommit extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		Version version = new Version(object);
-
+		//Get Station
 		Station sourceStation = XChange.instance
 				.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
 		
-		MVRFile file = new MVRFile(object);
-		file.getStationUUID().add(sourceStation.getUuid());
-		
-		XChange.instance.addFile(file);
-
-		if (version.getMajor() == 0 && version.getMinor() == 0)
+		//Check if Station exists
+		if (sourceStation == null) {
+			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
 			return;
+		}
+		
+		//Check if Version is compatible
+		Version stationVersion = new Version(object);
+		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
+			sourceStation.getConnection()
+					.sendPacket(new S03PacketCommit(false, "Version is not Compatible With Server, Server Version: "
+							+ XChange.instance.station.getVersion().toString()));
 
-		JsonArray targetStations = object.get("ForStationsUUID").getAsJsonArray();
-		// If target is empty everyone is target
-		if (!targetStations.isEmpty()) {
-			// If targetStations contains clients uuid
-			boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
-					.fromString(element.getAsString()).equals(XChange.instance.station.getUuid())) != null;
-
-			if (!isTarget)
-				return;
+			// Send Error
+			XChange.instance.listener.xChangeError(packetType, "Station " + object.get("StationUUID").getAsString()
+					+ " Version: " + stationVersion + " is not Compatible With Server Version");
+			return;
 		}
 		
 		
-		XChange.instance.listener.newMVRFile(file);
-
-		sourceStation.getConnection().sendPacket(new S03PacketCommit());
+		//Get File and add Station
+		MVRFile file = new MVRFile(object);
+		file.getStationUUID().add(sourceStation.getUuid());
 		
-		// TODO Call API that a new file is available
+
+		//Get Target Stations, if this instance isn't a target ignore
+		JsonArray targetStations = object.get("ForStationsUUID").getAsJsonArray();
+		// If target is empty everyone is target
+		if (!targetStations.isEmpty()) {
+			//TargetStations contains clients uuid
+			boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
+					.fromString(element.getAsString()).equals(XChange.instance.station.getUuid())) != null;
+			
+			//TODO add Websocket Logic
+			
+			//If this Station is not the Target return
+			if (!isTarget)
+				return;
+			
+			
+		}
+
+		//Register File
+		XChange.instance.registerFile(file);
+		
+		
+		//Send Return packet
+		sourceStation.getConnection().sendPacket(new S03PacketCommit());
 	}
 
 	@Override
@@ -94,10 +129,13 @@ public class C03PacketCommit extends UTF8Packet {
 
 		// Add Target Stations
 		JsonArray array = new JsonArray();
-		for (Station s : forStation) {
-			array.add(s.getUuid().toString());
+		//If forStation equals null send empty array
+		if(forStation != null) {
+			for (Station s : forStation) {
+				array.add(s.getUuid().toString());
+			}
 		}
-		object.add("FromStationUUID", array);
+		object.add("ForStationsUUID", array);
 
 		return object;
 	}

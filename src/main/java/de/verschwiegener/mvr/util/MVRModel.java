@@ -2,6 +2,12 @@ package de.verschwiegener.mvr.util;
 
 import java.io.File;
 
+/**
+ * MVRModel holding File, FileType and Transformatio Matrix
+ * 
+ * @author julius
+ *
+ */
 public class MVRModel {
 	
 	private File modelFile;
@@ -18,13 +24,16 @@ public class MVRModel {
 		}
 	}
 
-	
 	public MVRMatrix getTransformationMatrix() {
 		return transformationMatrix;
 	}
 	
 	public File getModelFile() {
 		return modelFile;
+	}
+	
+	public FileType getFileType() {
+		return fileType;
 	}
 	
 	/**
@@ -62,11 +71,7 @@ public class MVRModel {
 		
 		}
 		
-		transformationMatrix.translate(other.getTranslation());
-		
-		
-		
-		//transformationMatrix.add(matrix);
+		transformationMatrix.offsetPos(other.getTranslation());
 	}
 	
 	

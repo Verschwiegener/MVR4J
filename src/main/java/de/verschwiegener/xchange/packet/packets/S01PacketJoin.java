@@ -1,5 +1,7 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.util.UUID;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -14,11 +16,13 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class S01PacketJoin extends UTF8Packet{
 
-	private boolean ok = true;
-	private String message = "";
+	private boolean ok;
+	private String message;
 	
-	public S01PacketJoin() {
+	public S01PacketJoin(boolean ok, String message) {
 		super("MVR_JOIN_RET");
+		this.ok = ok;
+		this.message = message;
 	}
 	
 	/**
@@ -26,29 +30,31 @@ public class S01PacketJoin extends UTF8Packet{
 	 * @param ok
 	 * @param message
 	 */
-	public S01PacketJoin(boolean ok, String message) {
-		this();
-		this.ok = ok;
-		this.message = message;
+	public S01PacketJoin() {
+		this(true, "");
 	}
 	
 	
 	
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		boolean ok = object.get("OK").getAsBoolean();
-		String message = object.get("Message").getAsString();
-		//TODO Call Error API
+		//Check if Packet contains error
+		if(!parseError(object))
+			return;
 		
-		//Add new Station that the Client knows who the sender is
-		Station station = new Station(object);
+		//Get Station
+		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
 		
-		JsonArray files = object.get("Files").getAsJsonArray();
+		if(station == null) {
+			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+			return;
+		}
+		
+		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(element -> {
 			// TODO parse MVR_COMMIT
 		});
-
-		XChange.instance.addStation(station);
+		
 	}
 
 	@Override
@@ -58,7 +64,7 @@ public class S01PacketJoin extends UTF8Packet{
 
 	@Override
 	public JsonObject writeJson() {
-		JsonObject object = responceMessage(ok, message);
+		JsonObject object = responseMessage(ok, message);
 		XChange.instance.station.writeToJson(object);
 
 		// Create Commits Array with all local Files
@@ -66,11 +72,10 @@ public class S01PacketJoin extends UTF8Packet{
 		for (MVRFile file : XChange.instance.getFiles()) {
 			array.add(new C03PacketCommit(file, null, new Version(0, 0)).writeJson());
 		}
-		object.add("Commits", object);
+		object.add("Commits", array);
 		
 		
-		
-		return null;
+		return object;
 	}
 
 }

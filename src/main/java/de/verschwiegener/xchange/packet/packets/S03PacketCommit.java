@@ -9,22 +9,25 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class S03PacketCommit extends UTF8Packet {
 
-	private boolean ok = true;
-	private String message = "";
-
-	public S03PacketCommit() {
-		super("MVR_COMMIT_RET");
-	}
+	private boolean ok;
+	private String message;
 
 	public S03PacketCommit(boolean ok, String message) {
-		this();
+		super("MVR_COMMIT_RET");
+		this.ok = ok;
+		this.message = message;
+	}
+
+	public S03PacketCommit() {
+		this(true, "");
 	}
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		boolean ok = object.get("OK").getAsBoolean();
-		String message = object.get("Message").getAsString();
-		//TODO Call Error API
+		if(!parseError(object))
+			return;
+		
+		//Needs no logic, Packet just Contains Error Codes
 	}
 
 	@Override
@@ -34,7 +37,7 @@ public class S03PacketCommit extends UTF8Packet {
 
 	@Override
 	public JsonObject writeJson() {
-		return responceMessage(ok, message);
+		return responseMessage(ok, message);
 	}
 
 }

@@ -11,6 +11,13 @@ import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * A client sends a MVR_LEAVE when it wants to quit an MVR-xchange Group and
+ * does not want to get updates about new MVR files anymore.
+ * 
+ * @author julius
+ *
+ */
 public class C02PacketLeave extends UTF8Packet {
 
 	public C02PacketLeave() {
@@ -21,10 +28,16 @@ public class C02PacketLeave extends UTF8Packet {
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		Station sourceStation = XChange.instance
 				.getStationByUUID(UUID.fromString(object.get("FromStationUUID").getAsString()));
-
-		XChange.instance.removeStation(sourceStation);
-		XChange.instance.listener.stationLeave(sourceStation);
 		
+		if (sourceStation == null) {
+			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("FromStationUUID").getAsString() + " not known");
+			return;
+		}
+
+		//Remove Station
+		XChange.instance.removeStation(sourceStation);
+
+		//Send Return Packet
 		sourceStation.getConnection().sendPacket(new S02PacketLeave());
 
 	}

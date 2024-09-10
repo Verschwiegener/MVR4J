@@ -1,6 +1,5 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.google.common.io.Files;
@@ -11,6 +10,16 @@ import io.netty.buffer.ByteBuf;
 
 public class MVRFilePacket extends FilePacket{
 	//TODO Support Streaming the MVR File Data directly into file and not save it first into a buffer
+	
+	private ByteBuf fileData;
+	
+	public MVRFilePacket(ByteBuf fileData) {
+		this.fileData = fileData;
+	}
+	
+	
+	public MVRFilePacket() {
+	}
 	
 	@Override
 	public void parsePacket(ByteBuf buffer) {
@@ -33,7 +42,7 @@ public class MVRFilePacket extends FilePacket{
 
 	@Override
 	public ByteBuf writePacket() {
-		return null;
+		return fileData;
 	}
 
 }

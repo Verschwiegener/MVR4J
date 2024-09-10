@@ -4,10 +4,12 @@ import java.lang.Math;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
-
-import org.joml.Options;
-import org.joml.Runtime;
-
+/**
+ * Matrix Class for simple Matrix Math
+ * 
+ * @author julius
+ *
+ */
 public class MVRMatrix {
 
 	double m00, m01, m02;
@@ -57,7 +59,9 @@ public class MVRMatrix {
 		m32 = Double.valueOf(oValues[2]);
 
 	}
-
+	/**
+	 * Resets the Matrix to an Identity matrix
+	 */
 	public void identity() {
 		m00 = 1.0f;
 		m01 = 0.0f;
@@ -77,8 +81,9 @@ public class MVRMatrix {
 	}
 
 	/**
+	 * Returns Scale of the Matrix
 	 * 
-	 * @return
+	 * @return double[] {scaleX, scaleY, scaleZ}
 	 */
 	public double[] getScale() {
 		double[] scale = new double[3];
@@ -100,7 +105,12 @@ public class MVRMatrix {
 		m11 = y;
 		m22 = z;
 	}
-
+	
+	/**
+	 * Returns the Translation of the Matrix 
+	 * 
+	 * @return double[] {posX, posY, posZ}
+	 */
 	public double[] getTranslation() {
 		double[] translation = new double[3];
 		translation[0] = m30;
@@ -110,7 +120,11 @@ public class MVRMatrix {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Returns the Translation of the Matrix multiplied by scaleFactor
+=======
+	 * Returns the Translation of the Matrix divided by scaleFactor
+>>>>>>> origin/main
 	 * 
 	 * @param scaleFactor Scales the Position to whatever Unit is wanted scaleFactor
 	 *                    1 = Millimeter
@@ -123,6 +137,7 @@ public class MVRMatrix {
 		translation[2] = m32 * scaleFactor;
 		return translation;
 	}
+<<<<<<< HEAD
 	/**
 	 * Offsets Position by given translation
 	 * @param offset
@@ -132,6 +147,36 @@ public class MVRMatrix {
 		m31 = m31 + offset[1];
 		m32 = m32 + offset[2];
 	}
+=======
+	
+	/**
+	 * Offsets the Position by the given Offset
+	 * 
+	 * @param offset
+	 */
+	public void offsetPos(double[] offset) {
+        m30 = m30 + offset[0];
+        m31 = m31 + offset[1];
+        m32 = m32 + offset[2];
+	}
+	/**
+	 * Sets the Rotation of this matrix 
+	 * 
+	 * @param radianX
+	 * @param radianY
+	 * @param radianZ
+	 */
+	public void setRotationXYZ(double radianX, double radianY, double radianZ) {		
+		double sinX = Math.sin(radianX);
+        double cosX = Math.sin(radianX + (Math.PI * 0.5));
+        double sinY = Math.sin(radianY);
+        double cosY = Math.sin(radianY + (Math.PI * 0.5));
+        double sinZ = Math.sin(radianZ);
+        double cosZ = Math.sin(radianZ + (Math.PI * 0.5));
+        double m_sinX = -sinX;
+        double m_sinY = -sinY;
+        double m_sinZ = -sinZ;
+>>>>>>> origin/main
 
 	public void setRotationXYZ(double angleX, double angleY, double angleZ) {
 		double sinX = Math.sin(angleX);
@@ -236,7 +281,15 @@ public class MVRMatrix {
 		double z = Math.atan2(m10, m00);
 		return new double[] { x, y, z };
 	}
+<<<<<<< HEAD
 
+=======
+	/**
+	 * Returns the Rotation as Angle
+	 * 
+	 * @return
+	 */
+>>>>>>> origin/main
 	public double[] getRotationAngles() {
 		double[] radians = getRotationRadians();
 		return new double[] { Math.toDegrees(radians[0]), Math.toDegrees(radians[1]), Math.toDegrees(radians[2]) };
@@ -350,6 +403,7 @@ public class MVRMatrix {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Return a string representation of this matrix.
 	 * <p>
 	 * This method creates a new {@link DecimalFormat} on every invocation with the
@@ -393,5 +447,71 @@ public class MVRMatrix {
 				+ Runtime.format(m02, formatter) + " " + Runtime.format(m12, formatter) + " "
 				+ Runtime.format(m22, formatter) + " " + Runtime.format(m32, formatter) + "\n";
 	}
+=======
+    * Return a string representation of this matrix.
+    * <p>
+    * This method creates a new {@link DecimalFormat} on every invocation with the format string "<code>0.000E0;-</code>".
+    * 
+    * @return the string representation
+    */
+   public String toString() {
+       String str = toString(decimalFormat());
+       StringBuffer res = new StringBuffer();
+       int eIndex = Integer.MIN_VALUE;
+       for (int i = 0; i < str.length(); i++) {
+           char c = str.charAt(i);
+           if (c == 'E') {
+               eIndex = i;
+           } else if (c == ' ' && eIndex == i - 1) {
+               // workaround Java 1.4 DecimalFormat bug
+               res.append('+');
+               continue;
+           } else if (Character.isDigit(c) && eIndex == i - 1) {
+               res.append('+');
+           }
+           res.append(c);
+       }
+       return res.toString();
+   }
+   
+   /**
+    * Return a string representation of this matrix by formatting the matrix elements with the given {@link NumberFormat}.
+    * 
+    * @param formatter
+    *          the {@link NumberFormat} used to format the matrix values with
+    * @return the string representation
+    */
+   public String toString(NumberFormat formatter) {
+       return format(m00, formatter) + " " + format(m10, formatter) + " " + format(m20, formatter) + " " + format(m30, formatter) + "\n"
+            + format(m01, formatter) + " " + format(m11, formatter) + " " + format(m21, formatter) + " " + format(m31, formatter) + "\n"
+            + format(m02, formatter) + " " + format(m12, formatter) + " " + format(m22, formatter) + " " + format(m32, formatter) + "\n";
+   }
+   
+   public static String format(double number, NumberFormat format) {
+       if (Double.isNaN(number)) {
+           return padLeft(format, " NaN");
+       } else if (Double.isInfinite(number)) {
+           return padLeft(format, number > 0.0 ? " +Inf" : " -Inf");
+       }
+       return format.format(number);
+   }
+   
+   private static String padLeft(NumberFormat format, String str) {
+       int len = format.format(0.0).length();
+       StringBuffer sb = new StringBuffer();
+       for (int i = 0; i < len - str.length() + 1; i++) {
+           sb.append(" ");
+       }
+       return sb.append(str).toString();
+   }
+   
+   private static NumberFormat decimalFormat() {
+       NumberFormat df;
+       char[] prec = new char[3];
+       Arrays.fill(prec, '0');
+       df = new DecimalFormat(" 0." + new String(prec) + "E0;-");
+       return df;
+   }
+>>>>>>> origin/main
 
 }

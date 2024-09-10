@@ -16,16 +16,21 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
  * Netty PacketHandler decoding and parsing incoming Packets from all Peers
+ * 
+ * @author julius
  */
 public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
 	private ByteBuf buffer = Unpooled.buffer();
 
 	HashMap<Integer, ByteBuf> multipacketBuffer = new HashMap<Integer, ByteBuf>();
+	
+	private ChannelHandlerContext ctx;
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
+		this.ctx = ctx;
 	}
 
 	@Override
@@ -36,29 +41,38 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		if (packageVersion != Util.MVR_PACKAGE_VERSION)
 			return;
 		
-		// Multi Packet Number of packet
-		int packageNumber = packet.readInt();
-		// Multi Packet Count of Packets for one Message
-		int packageCount = packet.readInt();
+		// Multi Packet Number of packet, unsigned Integer
+		int packageNumber = packet.readInt() & 0xff;
+		// Multi Packet Count of Packets for one Message, Unsigned Integer
+		int packageCount = (packet.readInt() & 0xff) - 1;
 		
 		int packetType = packet.readInt();
 		long payloadLength = packet.readLong();
 		
 		buffer.writeBytes(packet, (int) payloadLength);
-
+		
 		if (packageCount == packageNumber) {
 			if(packetType == 1)
 				new MVRFilePacket().parsePacket(buffer);
 			else {
+				
+				System.out.println("JSon: " + buffer.toString(StandardCharsets.UTF_8));
+				
 				JsonObject mainObject = Util.byteBufToJson(buffer);
 				if(mainObject == null)
 					return;
-				UTF8Packet p = PacketRegistry.JSON.getPacket(mainObject.get("Type").getAsString());
-				p.parsePacket(mainObject, ctx);
+				try {
+					UTF8Packet p = PacketRegistry.JSON.getPacket(mainObject.get("Type").getAsString());
+					p.parsePacket(mainObject, ctx);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
-			
 			buffer.clear();
 		}
-
+	}
+	
+	public ChannelHandlerContext getCtx() {
+		return ctx;
 	}
 }

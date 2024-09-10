@@ -13,6 +13,11 @@ import de.verschwiegener.xchange.packet.packets.S02PacketLeave;
 import de.verschwiegener.xchange.packet.packets.S03PacketCommit;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 
+/**
+ * 
+ * @author julius
+ *
+ */
 public enum PacketRegistry {
 
 	JSON() {

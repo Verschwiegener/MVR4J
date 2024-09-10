@@ -11,6 +11,12 @@ import de.verschwiegener.mvr.util.MVRUtil;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.packets.C04PacketRequest;
 
+/**
+ * Class containing MVR File Data as well as logic to request the file
+ * 
+ * @author julius
+ *
+ */
 public class MVRFile {
 
 	private int fileSize;
@@ -31,6 +37,14 @@ public class MVRFile {
 	 * UUIDs of Stations containing the File
 	 */
 	private ArrayList<UUID> stationUUID = new ArrayList<UUID>();
+	
+	public MVRFile(File mvrFile, String comment) {
+		this.fileSystemLocation = mvrFile;
+		this.comment = comment;
+		this.fileName = mvrFile.getName();
+		this.fileSize = (int) mvrFile.length();
+		uuid = UUID.nameUUIDFromBytes(mvrFile.getName().getBytes());
+	}
 
 	public MVRFile(JsonObject object) {
 		fileSize = object.get("FileSize").getAsInt();
@@ -44,10 +58,13 @@ public class MVRFile {
 	 * 
 	 * @param future CompletableFuture, future if request was send without exception
 	 */
-	public void requestFile(CompletableFuture<Void> future) {
+	public CompletableFuture<Void> requestFile() {
+		//TODO Future complete only when the File has been received
+		CompletableFuture<Void> future = new CompletableFuture<Void>();
+		
 		if (isFilePresent()) {
 			future.complete(null);
-			return;
+			return future;
 		}
 
 		for (UUID uuid : getStationUUID()) {
@@ -62,6 +79,7 @@ public class MVRFile {
 						future.complete(null);
 					});
 		}
+		return future;
 
 	}
 	/**

@@ -14,6 +14,17 @@ import de.verschwiegener.xchange.util.Version;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * When a MVR-xchange client connects with another MVR-xchange client, the first
+ * MVR-xchange client needs to send a MVR_JOIN message.
+ * 
+ * NOTE A MVR-xchange client can send multiple MVR_JOIN messages to the same
+ * server during the same connection to update its name or get the latest MVR
+ * file list.
+ * 
+ * @author julius
+ *
+ */
 public class C01PacketJoin extends UTF8Packet {
 
 	public C01PacketJoin() {
@@ -23,27 +34,38 @@ public class C01PacketJoin extends UTF8Packet {
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		if (!XChange.instance.station.getVersion().checkVersion(new Version(object))) {
+		
+		//Check if Station exists
+		if (station == null) {
+			XChange.instance.listener.xChangeError(packetType,
+					packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+			return;
+		}
+		
+		//Check if Version is Compatible
+		Version stationVersion = new Version(object);
+		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
 			station.getConnection()
 					.sendPacket(new S01PacketJoin(false, "Version is not Compatible With Server, Server Version: "
 							+ XChange.instance.station.getVersion().toString()));
+
+			// Send Error
+			XChange.instance.listener.xChangeError(packetType, "Station " + object.get("StationUUID").getAsString()
+					+ " Version: " + stationVersion + " is not Compatible With Server Version");
 			return;
 		}
-
-		if (station == null)
-			return;
+		
+		
 
 		station.updateValues(object);
 
-		JsonArray files = object.get("Files").getAsJsonArray();
+		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(element -> {
 			// TODO parse MVR_COMMIT
 		});
 
+		//Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
-
-		// TODO Call Some Kind of API to signal to the user that the station is new(if
-		// XChange.instance.getStaion(station) is null)
 	}
 
 	@Override
@@ -57,8 +79,6 @@ public class C01PacketJoin extends UTF8Packet {
 			array.add(new C03PacketCommit(file, null, new Version(0, 0)).writeJson());
 		}
 		object.add("Commits", array);
-
-		System.out.println("Write C01");
 		return object;
 	}
 

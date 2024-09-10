@@ -187,31 +187,73 @@ public class Layer {
     	return getChildList().getSceneObject();
     }
     
+    public SceneObject getSceneObjectByUUID(UUID uuid) {
+    	return getSceneObjects().stream().filter(so -> so.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
+    }
+    
     public List<GroupObject> getGroupObjects() {
     	return getChildList().getGroupObject();
+    }
+    
+    public GroupObject getGroupObjectByUUID(UUID uuid) {
+    	return getGroupObjects().stream().filter(go -> go.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
     }
     
     public List<FocusPoint> getFocusPoints() {
 		return getChildList().getFocusPoint();
 	}
     
+    /**
+     * Returns FocusPoint with correct UUID or null
+     * @param uuid
+     * @return
+     */
+    public FocusPoint getFocusPointByUUID(UUID uuid) {
+    	return getFocusPoints().stream().filter(fp -> fp.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
+    }
+    
     public List<Fixture> getFixtures() {
 		return getChildList().getFixture();
 	}
     
+    /**
+     * Returns Fixture with correct UUID or null
+     * @param uuid
+     * @return
+     */
+    public Fixture getFixtureByUUID(UUID uuid) {
+    	return getFixtures().stream().filter(f -> f.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
+    }
+    
     public List<Support> getSupports() {
     	return getChildList().getSupport();
+    }
+    
+    public Support getSupportByUUID(UUID uuid) {
+    	return getSupports().stream().filter(s -> s.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
     }
     
     public List<Truss> getTrusses() {
     	return getChildList().getTruss();
     }
     
+    public Truss getTrussByUUID(UUID uuid) {
+    	return getTrusses().stream().filter(t -> t.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
+    }
+    
     public List<VideoScreen> getVideoScreens() {
     	return getChildList().getVideoScreen();
+    }
+    
+    public VideoScreen getVideoScreenByUUID(UUID uuid) {
+    	return getVideoScreens().stream().filter(vs -> vs.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
     }
 
     public List<Projector> getProjectors() {
     	return getChildList().getProjector();
+    }
+    
+    public Projector getProjectorByUUID(UUID uuid) {
+    	return getProjectors().stream().filter(p -> p.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
     }
 }

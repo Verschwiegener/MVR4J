@@ -5,7 +5,6 @@
 // Generiert: 2024.05.02 um 12:46:28 AM CEST 
 //
 
-
 package de.verschwiegener.mvr.auxData;
 
 import java.util.ArrayList;
@@ -16,12 +15,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.nodes.Network;
-
+import de.verschwiegener.mvr.nodes.Network.NetworkType;
 
 /**
- * <p>Java-Klasse für Addresses complex type.
+ * <p>
+ * Java-Klasse für Addresses complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>
+ * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser
+ * Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="Addresses"&gt;
@@ -39,81 +41,87 @@ import de.verschwiegener.mvr.nodes.Network;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Addresses", propOrder = {
-    "address",
-    "network"
-})
+@XmlType(name = "Addresses", propOrder = { "address", "network" })
 public class Addresses {
 
-    @XmlElement(name = "Address")
-    protected List<Address> address;
-    @XmlElement(name = "Network")
-    protected List<Network> network;
+	@XmlElement(name = "Address")
+	protected List<Address> address;
+	@XmlElement(name = "Network")
+	protected List<Network> network;
 
-    /**
-     * Gets the value of the address property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the address property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAddress().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Address }
-     * 
-     * 
-     */
-    public List<Address> getAddress() {
-        if (address == null) {
-            address = new ArrayList<Address>();
-        }
-        return this.address;
-    }
-    
-    public boolean hasAddresses() {
-    	return !getAddress().isEmpty();
-    }
+	/**
+	 * Gets the value of the address property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot.
+	 * Therefore any modification you make to the returned list will be present
+	 * inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+	 * for the address property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getAddress().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link Address }
+	 * 
+	 * 
+	 */
+	public List<Address> getAddress() {
+		if (address == null) {
+			address = new ArrayList<Address>();
+		}
+		return this.address;
+	}
 
-    /**
-     * Gets the value of the network property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the network property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNetwork().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Network }
-     * 
-     * 
-     */
-    public List<Network> getNetwork() {
-        if (network == null) {
-            network = new ArrayList<Network>();
-        }
-        return this.network;
-    }
-    
-    public boolean hasNetworks() {
-    	return !getNetwork().isEmpty();
-    }
+	public boolean hasAddresses() {
+		return !getAddress().isEmpty();
+	}
+
+	/**
+	 * Gets the value of the network property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a snapshot.
+	 * Therefore any modification you make to the returned list will be present
+	 * inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+	 * for the network property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getNetwork().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link Network }
+	 * 
+	 * 
+	 */
+	public List<Network> getNetwork() {
+		if (network == null) {
+			network = new ArrayList<Network>();
+		}
+		return this.network;
+	}
+
+	public boolean hasNetworks() {
+		return !getNetwork().isEmpty();
+	}
+
+	/**
+	 * Returns Network with specific Type
+	 * @param type
+	 */
+	public Network getNetworkType(NetworkType type) {
+		return getNetwork().stream().filter(n -> n.getNetworkType() == type).findFirst().orElse(null);
+	}
+	
 
 }

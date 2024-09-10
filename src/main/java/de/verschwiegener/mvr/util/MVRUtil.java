@@ -2,7 +2,6 @@ package de.verschwiegener.mvr.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -69,11 +68,11 @@ public class MVRUtil {
 	 * Parses the MVR File
 	 * 
 	 * @throws JAXBException
-	 * @throws FileNotFoundException
+	 * @throws IOException 
 	 */
-	public void parse() throws JAXBException, FileNotFoundException {
+	public void parse() throws JAXBException, IOException {
 		mvrOutputFolder.mkdirs();
-		// unzipFile(mvrFile, mvrOutputFolder);
+		//unzipFile(mvrFile, mvrOutputFolder);
 
 		// https://bugs.openjdk.org/browse/JDK-8204933
 		Locale.setDefault(Locale.ENGLISH);

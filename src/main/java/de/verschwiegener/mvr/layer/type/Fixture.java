@@ -513,6 +513,10 @@ public class Fixture {
     public Protocols getProtocols() {
         return protocols;
     }
+    
+    public boolean hasProtocols() {
+    	return protocols != null;
+    }
 
     /**
      * Legt den Wert der protocols-Eigenschaft fest.

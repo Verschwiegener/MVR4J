@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.nodes.Protocol.ProtocolType;
+
 
 /**
  * <p>Java-Klasse für Protocols complex type.
@@ -71,6 +73,24 @@ public class Protocols {
             protocol = new ArrayList<Protocol>();
         }
         return this.protocol;
+    }
+    
+    /**
+     * Returns true if ProtocolType is supported
+     * @param type
+     * @return
+     */
+    public boolean supports(ProtocolType type) {
+    	return getProtocol(type) != null;
+    }
+    
+    /**
+     * Returns the Protocol Attributes of the given ProtocolType or null if the Protocol is not supported
+     * @param type
+     * @return
+     */
+    public Protocol getProtocol(ProtocolType type) {
+    	return getProtocol().stream().filter(p -> p.getType() == type).findFirst().orElse(null);
     }
 
 }

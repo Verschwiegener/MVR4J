@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import de.verschwiegener.mvr.nodes.Protocol.ProtocolType;
+
 
 /**
  * <p>Java-Klasse für Network complex type.
@@ -210,5 +212,24 @@ public class Network {
     public void setHostname(String value) {
         this.hostname = value;
     }
+    /**
+     * Returns NetworkType of this Network, e.g. IPv4, IPv6, DHCP
+     * @return
+     */
+    public NetworkType getNetworkType() {
+    	if(ipv4 != null && hostname != null)
+    		return NetworkType.IPv4;
+    	if(ipv6 != null) 
+    		return NetworkType.IPv6;
+    	if(isDHCP())
+    		return NetworkType.DHCP;
+    	return NetworkType.NONE;
+    }
+
+	public enum NetworkType {
+
+		IPv4, IPv6, DHCP, NONE;
+
+	}
 
 }

@@ -120,29 +120,22 @@ public class MVRMatrix {
 	}
 	
 	/**
-	 * Returns the Translation of the Matrix divided by scaleFactor
-	 * 
-	 * @param scaleFactor Scales the Position to whatever Unit is wanted
-	 * scaleFactor 1 = Millimeter
-	 * @return
+	 * Returns the Translation of the Matrix in GDTF Scale
 	 */
-	public double[] getTranslation(double scaleFactor) {
+	public double[] getGDTFScaleTranslation() {
 		double[] translation = new double[3];
-		translation[0] = m30 / 100;
-		translation[1] = m31 / 100;
-		translation[2] = m32 / 100;
+		translation[0] = m30 / 1000;
+		translation[1] = m31 / 1000;
+		translation[2] = m32 / 1000;
 		return translation;
 	}
 	
-	/**
-	 * Offsets the Position by the given Offset
-	 * 
-	 * @param offset
-	 */
-	public void offsetPos(double[] offset) {
-        m30 = m30 + offset[0];
-        m31 = m31 + offset[1];
-        m32 = m32 + offset[2];
+	public void addTranslation(double[] translation) {
+		if (translation.length != 3)
+			return;
+		m30 += translation[0];
+		m31 += translation[1];
+		m32 += translation[2];
 	}
 	/**
 	 * Sets the Rotation of this matrix 

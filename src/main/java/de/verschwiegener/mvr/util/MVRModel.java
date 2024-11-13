@@ -18,10 +18,9 @@ public class MVRModel {
 	public MVRModel(File modelFile, MVRMatrix transformationMatrix) {
 		this.modelFile = modelFile;
 		this.matrix = transformationMatrix;
-		this.fileType = FileType.fromExtension(
-				modelFile.getName().substring(modelFile.getName().lastIndexOf(".") + 1, modelFile.getName().length()));
-		if (fileType == FileType.TYPE_3DS) {
-			transformationMatrix.setRotationXYZ((float) Math.toRadians(90f), 0, 0);
+		if(modelFile != null) {
+			this.fileType = FileType.fromExtension(
+					modelFile.getName().substring(modelFile.getName().lastIndexOf(".") + 1, modelFile.getName().length()));
 		}
 	}
 

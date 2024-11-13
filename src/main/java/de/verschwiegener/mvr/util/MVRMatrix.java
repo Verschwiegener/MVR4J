@@ -175,64 +175,52 @@ public class MVRMatrix {
         m11 = nm01 * m_sinZ + nm11 * cosZ;
         m12 = nm02 * m_sinZ + nm12 * cosZ;
 	}
-
+	
 	public double[] getRotation() {
-		double[] rotation = new double[4];
+		double[] scale = getScale();
 
-		double nm00 = m00, nm01 = m01, nm02 = m02;
-		double nm10 = m10, nm11 = m11, nm12 = m12;
-		double nm20 = m20, nm21 = m21, nm22 = m22;
-		double lenX = 1.0f / Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
-		double lenY = 1.0f / Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
-		double lenZ = 1.0f / Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
-		nm00 *= lenX;
-		nm01 *= lenX;
-		nm02 *= lenX;
-		nm10 *= lenY;
-		nm11 *= lenY;
-		nm12 *= lenY;
-		nm20 *= lenZ;
-		nm21 *= lenZ;
-		nm22 *= lenZ;
-		double epsilon = 1E-4f, epsilon2 = 1E-3f;
-		if (Math.abs(nm10 - nm01) < epsilon && Math.abs(nm20 - nm02) < epsilon && Math.abs(nm21 - nm12) < epsilon) {
-			if (Math.abs(nm10 + nm01) < epsilon2 && Math.abs(nm20 + nm02) < epsilon2 && Math.abs(nm21 + nm12) < epsilon2
-					&& Math.abs(nm00 + nm11 + nm22 - 3) < epsilon2) {
-				rotation[0] = 0f;
-				rotation[1] = 0f;
-				rotation[2] = 1f;
-				rotation[3] = 0f;
-				return rotation;
-			}
-			rotation[3] = Math.PI;
-			double xx = (nm00 + 1) / 2;
-			double yy = (nm11 + 1) / 2;
-			double zz = (nm22 + 1) / 2;
-			double xy = (nm10 + nm01) / 4;
-			double xz = (nm20 + nm02) / 4;
-			double yz = (nm21 + nm12) / 4;
-			if ((xx > yy) && (xx > zz)) {
-				rotation[0] = Math.sqrt(xx);
-				rotation[1] = xy / rotation[0];
-				rotation[2] = xz / rotation[0];
-			} else if (yy > zz) {
-				rotation[1] = Math.sqrt(yy);
-				rotation[0] = xy / rotation[1];
-				rotation[2] = yz / rotation[1];
-			} else {
-				rotation[2] = Math.sqrt(zz);
-				rotation[0] = xz / rotation[2];
-				rotation[1] = yz / rotation[2];
-			}
-			return rotation;
+		// Normalize Rotational Component
+		double m00 = this.m00 / scale[0];
+		double m01 = this.m01 / scale[0];
+		double m02 = this.m02 / scale[0];
+		double m10 = this.m10 / scale[1];
+		double m11 = this.m11 / scale[1];
+		double m12 = this.m12 / scale[1];
+		double m20 = this.m20 / scale[2];
+		double m21 = this.m21 / scale[2];
+		double m22 = this.m22 / scale[2];
+
+		// Calculate Quaternion
+		double trace = m00 + m11 + m22;
+		double[] quat = new double[4];
+
+		if (trace > 0) {
+			double s = Math.sqrt(trace + 1.0f) * 2; // s = 4 * w
+			quat[3] = 0.25f * s;
+			quat[0] = (m21 - m12) / s;
+			quat[1] = (m02 - m20) / s;
+			quat[2] = (m10 - m01) / s;
+		} else if ((m00 > m11) && (m00 > m22)) {
+			double s = Math.sqrt(1.0f + m00 - m11 - m22) * 2; // s = 4 * x
+			quat[3] = (m21 - m12) / s;
+			quat[0] = 0.25f * s;
+			quat[1] = (m01 + m10) / s;
+			quat[2] = (m02 + m20) / s;
+		} else if (m11 > m22) {
+			double s = Math.sqrt(1.0f + m11 - m00 - m22) * 2; // s = 4 * y
+			quat[3] = (m02 - m20) / s;
+			quat[0] = (m01 + m10) / s;
+			quat[1] = 0.25f * s;
+			quat[2] = (m12 + m21) / s;
+		} else {
+			double s = Math.sqrt(1.0f + m22 - m00 - m11) * 2; // s = 4 * z
+			quat[3] = (m10 - m01) / s;
+			quat[0] = (m02 + m20) / s;
+			quat[1] = (m12 + m21) / s;
+			quat[2] = 0.25f * s;
 		}
-		double s = Math
-				.sqrt((nm12 - nm21) * (nm12 - nm21) + (nm20 - nm02) * (nm20 - nm02) + (nm01 - nm10) * (nm01 - nm10));
-		rotation[3] = safeAcos((nm00 + nm11 + nm22 - 1) / 2);
-		rotation[0] = (nm12 - nm21) / s;
-		rotation[1] = (nm20 - nm02) / s;
-		rotation[2] = (nm01 - nm10) / s;
-		return rotation;
+
+		return quat;
 	}
 	
 	/**

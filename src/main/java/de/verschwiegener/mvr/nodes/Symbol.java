@@ -16,7 +16,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.util.MVRMatrix;
+import org.joml.Matrix4f;
+
+import de.verschwiegener.mvr.util.MVRUtils;
 
 
 /**
@@ -57,16 +59,9 @@ public class Symbol {
      * Ruft den Wert der matrix-Eigenschaft ab.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getMatrix() {
-        return matrix;
-    }
-    
-    public MVRMatrix matrix() {
-    	return new MVRMatrix(matrix);
+    public Matrix4f matrix() {
+    	return MVRUtils.toMatrix(matrix);
     }
 
     /**
@@ -77,8 +72,8 @@ public class Symbol {
      *     {@link String }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(Matrix4f value) {
+        this.matrix = MVRUtils.toGDTFMatrix(value);
     }
 
     /**

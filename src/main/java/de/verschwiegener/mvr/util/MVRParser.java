@@ -27,7 +27,7 @@ import de.verschwiegener.mvr.auxData.Symdef;
 import de.verschwiegener.mvr.layer.Classing;
 import de.verschwiegener.mvr.layer.Layer;
 
-public class MVRUtil {
+public class MVRParser {
 
 	/**
 	 * Parent Folder into which all MVR Files get extracted
@@ -58,7 +58,7 @@ public class MVRUtil {
 	}
 
 
-	public MVRUtil(File mvrFile) {
+	public MVRParser(File mvrFile) {
 		this.mvrFile = mvrFile;
 		mvrOutputFolder = new File(mvrExtractFolder,
 				mvrFile.getName().substring(0, mvrFile.getName().lastIndexOf(".")));
@@ -72,7 +72,7 @@ public class MVRUtil {
 	 */
 	public void parse() throws JAXBException, IOException {
 		mvrOutputFolder.mkdirs();
-		unzipFile(mvrFile, mvrOutputFolder);
+		//unzipFile(mvrFile, mvrOutputFolder);
 
 		// https://bugs.openjdk.org/browse/JDK-8204933
 		Locale.setDefault(Locale.ENGLISH);

@@ -2,6 +2,8 @@ package de.verschwiegener.mvr.util;
 
 import java.io.File;
 
+import org.joml.Matrix4f;
+
 /**
  * MVRModel holding File, FileType and Transformation Matrix
  * 
@@ -11,11 +13,11 @@ import java.io.File;
 public class MVRModel {
 
 	private final File modelFile;
-	private FileType fileType;
+	private FileType fileType = FileType.TYPE_GLTF;
 
-	private final MVRMatrix matrix;
+	private final Matrix4f matrix;
 
-	public MVRModel(File modelFile, MVRMatrix transformationMatrix) {
+	public MVRModel(File modelFile, Matrix4f transformationMatrix) {
 		this.modelFile = modelFile;
 		this.matrix = transformationMatrix;
 		if(modelFile != null) {
@@ -24,7 +26,7 @@ public class MVRModel {
 		}
 	}
 
-	public MVRMatrix getMatrix() {
+	public Matrix4f getMatrix() {
 		return matrix;
 	}
 

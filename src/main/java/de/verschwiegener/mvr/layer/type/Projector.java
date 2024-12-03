@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.joml.Matrix4f;
+
 import de.verschwiegener.mvr.auxData.Addresses;
 import de.verschwiegener.mvr.layer.ChildList;
 import de.verschwiegener.mvr.nodes.Alignments;
@@ -25,7 +27,7 @@ import de.verschwiegener.mvr.nodes.CustomCommands;
 import de.verschwiegener.mvr.nodes.Geometries;
 import de.verschwiegener.mvr.nodes.Overwrites;
 import de.verschwiegener.mvr.nodes.Projections;
-import de.verschwiegener.mvr.util.MVRMatrix;
+import de.verschwiegener.mvr.util.MVRUtils;
 
 
 /**
@@ -130,15 +132,12 @@ public class Projector {
     protected String multipatch;
 
     /**
-     * Ruft den Wert der matrix-Eigenschaft ab.
-     * 
+     *  Considered identity when missing
+     *  
      * @return
-     *     possible object is
-     *     {@link MVRMatrix }
-     *     
      */
-    public MVRMatrix getMatrix() {
-        return new MVRMatrix(matrix);
+    public Matrix4f matrix() {
+    	return MVRUtils.toMatrix(matrix);
     }
 
     /**
@@ -146,11 +145,11 @@ public class Projector {
      * 
      * @param value
      *     allowed object is
-     *     {@link MVRMatrix }
+     *     {@link String }
      *     
      */
-    public void setMatrix(MVRMatrix value) {
-        this.matrix = value.toMVR();
+    public void setMatrix(Matrix4f value) {
+        this.matrix = MVRUtils.toGDTFMatrix(value);
     }
 
     /**

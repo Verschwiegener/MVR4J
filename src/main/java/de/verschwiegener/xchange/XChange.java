@@ -14,7 +14,7 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import de.verschwiegener.mvr.util.MVRUtil;
+import de.verschwiegener.mvr.util.MVRParser;
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
 import de.verschwiegener.xchange.packet.packets.C03PacketCommit;
 import de.verschwiegener.xchange.tcp.TCPServer;
@@ -348,7 +348,7 @@ public class XChange {
 
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 		
-		MVRUtil.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
+		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
 		XChange xchange = new XChange(ProtocolMode.TCP, "MVR4J XChange", null);
 		
 		

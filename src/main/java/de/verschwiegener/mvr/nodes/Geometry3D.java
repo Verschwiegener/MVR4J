@@ -14,7 +14,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.util.MVRMatrix;
+import org.joml.Matrix4f;
+
+import de.verschwiegener.mvr.util.MVRUtils;
 
 
 /**
@@ -48,25 +50,14 @@ public class Geometry3D {
     @XmlAttribute(name = "fileName", required = true)
     protected String fileName;
 
-    /**
-     * Ruft den Wert der matrix-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMatrix() {
-        return matrix;
-    }
     
     /**
      *  Considered identity when missing
      *  
      * @return
      */
-    public MVRMatrix matrix() {
-    	return new MVRMatrix(matrix);
+    public Matrix4f matrix() {
+    	return MVRUtils.toMatrix(matrix);
     }
 
     /**
@@ -77,8 +68,8 @@ public class Geometry3D {
      *     {@link String }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(Matrix4f value) {
+        this.matrix = MVRUtils.toGDTFMatrix(value);
     }
 
     /**

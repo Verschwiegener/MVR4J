@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.joml.Matrix4f;
+
 import de.verschwiegener.mvr.layer.type.Fixture;
 import de.verschwiegener.mvr.layer.type.FocusPoint;
 import de.verschwiegener.mvr.layer.type.GroupObject;
@@ -26,7 +28,7 @@ import de.verschwiegener.mvr.layer.type.Support;
 import de.verschwiegener.mvr.layer.type.Truss;
 import de.verschwiegener.mvr.layer.type.VideoScreen;
 import de.verschwiegener.mvr.nodes.Projections;
-import de.verschwiegener.mvr.util.MVRMatrix;
+import de.verschwiegener.mvr.util.MVRUtils;
 
 
 /**
@@ -68,19 +70,12 @@ public class Layer {
     protected String name;
 
     /**
-     * Ruft den Wert der matrix-Eigenschaft ab.
-     * 
+     *  Considered identity when missing
+     *  
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getMatrix() {
-        return matrix;
-    }
-    
-    public MVRMatrix matrix() {
-    	return new MVRMatrix(matrix);
+    public Matrix4f matrix() {
+    	return MVRUtils.toMatrix(matrix);
     }
 
     /**
@@ -91,8 +86,8 @@ public class Layer {
      *     {@link String }
      *     
      */
-    public void setMatrix(String value) {
-        this.matrix = value;
+    public void setMatrix(Matrix4f value) {
+        this.matrix = MVRUtils.toGDTFMatrix(value);
     }
 
     /**

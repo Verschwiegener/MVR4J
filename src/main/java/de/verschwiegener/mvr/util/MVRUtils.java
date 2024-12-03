@@ -6,9 +6,9 @@ public class MVRUtils {
 	
 	
 	public static Matrix4f toMatrix(String mvrMatrix) {
-		if(mvrMatrix == null)
+		if(mvrMatrix == null) {
 			return new Matrix4f();
-		
+		}
 		String[] substrings = everySubstringBetween(mvrMatrix, "{", "}");
 
 		String[] uValues = substrings[0].split(",");

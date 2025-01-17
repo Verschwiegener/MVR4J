@@ -24,6 +24,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
@@ -55,7 +56,9 @@ public class WebsocketServer implements XChangeServer {
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
 
-						pipeline.addLast(sslContext.newHandler(ch.alloc()));
+						SslHandler handler = sslContext.newHandler(ch.alloc());
+						//handler.engine().setEnabledProtocols(new String[] {"TLSv1.2"});
+						pipeline.addLast(handler);
 
 						pipeline.addLast(new HttpServerCodec());
 						pipeline.addLast(new HttpObjectAggregator(65536));

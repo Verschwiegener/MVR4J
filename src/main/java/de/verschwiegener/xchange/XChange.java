@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.net.ssl.SSLException;
 
 import de.verschwiegener.mvr.util.MVRParser;
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
@@ -22,6 +23,7 @@ import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Version;
+import de.verschwiegener.xchange.websocket.WebsocketServer;
 
 /**
  * Class Managing all XChange related things
@@ -69,7 +71,7 @@ public class XChange {
 
 	private String mvrGroup;
 
-	private TCPServer server;
+	private XChangeServer server;
 	
 	private final String mDnsService = "_mvrxchange._tcp.local.";
 
@@ -123,7 +125,7 @@ public class XChange {
 			server = new TCPServer();
 			try {
 				server.start();
-			}catch(InterruptedException e) {
+			}catch(InterruptedException | SSLException | CertificateException e) {
 				server.shutdown();
 				e.printStackTrace();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
@@ -228,6 +230,16 @@ public class XChange {
 
 			MDNSService.addServiceListener(getServiceString(), listener);
 		}else {
+			
+			server = new WebsocketServer();
+			try {
+				server.start();
+			}catch(InterruptedException | SSLException | CertificateException e) {
+				server.shutdown();
+				e.printStackTrace();
+				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
+				return;
+			}
 			
 			//Throws CertificateException
 			/*WebsocketServer server = new WebsocketServer();
@@ -349,7 +361,7 @@ public class XChange {
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 		
 		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
-		XChange xchange = new XChange(ProtocolMode.TCP, "MVR4J XChange", null);
+		XChange xchange = new XChange(ProtocolMode.WEBSOCKET, "MVR4J XChange", null);
 		
 		
 		System.out.println("UUID: " + xchange.station.getUuid());

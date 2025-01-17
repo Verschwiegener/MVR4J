@@ -35,6 +35,9 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, ByteBuf packet) throws Exception {
+		
+		System.out.println("Test: " + packet);
+		
 		if (packet.readInt() != Util.MVR_PACKAGE_HEADER)
 			return;
 		int packageVersion = packet.readInt();

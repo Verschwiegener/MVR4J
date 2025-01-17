@@ -80,5 +80,17 @@
 			<version>1.18.22</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.78.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk18on</artifactId>
+			<version>1.78.1</version>
+		</dependency>
 	</dependencies>
 </project>

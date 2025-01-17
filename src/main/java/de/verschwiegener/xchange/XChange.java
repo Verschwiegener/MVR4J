@@ -235,8 +235,8 @@ public class XChange {
 			try {
 				server.start();
 			}catch(InterruptedException | SSLException | CertificateException e) {
-				server.shutdown();
 				e.printStackTrace();
+				server.shutdown();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
 			}

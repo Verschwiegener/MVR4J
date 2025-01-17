@@ -22,6 +22,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class WebsocketServer implements XChangeServer {
@@ -36,6 +39,10 @@ public class WebsocketServer implements XChangeServer {
 
 	@Override
 	public void start() throws InterruptedException, SSLException, CertificateException {
+
+		SelfSignedCertificate ssc = new SelfSignedCertificate();
+		SslContext sslContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(bossEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
 				/*
@@ -47,17 +54,20 @@ public class WebsocketServer implements XChangeServer {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
+
+						pipeline.addLast(sslContext.newHandler(ch.alloc()));
+
 						pipeline.addLast(new HttpServerCodec());
 						pipeline.addLast(new HttpObjectAggregator(65536));
-						//pipeline.addLast(new WebSocketServerCompressionHandler());
+						// pipeline.addLast(new WebSocketServerCompressionHandler());
 						pipeline.addLast(new ChunkedWriteHandler());
-                        pipeline.addLast(new WebSocketServerProtocolHandler("/websocket"));
+						pipeline.addLast(new WebSocketServerProtocolHandler("/websocket"));
 						pipeline.addLast(peerEventLoopGroup, new WebSocketPacketHandler());
 					}
 				});
 
 		bindFuture = peerBootstrap.bind(XChange.instance.serverPort).sync();
-		bindFuture.channel().closeFuture().sync();
+		// bindFuture.channel().closeFuture().sync();
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.UTF8Packet;
 import de.verschwiegener.xchange.util.MVRFile;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
@@ -32,7 +33,7 @@ public class C04PacketRequest extends UTF8Packet {
 	private Station request;
 
 	public C04PacketRequest() {
-		super("MVR_REQUEST");
+		super(PacketType.MVR_REQUEST);
 	}
 
 	public C04PacketRequest(MVRFile file, Station request) {
@@ -81,7 +82,7 @@ public class C04PacketRequest extends UTF8Packet {
 			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 			
 			//Call Error Listener
-			XChange.instance.listener.xChangeError(packetType,
+			XChange.instance.listener.xChangeError(packetType.toString(),
 					"Could not send File: " + file.getFileName());
 		}
 	}

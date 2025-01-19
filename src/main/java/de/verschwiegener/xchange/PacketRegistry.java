@@ -58,7 +58,7 @@ public enum PacketRegistry {
 	 */
 	public UTF8Packet getPacket(String JSONPacketType) throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		UTF8Packet p = JSON.packets.stream().filter(packet -> packet.getPacketType().equals(JSONPacketType))
+		UTF8Packet p = JSON.packets.stream().filter(packet -> packet.getPacketType().name().equals(JSONPacketType))
 				.findFirst().orElse(null);
 		return p.getClass().getDeclaredConstructor().newInstance();
 	}

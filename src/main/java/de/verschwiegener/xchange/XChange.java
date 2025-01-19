@@ -51,12 +51,13 @@ public class XChange {
 	public ProtocolMode mode;
 
 	/**
-	 * Metadata of the File currently being received, is being set in MVR_REQUEST Packet
+	 * Metadata of the File currently being received, is being set in MVR_REQUEST
+	 * Packet
 	 */
 	public MVRFile currentReceiveFile;
-	
+
 	public int serverPort;
-	
+
 	public XChangeListener listener;
 
 	/**
@@ -72,29 +73,113 @@ public class XChange {
 	private String mvrGroup;
 
 	private XChangeServer server;
-	
-	private final String mDnsService = "_mvrxchange._tcp.local.";
 
+	private final String mDnsService = "_mvrxchange._tcp.local.";
+	
 	/**
-	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection 
+	 * WebSocket Server Constructor
 	 * 
-	 * @param mode Network Protocol to use
-	 * @param stationName Name of the Station and mDNS
-	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files get saved
+	 * @param stationName
+	 * @param mvrWorkingDirectory
+	 * @param stationUUID
 	 */
+	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID) {
+		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), 4568, "MVR4J", "");
+	}
+	
+	/**
+	 * WebSocket Server Constructor
+	 * 
+	 * @param stationName
+	 * @param mvrWorkingDirectory
+	 * @param stationUUID
+	 * @param serverPort
+	 * @param provider
+	 * @param mvrGroup
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, int serverPort, String provider, String mvrGroup) {
+		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
+	}
+	
+	
+	
+	/**
+	 * WebSocket Client Constructor
+	 * 
+	 * @param stationName
+	 * @param mvrWorkingDirectory
+	 * @param stationUUID
+	 * @param address
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory, InetSocketAddress address) {
+		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "", address);
+	}
+	
+	/**
+	 * WebSocket Client Constructor
+	 * 
+	 * @param stationName
+	 * @param mvrWorkingDirectory
+	 * @param stationUUID
+	 * @param serverPort
+	 * @param provider
+	 * @param mvrGroup
+	 * @param address
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, String provider, String mvrGroup, InetSocketAddress address) {
+		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
+		station.setConnection(new Connection(address));
+	}
+	
+	/**
+	 * mDNS Client COnstructor
+	 * 
+	 * @param stationName
+	 * @param mvrWorkingDirectory
+	 * @param stationUUID
+	 * @param provider
+	 * @param mvrGroup
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, String provider, String mvrGroup) {
+		this(ProtocolMode.mDNS, 4568, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
+	}
+	
+	/**
+	 * mDNS Client COnstructor
+	 * 
+	 * @param stationName
+	 * @param mvrWOrkingDirectory
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory) {
+		this(ProtocolMode.mDNS, 4568, stationName, "MVR4J", "", UUID.randomUUID(), mvrWorkingDirectory);
+	}
+	
+	/**
+	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection
+	 * 
+	 * @param mode                Network Protocol to use
+	 * @param stationName         Name of the Station and mDNS
+	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files
+	 *                            get saved
+	 */
+	@Deprecated
 	public XChange(ProtocolMode mode, String stationName, File mvrWorkingDirectory) {
 		this(mode, 4568, stationName, "MVR4J", "", UUID.randomUUID(), mvrWorkingDirectory);
 	}
+
 	/**
-	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection 
+	 * Create MVR XChange
 	 * 
-	 * @param mode Network Protocol to use
-	 * @param serverPort Port the Server should use
-	 * @param stationName Name of the Station and mDNS
-	 * @param provider Name of the XChange Provider
-	 * @param mvrGroup Name of the XChange Group to join
-	 * @param stationUUID UUID of the Station, should be persistent across multiple start-ups of the same software on the same computer
-	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files get saved
+	 * @param mode                Network Protocol to use
+	 * @param serverPort          Port the Server should use
+	 * @param stationName         Name of the Station and mDNS
+	 * @param provider            Name of the XChange Provider
+	 * @param mvrGroup            Name of the XChange Group to join
+	 * @param stationUUID         UUID of the Station, should be persistent across
+	 *                            multiple start-ups of the same software on the
+	 *                            same computer
+	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files
+	 *                            get saved
 	 */
 	public XChange(ProtocolMode mode, int serverPort, String stationName, String provider, String mvrGroup,
 			UUID stationUUID, File mvrWorkingDirectory) {
@@ -108,32 +193,32 @@ public class XChange {
 	}
 
 	/**
-	 * Starts XChange Server 
+	 * Starts XChange Server
 	 * 
-	 * @param xchangeListener 
+	 * @param xchangeListener
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws CertificateException 
+	 * @throws CertificateException
 	 */
 	public void start(XChangeListener xchangeListener) {
-		
-		//TODO Catch all errors and shut down Server and MDNS if the error is severe enough
-		this.listener = xchangeListener;
-		if (mode == ProtocolMode.TCP) {
 
-			//Throws Interrupt Exception
+		// TODO Catch all errors and shut down Server and MDNS if the error is severe
+		// enough
+		this.listener = xchangeListener;
+		if (mode == ProtocolMode.mDNS) {
+
+			// Throws Interrupt Exception
 			server = new TCPServer();
 			try {
 				server.start();
-			}catch(InterruptedException | SSLException | CertificateException e) {
+			} catch (InterruptedException | SSLException | CertificateException e) {
 				server.shutdown();
 				e.printStackTrace();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
 			}
 
-			
-			//Throws IOException
+			// Throws IOException
 			try {
 				MDNSService.registerMDNS(new MDNSServiceData() {
 
@@ -160,7 +245,7 @@ public class XChange {
 						return properties;
 					}
 				});
-			}catch(IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 				listener.xChangeError("MDNS_STARTUP", "Could not register mDNS Entry");
 				return;
@@ -175,7 +260,6 @@ public class XChange {
 					String stationUUID = info.getPropertyString("StationUUID");
 					String stationName = info.getPropertyString("StationName");
 
-					
 					if (stationUUID == null || stationName == null)
 						return;
 
@@ -183,26 +267,22 @@ public class XChange {
 					// Check if station is known, or is this instance
 					if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUuid()) == 0)
 						return;
-					
-					
+
 					InetAddress address = null;
-					
-					for(InetAddress ipv4 : info.getInet4Addresses()) {
-						if(!ipv4.isLoopbackAddress())
+
+					for (InetAddress ipv4 : info.getInet4Addresses()) {
+						if (!ipv4.isLoopbackAddress())
 							address = ipv4;
 					}
-					
-					//If mDNS Entry does not have a valid IPv4 Address
-					if(address == null)
+
+					// If mDNS Entry does not have a valid IPv4 Address
+					if (address == null)
 						return;
-					
+
 					// Create Connection
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
-					
-					System.out.println("Port: " + info.getPort() + " / " + address);
-					
-					
-					//Call Listener
+
+					// Call Listener
 					XChange.instance.listener.stationAdded(new Station(uuid, stationName, null, null, connection));
 				}
 
@@ -211,13 +291,13 @@ public class XChange {
 					String stationUUID = event.getInfo().getPropertyString("StationUUID");
 					if (stationUUID == null)
 						return;
-					
+
 					// Potential Station to remove, if not connected
 					Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
-					
+
 					// Remove Station only if no connection to Station exists, otherwise it would be
 					// removed when the Station Leaves
-					if(stationToRemove.getConnection().isConnected()) {
+					if (stationToRemove.getConnection().isConnected()) {
 						stationToRemove.getConnection().shutdown();
 						removeStation(stationToRemove);
 					}
@@ -229,35 +309,27 @@ public class XChange {
 			};
 
 			MDNSService.addServiceListener(getServiceString(), listener);
+		} if (mode == ProtocolMode.WEBSOCKET_CLIENT) {
+			//Connect to WebSocket Server
+			station.connect();
 		}else {
-			
+			//WebSocket Server
 			server = new WebsocketServer();
 			try {
 				server.start();
-			}catch(InterruptedException | SSLException | CertificateException e) {
+			} catch (InterruptedException | SSLException | CertificateException e) {
 				e.printStackTrace();
 				server.shutdown();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
 			}
-			
-			//Throws CertificateException
-			/*WebsocketServer server = new WebsocketServer();
-			try {
-				server.start();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
-				return;
-			}*/
-			
 		}
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 			}
 		});
-		
+
 	}
 
 	/**
@@ -279,7 +351,7 @@ public class XChange {
 	 * @param station
 	 */
 	public void addStation(Station station) {
-		if(getStationByUUID(station.getUuid()) != null)
+		if (getStationByUUID(station.getUuid()) != null)
 			return;
 		stations.add(station);
 	}
@@ -292,12 +364,12 @@ public class XChange {
 	public void removeStation(Station station) {
 		station.getConnection().shutdown();
 		stations.remove(station);
-		
+
 		listener.stationLeave(station);
-		
-		//TODO Remove Station from MVRFile station List
+
+		// TODO Remove Station from MVRFile station List
 	}
-	
+
 	/**
 	 * Return Station by UUID, null if non found
 	 * 
@@ -317,7 +389,7 @@ public class XChange {
 	public MVRFile getFileByUUID(UUID uuid) {
 		return files.stream().filter(files -> files.getUuid().equals(uuid)).findFirst().orElse(null);
 	}
-	
+
 	/**
 	 * Commits new File to all Connected XChange Clients
 	 * 
@@ -329,72 +401,71 @@ public class XChange {
 	}
 
 	/**
-	 * Checks if File is already known, if not add to known files. Calls newMVRFile listener if File is new
+	 * Checks if File is already known, if not add to known files. Calls newMVRFile
+	 * listener if File is new
 	 * 
 	 * @param file
 	 */
 	public void registerFile(MVRFile file) {
 		MVRFile existingFile = getFileByUUID(file.getUuid());
-		//If File Exists add Station UUIDs to existing file, to keep track which stations have the file
+		// If File Exists add Station UUIDs to existing file, to keep track which
+		// stations have the file
 		if (existingFile != null) {
 			existingFile.getStationUUID().addAll(file.getStationUUID());
 			return;
 		}
 		files.add(file);
-		//Call Listener
+		// Call Listener
 		listener.newMVRFile(file);
 	}
 
 	public ArrayList<MVRFile> getFiles() {
 		return files;
 	}
-	
+
 	public ArrayList<Station> getStations() {
 		return stations;
 	}
-	
+
 	private String getServiceString() {
 		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
 	}
 
-
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
-		
-		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");;
-		XChange xchange = new XChange(ProtocolMode.WEBSOCKET, "MVR4J XChange", null);
-		
-		
+
+		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");
+		XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange", null);
+
 		System.out.println("UUID: " + xchange.station.getUuid());
-		
+
 		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "MA Demostage"));
-		
+
 		xchange.start(new XChangeListener() {
-			
+
 			@Override
 			public void stationLeave(Station station) {
-				
+
 			}
-			
+
 			@Override
 			public void stationAdded(Station station) {
-				System.out.println("StationAdded: " + station.getName());
+				// Connect to TCP Mode Cient
 				station.connect();
 			}
-			
+
 			@Override
 			public void newMVRFile(MVRFile file) {
-				
+
 			}
 
 			@Override
 			public void xChangeError(String packet, String message) {
-				System.out.println("Error: " + packet  + " / " + message);
+				System.out.println("Error: " + packet + " / " + message);
 			}
 		});
-		
 
 		Thread.sleep(100000);
-		
+
 		xchange.shutdown();
 
 //		xchange2.start();
@@ -403,7 +474,7 @@ public class XChange {
 
 //		xchange3.start();
 
-		//Thread.sleep(10000);
+		// Thread.sleep(10000);
 
 		// xchange2.shutdown();
 		// xchange3.shutdown();

@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
 import de.verschwiegener.xchange.util.MVRFile;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import de.verschwiegener.xchange.util.Version;
@@ -35,7 +36,7 @@ public class C03PacketCommit extends UTF8Packet {
 	private Version version;
 
 	public C03PacketCommit() {
-		super("MVR_COMMIT");
+		super(PacketType.MVR_COMMIT);
 	}
 
 	/**
@@ -64,15 +65,9 @@ public class C03PacketCommit extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		//Get Station
-		Station sourceStation = XChange.instance
-				.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		
-		//Check if Station exists
-		if (sourceStation == null) {
-			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+		Station sourceStation = Util.checkStation(object.get("StationUUID").getAsString(), packetType);
+		if(sourceStation == null)
 			return;
-		}
 		
 		//Check if Version is compatible
 		Version stationVersion = new Version(object);
@@ -82,7 +77,7 @@ public class C03PacketCommit extends UTF8Packet {
 							+ XChange.instance.station.getVersion().toString()));
 
 			// Send Error
-			XChange.instance.listener.xChangeError(packetType, "Station " + object.get("StationUUID").getAsString()
+			XChange.instance.listener.xChangeError(packetType.toString(), "Station " + object.get("StationUUID").getAsString()
 					+ " Version: " + stationVersion + " is not Compatible With Server Version");
 			return;
 		}

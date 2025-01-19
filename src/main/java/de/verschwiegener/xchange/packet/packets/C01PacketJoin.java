@@ -1,13 +1,17 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
+import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import de.verschwiegener.xchange.util.Version;
@@ -28,21 +32,25 @@ import io.netty.channel.ChannelHandlerContext;
 public class C01PacketJoin extends UTF8Packet {
 
 	public C01PacketJoin() {
-		super("MVR_JOIN");
+		super(PacketType.MVR_JOIN);
 	}
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		
-		//Check if Station exists
-		if (station == null) {
-			XChange.instance.listener.xChangeError(packetType,
-					packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
-			return;
+		System.out.println("Ctx: " + ctx.channel());
+		if (XChange.instance.mode == ProtocolMode.WEBSOCKET_SERVER || XChange.instance.mode == ProtocolMode.WEBSOCKET_CLIENT) {
+			Station station = new Station(object);
+			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
+			//Set Station COnnection
+			station.getConnection().setChannel(ctx.channel());
+			XChange.instance.addStation(station);
 		}
-		
-		//Check if Version is Compatible
+
+		Station station = Util.checkStation(object.get("StationUUID").getAsString(), packetType);
+		if (station == null)
+			return;
+
+		// Check if Version is Compatible
 		Version stationVersion = new Version(object);
 		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
 			station.getConnection()
@@ -50,12 +58,11 @@ public class C01PacketJoin extends UTF8Packet {
 							+ XChange.instance.station.getVersion().toString()));
 
 			// Send Error
-			XChange.instance.listener.xChangeError(packetType, "Station " + object.get("StationUUID").getAsString()
-					+ " Version: " + stationVersion + " is not Compatible With Server Version");
+			XChange.instance.listener.xChangeError(packetType.toString(),
+					"Station " + object.get("StationUUID").getAsString() + " Version: " + stationVersion
+							+ " is not Compatible With Server Version");
 			return;
 		}
-		
-		
 
 		station.updateValues(object);
 
@@ -64,7 +71,7 @@ public class C01PacketJoin extends UTF8Packet {
 			// TODO parse MVR_COMMIT
 		});
 
-		//Send return packet
+		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
 	}
 

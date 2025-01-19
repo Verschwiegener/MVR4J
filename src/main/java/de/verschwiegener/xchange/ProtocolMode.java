@@ -7,7 +7,8 @@ package de.verschwiegener.xchange;
  */
 public enum ProtocolMode {
 	
-	TCP,
-	WEBSOCKET;
+	mDNS,
+	WEBSOCKET_CLIENT,
+	WEBSOCKET_SERVER;
 
 }

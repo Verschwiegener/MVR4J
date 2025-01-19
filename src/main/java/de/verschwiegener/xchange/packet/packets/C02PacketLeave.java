@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
@@ -21,18 +22,15 @@ import io.netty.channel.ChannelHandlerContext;
 public class C02PacketLeave extends UTF8Packet {
 
 	public C02PacketLeave() {
-		super("MVR_LEAVE");
+		super(PacketType.MVR_LEAVE);
 	}
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		Station sourceStation = XChange.instance
-				.getStationByUUID(UUID.fromString(object.get("FromStationUUID").getAsString()));
+		Station sourceStation = Util.checkStation(object.get("FromStationUUID").getAsString(), packetType);
 		
-		if (sourceStation == null) {
-			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("FromStationUUID").getAsString() + " not known");
+		if(sourceStation == null)
 			return;
-		}
 
 		//Remove Station
 		XChange.instance.removeStation(sourceStation);

@@ -3,6 +3,7 @@ package de.verschwiegener.xchange.packet;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
+import de.verschwiegener.xchange.util.PacketType;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -12,9 +13,9 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public abstract class UTF8Packet implements Packet {
 
-	protected final String packetType;
+	protected final PacketType packetType;
 
-	public UTF8Packet(String packetType) {
+	public UTF8Packet(PacketType packetType) {
 		this.packetType = packetType;
 	}
 	@Override
@@ -34,7 +35,7 @@ public abstract class UTF8Packet implements Packet {
 	 */
 	protected JsonObject responseMessage(boolean error, String message) {
 		JsonObject object = new JsonObject();
-		object.addProperty("Type", packetType);
+		object.addProperty("Type", packetType.toString());
 		object.addProperty("OK", error);
 		object.addProperty("Message", message);
 		return object;
@@ -45,7 +46,7 @@ public abstract class UTF8Packet implements Packet {
 	 */
 	protected JsonObject message() {
 		JsonObject object = new JsonObject();
-		object.addProperty("Type", packetType);
+		object.addProperty("Type", packetType.toString());
 		return object;
 	}
 	
@@ -59,13 +60,13 @@ public abstract class UTF8Packet implements Packet {
 		String message = object.get("Message").getAsString();
 		
 		if(!ok) {
-			XChange.instance.listener.xChangeError(packetType, message);
+			XChange.instance.listener.xChangeError(packetType.toString(), message);
 		}
 		
 		return ok;
 	}
 	
-	public String getPacketType() {
+	public PacketType getPacketType() {
 		return packetType;
 	}
 

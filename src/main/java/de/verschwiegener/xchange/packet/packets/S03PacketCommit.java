@@ -3,6 +3,7 @@ package de.verschwiegener.xchange.packet.packets;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.packet.UTF8Packet;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,7 +14,7 @@ public class S03PacketCommit extends UTF8Packet {
 	private String message;
 
 	public S03PacketCommit(boolean ok, String message) {
-		super("MVR_COMMIT_RET");
+		super(PacketType.MVR_COMMIT_RET);
 		this.ok = ok;
 		this.message = message;
 	}

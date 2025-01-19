@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
 import de.verschwiegener.xchange.util.MVRFile;
+import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
 import de.verschwiegener.xchange.util.Version;
@@ -20,7 +21,7 @@ public class S01PacketJoin extends UTF8Packet{
 	private String message;
 	
 	public S01PacketJoin(boolean ok, String message) {
-		super("MVR_JOIN_RET");
+		super(PacketType.MVR_JOIN_RET);
 		this.ok = ok;
 		this.message = message;
 	}
@@ -46,7 +47,7 @@ public class S01PacketJoin extends UTF8Packet{
 		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
 		
 		if(station == null) {
-			XChange.instance.listener.xChangeError(packetType, packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+			XChange.instance.listener.xChangeError(packetType.toString(), packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
 			return;
 		}
 		

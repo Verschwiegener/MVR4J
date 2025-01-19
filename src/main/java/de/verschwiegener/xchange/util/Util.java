@@ -1,12 +1,14 @@
 package de.verschwiegener.xchange.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import de.verschwiegener.xchange.XChange;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -53,7 +55,24 @@ public class Util {
 		
 		data.clear();
 		return buffer;
+	}
+	
+	/**
+	 * Checks if Station is known
+	 * @param object
+	 * @param packetType
+	 * @return
+	 */
+	public static Station checkStation(String object, PacketType packetType) {
+		Station station = XChange.instance.getStationByUUID(UUID.fromString(object));
 		
+		//Check if Station exists
+		if (station == null) {
+			XChange.instance.listener.xChangeError(packetType.toString(),
+					packetType + " Station " + object + " not known");
+			return null;
+		}
+		return station;
 	}
 
 }

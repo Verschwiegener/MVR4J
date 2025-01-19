@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Wrapper Class for Peers
@@ -92,6 +93,10 @@ public class Station {
 
 	public Connection getConnection() {
 		return connection;
+	}
+	
+	public void setConnection(Connection connection) {
+		this.connection = connection;
 	}
 	
 	public boolean compareUUID(UUID compare) {

@@ -21,8 +21,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-	private ByteBuf buffer = Unpooled.buffer();
-
 	HashMap<Integer, ByteBuf> multipacketBuffer = new HashMap<Integer, ByteBuf>();
 	
 	private ChannelHandlerContext ctx;
@@ -35,9 +33,6 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, ByteBuf packet) throws Exception {
-		
-		System.out.println("Test: " + packet);
-		
 		if (packet.readInt() != Util.MVR_PACKAGE_HEADER)
 			return;
 		int packageVersion = packet.readInt();
@@ -52,6 +47,8 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		int packetType = packet.readInt();
 		long payloadLength = packet.readLong();
 		
+		//Create new Buffer so Index is 0 for Packet Parsing
+		ByteBuf buffer = Unpooled.buffer();
 		buffer.writeBytes(packet, (int) payloadLength);
 		
 		if (packageCount == packageNumber) {

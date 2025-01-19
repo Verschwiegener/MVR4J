@@ -24,8 +24,10 @@ public class MVRFilePacket extends FilePacket{
 	@Override
 	public void parsePacket(ByteBuf buffer) {
 		try {
+			/*//Write Buffer data into array
+			byte[] data = new byte[buffer.readableBytes()];
+			buffer.getBytes(buffer.readerIndex(), data);*/
 			Files.write(buffer.array(), XChange.instance.currentReceiveFile.getFilesystemLocation());
-			
 			
 			/**
 			 * Appends Data to File

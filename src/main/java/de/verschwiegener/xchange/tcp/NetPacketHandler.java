@@ -20,10 +20,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author julius
  */
 public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
-
-	HashMap<Integer, ByteBuf> multipacketBuffer = new HashMap<Integer, ByteBuf>();
 	
 	private ChannelHandlerContext ctx;
+	
+	ByteBuf[] multiPacketBuffer = new ByteBuf[1];
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -39,26 +39,32 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		if (packageVersion != Util.MVR_PACKAGE_VERSION)
 			return;
 		
-		// Multi Packet Number of packet, unsigned Integer
+		// Number that defines what number this package in the complete message has. unsigned Integer
 		int packageNumber = packet.readInt() & 0xff;
-		// Multi Packet Count of Packets for one Message, Unsigned Integer
+		// Number that defines how many packages the current message consists of. Unsigned Integer
 		int packageCount = (packet.readInt() & 0xff) - 1;
+		
+		if(packageCount != multiPacketBuffer.length) {
+			multiPacketBuffer = new ByteBuf[packageCount];
+		}
 		
 		int packetType = packet.readInt();
 		long payloadLength = packet.readLong();
 		
-		//Create new Buffer so Index is 0 for Packet Parsing
-		ByteBuf buffer = Unpooled.buffer();
-		buffer.writeBytes(packet, (int) payloadLength);
+		multiPacketBuffer[packageNumber] = packet;
+		
 		
 		if (packageCount == packageNumber) {
+			//TODO Test MultiPacket Code
+			ByteBuf data = Unpooled.buffer(0);
+			for(int i = 0; i < multiPacketBuffer.length;i++) {
+				data.writeBytes(multiPacketBuffer[i]);
+				multiPacketBuffer[i].clear();
+			}
 			if(packetType == 1)
-				new MVRFilePacket().parsePacket(buffer);
+				new MVRFilePacket().parsePacket(data);
 			else {
-				
-				System.out.println("JSon: " + buffer.toString(StandardCharsets.UTF_8));
-				
-				JsonObject mainObject = Util.byteBufToJson(buffer);
+				JsonObject mainObject = Util.byteBufToJson(data);
 				if(mainObject == null)
 					return;
 				try {
@@ -68,7 +74,7 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 					e.printStackTrace();
 				}
 			}
-			buffer.clear();
+			packet.clear();
 		}
 	}
 	

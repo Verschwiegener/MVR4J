@@ -91,7 +91,7 @@ public class MVRFile {
 			return;
 		}
 
-		for (UUID uuid : getStationUUID()) {
+		for (UUID uuid : getStationUUIDs()) {
 			// Ignore Station
 			if (ignoreStation != null && uuid.equals(ignoreStation)) {
 				continue;
@@ -147,7 +147,7 @@ public class MVRFile {
 		return isLocal;
 	}
 
-	public ArrayList<UUID> getStationUUID() {
+	public ArrayList<UUID> getStationUUIDs() {
 		return stationUUID;
 	}
 
@@ -157,6 +157,10 @@ public class MVRFile {
 
 	public String getFileName() {
 		return fileName;
+	}
+	
+	public int getFileSize() {
+		return fileSize;
 	}
 	
 	/**

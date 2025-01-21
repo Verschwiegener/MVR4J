@@ -117,7 +117,7 @@ public class Station {
 						+ uuid.toString() + "IP: " + connection.getRemoteAddress().getHostString() + " at Port: " + connection.getRemoteAddress().getPort());
 				return;
 			}
-			//Add Station
+			//Add Station when connection is established
 			XChange.instance.addStation(this);
 		});
 		

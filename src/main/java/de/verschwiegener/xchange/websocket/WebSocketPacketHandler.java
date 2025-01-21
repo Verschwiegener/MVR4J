@@ -1,6 +1,8 @@
 package de.verschwiegener.xchange.websocket;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.google.gson.JsonObject;
 
@@ -8,13 +10,14 @@ import de.verschwiegener.xchange.PacketRegistry;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
 import de.verschwiegener.xchange.packet.packets.MVRFilePacket;
+import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.ContinuationWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -35,9 +38,6 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 		// Handle MVRPackets
 		if (frame instanceof TextWebSocketFrame) {
 			ByteBuf packet = frame.content();
-			
-			
-			System.out.println("JSon: " + packet.toString(StandardCharsets.UTF_8));
 
 			JsonObject mainObject = Util.byteBufToJson(packet);
 			if (mainObject == null)
@@ -51,7 +51,10 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 			packet.clear();
 		} else if(frame instanceof BinaryWebSocketFrame) {
 			new MVRFilePacket().parsePacket(frame.content());
-			if(frame.isFinalFragment()) {
+			
+			//Checks if File is complete
+			MVRFile file = XChange.instance.currentReceiveFile;
+			if(file.getFileSize() == Files.size(Paths.get(file.getFilesystemLocation().getAbsolutePath()))) {
 				XChange.instance.currentReceiveFile.setLocal();
 				XChange.instance.listener.newMVRFile(XChange.instance.getFileByUUID(XChange.instance.currentReceiveFile.getUuid()));
 				XChange.instance.currentReceiveFile = null;

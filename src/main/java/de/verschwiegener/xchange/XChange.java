@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -17,6 +18,7 @@ import javax.net.ssl.SSLException;
 
 import de.verschwiegener.mvr.util.MVRParser;
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
+import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
 import de.verschwiegener.xchange.packet.packets.C03PacketCommit;
 import de.verschwiegener.xchange.tcp.TCPServer;
 import de.verschwiegener.xchange.util.Connection;
@@ -41,7 +43,7 @@ public class XChange {
 	public File mvrWorkingDirectory;
 
 	/**
-	 * Describing local Station
+	 * Describes local Station
 	 */
 	public Station station;
 
@@ -73,6 +75,11 @@ public class XChange {
 	private String mvrGroup;
 
 	private XChangeServer server;
+	
+	/**
+	 * WebSocketServer Address to connect to when launching xChange as WebSocket Client
+	 */
+	private InetSocketAddress webSocketServer;
 
 	private final String mDnsService = "_mvrxchange._tcp.local.";
 	
@@ -128,7 +135,7 @@ public class XChange {
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, String provider, String mvrGroup, InetSocketAddress address) {
 		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
-		station.setConnection(new Connection(address));
+		webSocketServer = address;
 	}
 	
 	/**
@@ -284,7 +291,7 @@ public class XChange {
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
 
 					// Call Listener
-					XChange.instance.listener.stationAdded(new Station(uuid, stationName, null, null, connection));
+					XChange.instance.listener.stationAvailable(new Station(uuid, stationName, null, null, connection));
 				}
 
 				@Override
@@ -312,7 +319,20 @@ public class XChange {
 			MDNSService.addServiceListener(getServiceString(), listener);
 		} if (mode == ProtocolMode.WEBSOCKET_CLIENT) {
 			//Connect to WebSocket Server
-			station.connect();
+			Connection connection = new Connection(webSocketServer);
+			CompletableFuture<Void> future = null;
+			try {
+				future = connection.connectTo();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			future.whenComplete((result, ex) -> {
+				if(ex != null) {
+					return;
+				}
+				connection.sendPacket(new C01PacketJoin());
+				
+			});
 		}else {
 			//WebSocket Server
 			server = new WebsocketServer();
@@ -339,7 +359,6 @@ public class XChange {
 	 * @throws IOException
 	 */
 	public void shutdown() throws IOException {
-		System.out.println("Shutdown");
 		MDNSService.unregisterAllServices();
 		MDNSService.shutdown();
 		stations.forEach(station -> station.getConnection().shutdown());
@@ -352,8 +371,11 @@ public class XChange {
 	 * @param station
 	 */
 	public void addStation(Station station) {
-		if (getStationByUUID(station.getUUID()) != null)
-			return;
+		Station stationOld = getStationByUUID(station.getUUID());
+		if(stationOld != null) {
+			stations.remove(stationOld);
+		}
+		
 		stations.add(station);
 	}
 
@@ -367,8 +389,13 @@ public class XChange {
 		stations.remove(station);
 
 		listener.stationLeave(station);
-
-		// TODO Remove Station from MVRFile station List
+		
+		//Remove Station from File Station List
+		for(MVRFile file : files) {
+			if(file.getStationUUIDs().contains(station.getUUID())) {
+				file.getStationUUIDs().remove(station.getUUID());
+			}
+		}
 	}
 
 	/**
@@ -412,7 +439,7 @@ public class XChange {
 		// If File Exists add Station UUIDs to existing file, to keep track which
 		// stations have the file
 		if (existingFile != null) {
-			existingFile.getStationUUID().addAll(file.getStationUUID());
+			existingFile.getStationUUIDs().addAll(file.getStationUUIDs());
 			return;
 		}
 		files.add(file);
@@ -445,20 +472,17 @@ public class XChange {
 		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");
 		XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange", new File(new File("").getAbsolutePath() + "/MVRReceive"));
 
-		System.out.println("UUID: " + xchange.station.getUUID());
-
 		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
 			@Override
 			public void stationLeave(Station station) {
-
 			}
 
 			@Override
-			public void stationAdded(Station station) {
-				// Connect to TCP Mode Cient
+			public void stationAvailable(Station station) {
+				// Connect to TCP Mode Client
 				station.connect();
 			}
 
@@ -473,6 +497,7 @@ public class XChange {
 			}
 			@Override
 			public void newMVRFile(MVRFile file) {
+				System.out.println("New File: " + file);
 			}
 			
 		});

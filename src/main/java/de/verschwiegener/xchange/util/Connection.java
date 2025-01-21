@@ -10,6 +10,7 @@ import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
+import de.verschwiegener.xchange.packet.packets.S02PacketLeave;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
 import de.verschwiegener.xchange.tcp.TCPServer;
@@ -163,6 +164,7 @@ public class Connection {
 	 * Shuts down Connection to Peer
 	 */
 	public void shutdown() {
+		sendPacket(new S02PacketLeave());
 		if (channel == null)
 			return;
 		channel.close();

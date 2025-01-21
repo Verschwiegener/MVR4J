@@ -69,7 +69,6 @@ public class C04PacketRequest extends UTF8Packet {
 		if(file == null || !file.existLocal()) {
 			if(XChange.instance.isWebSocketServer()) {
 				file.requestFile();
-				
 			}else {
 				Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
 				ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));

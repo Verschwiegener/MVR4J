@@ -14,7 +14,7 @@ public interface XChangeListener {
 	 * New Station joined
 	 * @param station
 	 */
-	public void stationAdded(Station station);
+	public void stationAvailable(Station station);
 	
 	/**
 	 * Station Left

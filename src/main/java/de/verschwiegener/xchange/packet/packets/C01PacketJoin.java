@@ -37,11 +37,11 @@ public class C01PacketJoin extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		System.out.println("Ctx: " + ctx.channel());
-		if (XChange.instance.mode == ProtocolMode.WEBSOCKET_SERVER || XChange.instance.mode == ProtocolMode.WEBSOCKET_CLIENT) {
+		//Create Station for WebSocket Server Mode
+		if (XChange.instance.isWebSocketServer()) {
 			Station station = new Station(object);
 			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
-			//Set Station COnnection
+			//Set Station Connection
 			station.getConnection().setChannel(ctx.channel());
 			XChange.instance.addStation(station);
 		}

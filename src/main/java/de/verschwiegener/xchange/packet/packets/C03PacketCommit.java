@@ -94,7 +94,7 @@ public class C03PacketCommit extends UTF8Packet {
 		
 		//Get File and add Station
 		MVRFile file = new MVRFile(object);
-		file.getStationUUID().add(sourceStation.getUUID());
+		file.getStationUUIDs().add(sourceStation.getUUID());
 		
 
 		//Get Target Stations, if this instance isn't a target ignore

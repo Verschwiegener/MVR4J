@@ -1,5 +1,6 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 import com.google.gson.JsonArray;
@@ -7,6 +8,7 @@ import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
+import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
@@ -35,10 +37,20 @@ public class S01PacketJoin extends UTF8Packet{
 		this(true, "");
 	}
 	
-	
-	
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
+		//Create Station for WebSocket Client Mode
+		if(XChange.instance.isWebSocketClient()) {
+			Station station = new Station(object);
+			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
+			//Set Station Connection
+			station.getConnection().setChannel(ctx.channel());
+			XChange.instance.addStation(station);
+		}
+		
+		
+		
+		
 		//Check if Packet contains error
 		if(!parseError(object))
 			return;
@@ -50,6 +62,8 @@ public class S01PacketJoin extends UTF8Packet{
 			XChange.instance.listener.xChangeError(packetType.toString(), packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
 			return;
 		}
+		
+		station.updateValues(object);
 		
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(element -> {

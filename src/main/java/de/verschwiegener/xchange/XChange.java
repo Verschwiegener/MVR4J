@@ -424,6 +424,7 @@ public class XChange {
 	 * @param file
 	 */
 	public void commitFile(MVRFile file) {
+		file.setLocal();
 		files.add(file);
 		stations.forEach(station -> station.getConnection().sendPacket(new C03PacketCommit(file, new Station[] {})));
 	}
@@ -505,17 +506,6 @@ public class XChange {
 		Thread.sleep(100000);
 
 		xchange.shutdown();
-
-//		xchange2.start();
-
-//		Thread.sleep(10000);
-
-//		xchange3.start();
-
-		// Thread.sleep(10000);
-
-		// xchange2.shutdown();
-		// xchange3.shutdown();
 	}
 
 }

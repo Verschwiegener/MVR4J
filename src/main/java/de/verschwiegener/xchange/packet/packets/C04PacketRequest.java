@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.UTF8Packet;
@@ -16,6 +17,7 @@ import de.verschwiegener.xchange.util.Util;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 
 /**
  * This packet requests a MVR file from a station. You either can request a
@@ -50,31 +52,40 @@ public class C04PacketRequest extends UTF8Packet {
 		if (!XChange.instance.station.compareUUID(retrieveUUID))
 			return;
 
+		//Get File
 		MVRFile file = null;
 		if (object.get("FileUUID") != null && !object.get("FileUUID").getAsString().isEmpty()) {
-			//Get Specific File
 			file = XChange.instance.getFileByUUID(UUID.fromString(object.get("FileUUID").getAsString()));
 		}else {
 			//Get Latest File if FileUUID is empty
 			file = XChange.instance.getFiles().get(XChange.instance.getFiles().size() - 1);
 		}
 		
+		
+		//TODO When new MVR Version is out check for Version and send File via S04 Packet
+		//Because the MVR_REQUEST Packet does not have a StationUUID Attribute in MVR 1.6 we need to send it directly to the Context
+		
 		//File was not found or this Station has no Files, Send File Not available Packet
-		if(file == null) {
-			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
-			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
+		if(file == null || !file.existLocal()) {
+			if(XChange.instance.isWebSocketServer()) {
+				file.requestFile();
+				
+			}else {
+				Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
+				ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
+			}
 			return;
 		}
 		
+		ByteBuf data;
 		//Send MVRFile to requesting station
 		try {
 			RandomAccessFile stream = new RandomAccessFile(file.getFilesystemLocation(), "r");
 			//Read to Buffer
 			byte[] array = new byte[(int) stream.length()];
 			stream.read(array);
-			ByteBuf buffer = Unpooled.wrappedBuffer(array);
-			//Send Message
-			ctx.writeAndFlush(Util.packetBuilder(buffer, 1, 1, 0));
+			stream.close();
+			data = Unpooled.wrappedBuffer(array);
 		}catch(Exception e) {
 			e.printStackTrace();
 			//Send File Not available Packet
@@ -84,6 +95,14 @@ public class C04PacketRequest extends UTF8Packet {
 			//Call Error Listener
 			XChange.instance.listener.xChangeError(packetType.toString(),
 					"Could not send File: " + file.getFileName());
+			return;
+		}
+		
+		//Send Data
+		if(XChange.instance.mode == ProtocolMode.mDNS) {
+			ctx.writeAndFlush(Util.packetBuilder( data, 1, 1, 0));
+		} else {
+			ctx.writeAndFlush(new BinaryWebSocketFrame(data));
 		}
 	}
 
@@ -93,7 +112,7 @@ public class C04PacketRequest extends UTF8Packet {
 		object.addProperty("FileUUID", file.getUuid().toString());
 
 		JsonArray array = new JsonArray();
-		array.add(request.getUuid().toString());
+		array.add(request.getUUID().toString());
 		object.add("FromStationUUID", array);
 		return object;
 	}

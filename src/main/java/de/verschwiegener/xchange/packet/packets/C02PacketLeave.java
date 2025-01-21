@@ -45,7 +45,7 @@ public class C02PacketLeave extends UTF8Packet {
 		JsonObject object = message();
 
 		// Add our UUID
-		object.addProperty("FromStationUUID", XChange.instance.station.getUuid().toString());
+		object.addProperty("FromStationUUID", XChange.instance.station.getUUID().toString());
 		return object;
 	}
 

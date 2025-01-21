@@ -1,6 +1,9 @@
 package de.verschwiegener.xchange.util;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import com.google.gson.Gson;
@@ -73,6 +76,23 @@ public class Util {
 			return null;
 		}
 		return station;
+	}
+	
+	/**
+	 * Returns the Default File
+	 * 
+	 * @return
+	 */
+	public static File getDefaultSaveFile() {
+		String captureTime = (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date());
+		File ssFile = new File(XChange.instance.mvrWorkingDirectory, captureTime + ".mvr");
+		// Check File for existing ones
+		int iterator = 0;
+		while (ssFile.exists()) {
+			iterator++;
+			ssFile = new File(XChange.instance.mvrWorkingDirectory, captureTime + "_" + iterator + ".mvr");
+		}
+		return ssFile;
 	}
 
 }

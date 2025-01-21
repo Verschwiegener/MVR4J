@@ -56,8 +56,8 @@ public class WebsocketServer implements XChangeServer {
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
 
-						SslHandler handler = sslContext.newHandler(ch.alloc());
-						pipeline.addLast(handler);
+						//SslHandler handler = sslContext.newHandler(ch.alloc());
+						//pipeline.addLast(handler);
 
 						pipeline.addLast(new HttpServerCodec());
 						pipeline.addLast(new HttpObjectAggregator(65536));
@@ -69,7 +69,7 @@ public class WebsocketServer implements XChangeServer {
 				});
 
 		bindFuture = peerBootstrap.bind(XChange.instance.serverPort).sync();
-		// bindFuture.channel().closeFuture().sync();
+		bindFuture.channel().closeFuture().sync();
 	}
 
 	@Override

@@ -190,6 +190,7 @@ public class XChange {
 		this.mvrGroup = mvrGroup;
 		station = new Station(stationUUID, stationName, provider, Version.MVR_LATEST, null);
 		this.mvrWorkingDirectory = mvrWorkingDirectory;
+		mvrWorkingDirectory.mkdirs();
 	}
 
 	/**
@@ -241,7 +242,7 @@ public class XChange {
 					public Map<String, String> createProperties(String macAddress) {
 						HashMap<String, String> properties = new HashMap<String, String>();
 						properties.put("StationName", station.getName());
-						properties.put("StationUUID", station.getUuid().toString());
+						properties.put("StationUUID", station.getUUID().toString());
 						return properties;
 					}
 				});
@@ -265,7 +266,7 @@ public class XChange {
 
 					UUID uuid = UUID.fromString(stationUUID);
 					// Check if station is known, or is this instance
-					if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUuid()) == 0)
+					if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUUID()) == 0)
 						return;
 
 					InetAddress address = null;
@@ -351,7 +352,7 @@ public class XChange {
 	 * @param station
 	 */
 	public void addStation(Station station) {
-		if (getStationByUUID(station.getUuid()) != null)
+		if (getStationByUUID(station.getUUID()) != null)
 			return;
 		stations.add(station);
 	}
@@ -377,7 +378,7 @@ public class XChange {
 	 * @return
 	 */
 	public Station getStationByUUID(UUID uuid) {
-		return stations.stream().filter(station -> station.getUuid().compareTo(uuid) == 0).findFirst().orElse(null);
+		return stations.stream().filter(station -> station.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
 	}
 
 	/**
@@ -416,7 +417,7 @@ public class XChange {
 		}
 		files.add(file);
 		// Call Listener
-		listener.newMVRFile(file);
+		listener.MVRFileAvailable(file);
 	}
 
 	public ArrayList<MVRFile> getFiles() {
@@ -426,6 +427,14 @@ public class XChange {
 	public ArrayList<Station> getStations() {
 		return stations;
 	}
+	
+	public boolean isWebSocketServer()  {
+		return mode == ProtocolMode.WEBSOCKET_SERVER;
+	}
+	
+	public boolean isWebSocketClient() {
+		return mode == ProtocolMode.WEBSOCKET_CLIENT;
+	}
 
 	private String getServiceString() {
 		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
@@ -434,9 +443,9 @@ public class XChange {
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 
 		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");
-		XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange", null);
+		XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange", new File(new File("").getAbsolutePath() + "/MVRReceive"));
 
-		System.out.println("UUID: " + xchange.station.getUuid());
+		System.out.println("UUID: " + xchange.station.getUUID());
 
 		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "MA Demostage"));
 
@@ -454,14 +463,18 @@ public class XChange {
 			}
 
 			@Override
-			public void newMVRFile(MVRFile file) {
-
+			public void MVRFileAvailable(MVRFile file) {
+				file.requestFile();
 			}
 
 			@Override
 			public void xChangeError(String packet, String message) {
 				System.out.println("Error: " + packet + " / " + message);
 			}
+			@Override
+			public void newMVRFile(MVRFile file) {
+			}
+			
 		});
 
 		Thread.sleep(100000);

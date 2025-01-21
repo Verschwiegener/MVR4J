@@ -26,6 +26,13 @@ public interface XChangeListener {
 	 * New MVR File available
 	 * @param file
 	 */
+	public void MVRFileAvailable(MVRFile file);
+	
+	/**
+	 * MVR File is received and can be used
+	 * 
+	 * @param file
+	 */
 	public void newMVRFile(MVRFile file);
 	
 	/**

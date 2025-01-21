@@ -83,7 +83,7 @@ public class Station {
 		return version;
 	}
 
-	public UUID getUuid() {
+	public UUID getUUID() {
 		return uuid;
 	}
 

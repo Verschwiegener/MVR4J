@@ -1,5 +1,6 @@
 package de.verschwiegener.xchange.packet.packets;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.google.common.io.Files;
@@ -24,18 +25,17 @@ public class MVRFilePacket extends FilePacket{
 	@Override
 	public void parsePacket(ByteBuf buffer) {
 		try {
-			/*//Write Buffer data into array
+			//Write Buffer data into array
 			byte[] data = new byte[buffer.readableBytes()];
-			buffer.getBytes(buffer.readerIndex(), data);*/
-			Files.write(buffer.array(), XChange.instance.currentReceiveFile.getFilesystemLocation());
-			
+			buffer.getBytes(buffer.readerIndex(), data);
+			buffer.clear();
 			/**
 			 * Appends Data to File
 			 */
-			/**FileOutputStream stream = new FileOutputStream(XChange.instance.currentReceiveFile.getFilesystemLocation(), true);
-			stream.write(buffer.array());
+			FileOutputStream stream = new FileOutputStream(XChange.instance.currentReceiveFile.getFilesystemLocation(), true);
+			stream.write(data);
 			stream.flush();
-			stream.close();*/
+			stream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			//TODO Send S04 Error packet

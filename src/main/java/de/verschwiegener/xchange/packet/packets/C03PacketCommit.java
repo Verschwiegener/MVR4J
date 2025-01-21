@@ -48,6 +48,15 @@ public class C03PacketCommit extends UTF8Packet {
 	public C03PacketCommit(MVRFile file, Station[] forStations) {
 		this(file, forStations, XChange.instance.station.getVersion());
 	}
+	/**
+	 * Commit Packet
+	 * 
+	 * @param file MVR File to send
+	 * @param forStation Station to send File to
+	 */
+	public C03PacketCommit(MVRFile file, Station forStation) {
+		this(file, (forStation == null) ? new Station[] {} : new Station[] {forStation});
+	}
 
 	/**
 	 * Commit Packet with custom Version (0.0) for first join
@@ -85,7 +94,7 @@ public class C03PacketCommit extends UTF8Packet {
 		
 		//Get File and add Station
 		MVRFile file = new MVRFile(object);
-		file.getStationUUID().add(sourceStation.getUuid());
+		file.getStationUUID().add(sourceStation.getUUID());
 		
 
 		//Get Target Stations, if this instance isn't a target ignore
@@ -94,14 +103,11 @@ public class C03PacketCommit extends UTF8Packet {
 		if (!targetStations.isEmpty()) {
 			//TargetStations contains clients uuid
 			boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
-					.fromString(element.getAsString()).equals(XChange.instance.station.getUuid())) != null;
-			
-			//TODO add Websocket Logic
+					.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) != null;
 			
 			//If this Station is not the Target return
 			if (!isTarget)
 				return;
-			
 			
 		}
 
@@ -111,6 +117,15 @@ public class C03PacketCommit extends UTF8Packet {
 		
 		//Send Return packet
 		sourceStation.getConnection().sendPacket(new S03PacketCommit());
+		
+		//Websocket Server Commit File to all other known Station
+		if(XChange.instance.isWebSocketServer()) {
+			XChange.instance.getStations().forEach(station -> {
+				if(!station.getUUID().equals(sourceStation.getUUID())) {
+					station.getConnection().sendPacket(new C03PacketCommit(file, station));
+				}
+			});
+		}
 	}
 
 	@Override
@@ -120,14 +135,14 @@ public class C03PacketCommit extends UTF8Packet {
 		file.writeToJson(object);
 
 		// Add our UUID
-		object.addProperty("StationUUID", XChange.instance.station.getUuid().toString());
+		object.addProperty("StationUUID", XChange.instance.station.getUUID().toString());
 
 		// Add Target Stations
 		JsonArray array = new JsonArray();
 		//If forStation equals null send empty array
 		if(forStation != null) {
 			for (Station s : forStation) {
-				array.add(s.getUuid().toString());
+				array.add(s.getUUID().toString());
 			}
 		}
 		object.add("ForStationsUUID", array);

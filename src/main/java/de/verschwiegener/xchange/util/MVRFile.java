@@ -37,11 +37,37 @@ public class MVRFile {
 	 * UUIDs of Stations containing the File
 	 */
 	private ArrayList<UUID> stationUUID = new ArrayList<UUID>();
+
+	/**
+	 * If the MVR File exists on this machine
+	 */
+	private boolean isLocal = false;
+
+	/**
+	 *  Creates MVRFile with specified fileName
+	 * 
+	 * @param mvrFile Location of file to be shared
+	 * @param fileName String Name the file should have on the receiving machine
+	 * @param comment Describes the changes made in this version of the MVR file.
+	 */
+	public MVRFile(File mvrFile, String fileName, String comment) {
+		this.fileSystemLocation = mvrFile;
+		this.comment = comment;
+		this.fileName = fileName;
+		this.fileSize = (int) mvrFile.length();
+		uuid = UUID.nameUUIDFromBytes(mvrFile.getName().getBytes());
+	}
 	
+	/**
+	 * Creates MVRFile without specified fileName
+	 * 
+	 * @param mvrFile Location of file to be shared
+	 * @param comment Describes the changes made in this version of the MVR file.
+	 */
 	public MVRFile(File mvrFile, String comment) {
 		this.fileSystemLocation = mvrFile;
 		this.comment = comment;
-		this.fileName = mvrFile.getName();
+		this.fileName = null;
 		this.fileSize = (int) mvrFile.length();
 		uuid = UUID.nameUUIDFromBytes(mvrFile.getName().getBytes());
 	}
@@ -54,44 +80,55 @@ public class MVRFile {
 	}
 
 	/**
-	 * Request File from Peers
+	 * Request File from all known Stations, ignoring ignoreStation
 	 * 
-	 * @param future CompletableFuture, future if request was send without exception
+	 * @param ignoreStation Station, station to not send File Request to
+	 * @return future CompletableFuture, future if request was send without
+	 *         exception
 	 */
-	public CompletableFuture<Void> requestFile() {
-		//TODO Future complete only when the File has been received
-		CompletableFuture<Void> future = new CompletableFuture<Void>();
-		
-		if (isFilePresent()) {
-			future.complete(null);
-			return future;
+	public void requestFile(UUID ignoreStation) {
+		if (existLocal()) {
+			return;
 		}
 
 		for (UUID uuid : getStationUUID()) {
+			// Ignore Station
+			if (ignoreStation != null && uuid.equals(ignoreStation)) {
+				continue;
+			}
+
 			Station requestStation = XChange.instance.getStationByUUID(uuid);
-
-			requestStation.getConnection().sendPacket(new C04PacketRequest(this, requestStation))
-					.whenComplete((result, ex) -> {
-						if (ex != null) {
-							future.completeExceptionally(ex);
-							return;
-						}
-						future.complete(null);
-					});
+			requestStation.getConnection().sendPacket(new C04PacketRequest(this, requestStation));
 		}
-		return future;
-
 	}
+
+	/**
+	 * Requests File from all Stations
+	 * 
+	 * @return
+	 */
+	public void requestFile() {
+		requestFile(null);
+	}
+
 	/**
 	 * Returns File System Location of this MVR File
+	 * 
 	 * @return
 	 */
 	public File getFilesystemLocation() {
-		if (fileSystemLocation == null)
-			fileSystemLocation = new File(XChange.instance.mvrWorkingDirectory, fileName);
+		if (fileSystemLocation == null) {
+			//If FileName is Blank and not set afterwards generate Default FileName
+			if(fileName.isBlank()) {
+				fileSystemLocation = Util.getDefaultSaveFile();
+			}else {
+				fileSystemLocation = new File(XChange.instance.mvrWorkingDirectory, fileName);
+			}
+		}
+		//fileSystemLocation.mkdir();
 		return fileSystemLocation;
 	}
-	
+
 	/**
 	 * Creates MVR Code representation to be parsed
 	 * 
@@ -101,10 +138,19 @@ public class MVRFile {
 		return new MVRParser(fileSystemLocation);
 	}
 
+	/**
+	 * If the MVR File exists on machine
+	 * 
+	 * @return
+	 */
+	public boolean existLocal() {
+		return isLocal;
+	}
+
 	public ArrayList<UUID> getStationUUID() {
 		return stationUUID;
 	}
-	
+
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -112,16 +158,27 @@ public class MVRFile {
 	public String getFileName() {
 		return fileName;
 	}
+	
+	/**
+	 * Sets the file name used to store file on disk, only works when fileName is Blank
+	 * 
+	 * @param fileName
+	 */
+	public void setFileName(String fileName) {
+		if(fileName.isBlank())
+			this.fileName = fileName;
+	}
 
-	public boolean isFilePresent() {
-		return getFilesystemLocation().exists();
+	public void setLocal() {
+		this.isLocal = true;
 	}
 
 	public void writeToJson(JsonObject object) {
 		object.addProperty("FileSize", fileSize);
 		object.addProperty("FileUUID", uuid.toString());
-		object.addProperty("FileName", fileName);
+		if(fileName != null)
+			object.addProperty("FileName", fileName);
 		object.addProperty("Comment", comment);
 	}
-	
+
 }

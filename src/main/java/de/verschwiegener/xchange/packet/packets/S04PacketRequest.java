@@ -12,11 +12,22 @@ public class S04PacketRequest extends UTF8Packet {
 
 	private boolean ok;
 	private String message;
+	
+	private ByteBuf buffer;
 
 	public S04PacketRequest(boolean ok, String message) {
 		super(PacketType.MVR_REQUEST_RET);
 		this.ok = ok;
 		this.message = message;
+	}
+	
+	/**
+	 * Used in Future for Websocket File Requests in MVR Version > 1.6
+	 * @param buffer
+	 */
+	public S04PacketRequest(ByteBuf buffer) {
+		super(PacketType.MVR_REQUEST_RET);
+		this.buffer = buffer;
 	}
 
 	public S04PacketRequest() {
@@ -34,6 +45,8 @@ public class S04PacketRequest extends UTF8Packet {
 
 	@Override
 	public ByteBuf writePacket() {
+		if(buffer != null)
+			return buffer;
 		return Util.jsonToByteBuf(writeJson());
 	}
 
@@ -42,5 +55,12 @@ public class S04PacketRequest extends UTF8Packet {
 		return responseMessage(ok, message);
 	}
 	
+	/**
+	 * If this Packet Needs to be Send as WebSocket Binary Frame
+	 * @return
+	 */
+	public boolean needsBinaryFrame() {
+		return buffer != null;
+	}
 
 }

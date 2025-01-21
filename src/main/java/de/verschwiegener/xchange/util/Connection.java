@@ -10,6 +10,7 @@ import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
+import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
 import de.verschwiegener.xchange.tcp.TCPServer;
 import de.verschwiegener.xchange.websocket.WebSocketPacketHandler;
@@ -26,6 +27,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
@@ -132,7 +134,15 @@ public class Connection {
 		if (XChange.instance.mode == ProtocolMode.mDNS) {
 			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		} else {
-			future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
+			if(packet instanceof S04PacketRequest requestPacket) {
+				if(requestPacket.needsBinaryFrame()) {
+					future = channel.writeAndFlush(new BinaryWebSocketFrame(packet.writePacket()));
+				}else {
+					future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
+				}
+			}else {
+				future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
+			}
 		}
 
 		future.addListener(new GenericFutureListener<Future<? super Void>>() {

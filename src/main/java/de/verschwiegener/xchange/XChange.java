@@ -204,11 +204,7 @@ public class XChange {
 	 * @throws CertificateException
 	 */
 	public void start(XChangeListener xchangeListener) {
-
-		// TODO Catch all errors and shut down Server and MDNS if the error is severe
-		// enough
 		this.listener = xchangeListener;
-		System.out.println("Mode: " + mode);
 		switch (mode) {
 		case mDNS: {
 			// Throws Interrupt Exception

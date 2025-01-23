@@ -3,8 +3,6 @@ package de.verschwiegener.xchange.packet.packets;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.google.common.io.Files;
-
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.FilePacket;
 import io.netty.buffer.ByteBuf;

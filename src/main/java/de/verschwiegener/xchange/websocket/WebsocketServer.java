@@ -1,5 +1,6 @@
 package de.verschwiegener.xchange.websocket;
 
+import java.io.File;
 import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
@@ -38,12 +39,17 @@ public class WebsocketServer implements XChangeServer {
 
 	private ChannelFuture bindFuture;
 
+	private final boolean ssl;
+	
+	private final SslContext sslCtx;
+	
+	public WebsocketServer(boolean ssl, SslContext sslCtx) {
+		this.ssl = ssl;
+		this.sslCtx = sslCtx;
+	}
+
 	@Override
 	public void start() throws InterruptedException, SSLException, CertificateException {
-
-		SelfSignedCertificate ssc = new SelfSignedCertificate();
-		SslContext sslContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(bossEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
 				/*
@@ -56,8 +62,10 @@ public class WebsocketServer implements XChangeServer {
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
 
-						//SslHandler handler = sslContext.newHandler(ch.alloc());
-						pipeline.addLast(sslContext.newHandler(ch.alloc()));
+						// SslHandler handler = sslContext.newHandler(ch.alloc());
+						if (ssl && sslCtx != null) {
+							pipeline.addLast(sslCtx.newHandler(ch.alloc()));
+						}
 
 						pipeline.addLast(new HttpServerCodec());
 						pipeline.addLast(new HttpObjectAggregator(65536));
@@ -73,7 +81,7 @@ public class WebsocketServer implements XChangeServer {
 	}
 
 	@Override
-	public void shutdown() throws InterruptedException{
+	public void shutdown() throws InterruptedException {
 		bindFuture.channel().close().sync();
 		networkEventLoopGroup.shutdownGracefully().sync();
 		bossEventLoopGroup.shutdownGracefully().sync();

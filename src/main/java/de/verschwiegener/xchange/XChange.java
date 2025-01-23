@@ -30,6 +30,7 @@ import de.verschwiegener.xchange.websocket.WebsocketServer;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 /**
  * Class Managing all XChange related things
@@ -84,6 +85,12 @@ public class XChange {
 	private String mvrGroup;
 
 	private XChangeServer server;
+
+	private boolean ssl;
+
+	private File certificate;
+
+	private File privateKey;
 
 	/**
 	 * WebSocketServer Address to connect to when launching xChange as WebSocket
@@ -368,8 +375,21 @@ public class XChange {
 		}
 		case WEBSOCKET_SERVER: {
 			// WebSocket Server
-			server = new WebsocketServer();
+
 			try {
+				//Create Server SSL Context
+				SslContext sslContext = null;
+				if (ssl) {
+					if (privateKey == null || certificate == null) {
+						SelfSignedCertificate ssc = new SelfSignedCertificate();
+						sslContext = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+					} else {
+						sslContext = SslContextBuilder.forServer(certificate, privateKey).build();
+					}
+				}
+				
+				server = new WebsocketServer(ssl, sslContext);
+
 				server.start();
 			} catch (InterruptedException | SSLException | CertificateException e) {
 				e.printStackTrace();
@@ -509,6 +529,18 @@ public class XChange {
 
 	public boolean isMDNS() {
 		return mode == ProtocolMode.mDNS;
+	}
+	
+	/**
+	 * Setup SSl Communication for WebSocket Server
+	 * 
+	 * @param certificate File certificate in PEM format
+	 * @param privateKey File private Key in PEM format
+	 */
+	public void setupSSL(File certificate, File privateKey) {
+		this.certificate = certificate;
+		this.privateKey = privateKey;
+		ssl = true;
 	}
 
 	private String getServiceString() {

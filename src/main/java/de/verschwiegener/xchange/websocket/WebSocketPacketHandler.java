@@ -58,7 +58,7 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 			MVRFile file = XChange.instance.currentReceiveFile;
 			if(file.getFileSize() == Files.size(Paths.get(file.getFilesystemLocation().getAbsolutePath()))) {
 				XChange.instance.currentReceiveFile.setLocal();
-				XChange.instance.listener.newMVRFile(XChange.instance.getFileByUUID(XChange.instance.currentReceiveFile.getUuid()));
+				XChange.instance.listener.newMVRFileReceived(XChange.instance.getFileByUUID(XChange.instance.currentReceiveFile.getUuid()));
 				XChange.instance.currentReceiveFile = null;
 			}
 		} else if (frame instanceof CloseWebSocketFrame) {

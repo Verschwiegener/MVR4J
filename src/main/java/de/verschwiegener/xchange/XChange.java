@@ -100,8 +100,8 @@ public class XChange {
 	 * @param mvrWorkingDirectory
 	 * @param stationUUID
 	 */
-	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID) {
-		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), 4568, "MVR4J", "");
+	public XChange(String stationName, File mvrWorkingDirectory, int port) {
+		this(stationName, mvrWorkingDirectory, port, UUID.randomUUID(), "MVR4J");
 	}
 
 	/**
@@ -114,10 +114,8 @@ public class XChange {
 	 * @param provider
 	 * @param mvrGroup
 	 */
-	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, int serverPort, String provider,
-			String mvrGroup) {
-		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, mvrGroup, stationUUID,
-				mvrWorkingDirectory);
+	public XChange(String stationName, File mvrWorkingDirectory, int serverPort, UUID stationUUID, String provider) {
+		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, "", stationUUID, mvrWorkingDirectory);
 	}
 
 	/**
@@ -129,7 +127,7 @@ public class XChange {
 	 * @param address
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, String uri) {
-		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "", uri);
+		this(stationName, mvrWorkingDirectory, uri, UUID.randomUUID(), "MVR4J");
 	}
 
 	/**
@@ -143,14 +141,23 @@ public class XChange {
 	 * @param mvrGroup
 	 * @param address
 	 */
-	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, String provider, String mvrGroup,
-			String uri) {
-		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
+	public XChange(String stationName, File mvrWorkingDirectory, String uri, UUID stationUUID, String provider) {
+		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, "", stationUUID, mvrWorkingDirectory);
 		webSocketServer = uri;
 	}
 
 	/**
-	 * mDNS Client COnstructor
+	 * mDNS Client Constructor
+	 * 
+	 * @param stationName
+	 * @param mvrWOrkingDirectory
+	 */
+	public XChange(String stationName, File mvrWorkingDirectory) {
+		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "");
+	}
+
+	/**
+	 * mDNS Client Constructor
 	 * 
 	 * @param stationName
 	 * @param mvrWorkingDirectory
@@ -160,29 +167,6 @@ public class XChange {
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, UUID stationUUID, String provider, String mvrGroup) {
 		this(ProtocolMode.mDNS, 4568, stationName, provider, mvrGroup, stationUUID, mvrWorkingDirectory);
-	}
-
-	/**
-	 * mDNS Client COnstructor
-	 * 
-	 * @param stationName
-	 * @param mvrWOrkingDirectory
-	 */
-	public XChange(String stationName, File mvrWorkingDirectory) {
-		this(ProtocolMode.mDNS, 4568, stationName, "MVR4J", "", UUID.randomUUID(), mvrWorkingDirectory);
-	}
-
-	/**
-	 * Create MVR XChange, call start mDNS and given ProtocolMode Connection
-	 * 
-	 * @param mode                Network Protocol to use
-	 * @param stationName         Name of the Station and mDNS
-	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files
-	 *                            get saved
-	 */
-	@Deprecated
-	public XChange(ProtocolMode mode, String stationName, File mvrWorkingDirectory) {
-		this(mode, 4568, stationName, "MVR4J", "", UUID.randomUUID(), mvrWorkingDirectory);
 	}
 
 	/**
@@ -199,7 +183,7 @@ public class XChange {
 	 * @param mvrWorkingDirectory Parent Folder into which all received MVR Files
 	 *                            get saved
 	 */
-	public XChange(ProtocolMode mode, int serverPort, String stationName, String provider, String mvrGroup,
+	private XChange(ProtocolMode mode, int serverPort, String stationName, String provider, String mvrGroup,
 			UUID stationUUID, File mvrWorkingDirectory) {
 		instance = this;
 
@@ -302,7 +286,7 @@ public class XChange {
 					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
 
 					// Call Listener
-					XChange.instance.listener.stationAvailable(new Station(uuid, stationName, null, null, connection));
+					XChange.instance.listener.stationDiscovered(new Station(uuid, stationName, null, null, connection));
 				}
 
 				@Override
@@ -354,9 +338,7 @@ public class XChange {
 				}
 				final boolean ssl = "wss".equalsIgnoreCase(scheme);
 				if (ssl) {
-
 					sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -393,12 +375,6 @@ public class XChange {
 				return;
 			}
 		}
-
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-			}
-		});
-
 	}
 
 	/**
@@ -406,9 +382,13 @@ public class XChange {
 	 * 
 	 * @throws IOException
 	 */
-	public void shutdown() throws IOException {
-		MDNSService.unregisterAllServices();
-		MDNSService.shutdown();
+	public void shutdown() {
+		try {
+			MDNSService.unregisterAllServices();
+			MDNSService.shutdown();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		stations.forEach(station -> station.getConnection().shutdown());
 		if (server != null)
 			server.shutdown();
@@ -534,7 +514,7 @@ public class XChange {
 		xchange.start(new XChangeListener() {
 
 			@Override
-			public void stationAvailable(Station station) {
+			public void stationDiscovered(Station station) {
 				// Connect to TCP Mode Client
 				station.connect();
 			}
@@ -559,7 +539,7 @@ public class XChange {
 			}
 
 			@Override
-			public void newMVRFile(MVRFile file) {
+			public void newMVRFileReceived(MVRFile file) {
 				System.out.println("New File: " + file);
 			}
 

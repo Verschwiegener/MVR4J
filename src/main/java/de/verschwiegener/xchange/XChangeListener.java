@@ -11,10 +11,11 @@ import de.verschwiegener.xchange.util.Station;
 public interface XChangeListener {
 	
 	/**
-	 * New Station available for connection only for mDNS
+	 * New Station discovered for connection 
+	 * Only for mDNS!
 	 * @param station
 	 */
-	public void stationAvailable(Station station);
+	public void stationDiscovered(Station station);
 	
 	/**
 	 * Station Connection has been established, station is ready to receive data
@@ -39,7 +40,7 @@ public interface XChangeListener {
 	 * 
 	 * @param file
 	 */
-	public void newMVRFile(MVRFile file);
+	public void newMVRFileReceived(MVRFile file);
 	
 	/**
 	 * Error occurred in XChange Transmission

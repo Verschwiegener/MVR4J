@@ -57,7 +57,7 @@ public class WebsocketServer implements XChangeServer {
 						final ChannelPipeline pipeline = ch.pipeline();
 
 						//SslHandler handler = sslContext.newHandler(ch.alloc());
-						//pipeline.addLast(handler);
+						pipeline.addLast(sslContext.newHandler(ch.alloc()));
 
 						pipeline.addLast(new HttpServerCodec());
 						pipeline.addLast(new HttpObjectAggregator(65536));

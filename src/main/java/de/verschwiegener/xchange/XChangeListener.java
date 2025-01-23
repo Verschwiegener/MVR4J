@@ -11,10 +11,16 @@ import de.verschwiegener.xchange.util.Station;
 public interface XChangeListener {
 	
 	/**
-	 * New Station joined
+	 * New Station available for connection only for mDNS
 	 * @param station
 	 */
 	public void stationAvailable(Station station);
+	
+	/**
+	 * Station Connection has been established, station is ready to receive data
+	 * @param station
+	 */
+	public void stationConnected(Station station);
 	
 	/**
 	 * Station Left

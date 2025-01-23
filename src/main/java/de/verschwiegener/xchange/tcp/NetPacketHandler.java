@@ -1,7 +1,5 @@
 package de.verschwiegener.xchange.tcp;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 import com.google.gson.JsonObject;
 
@@ -21,14 +19,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 	
-	private ChannelHandlerContext ctx;
-	
 	ByteBuf[] multiPacketBuffer = new ByteBuf[1];
-
+	
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		super.channelActive(ctx);
-		this.ctx = ctx;
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 	}
 
 	@Override
@@ -76,9 +70,5 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			}
 			packet.clear();
 		}
-	}
-	
-	public ChannelHandlerContext getCtx() {
-		return ctx;
 	}
 }

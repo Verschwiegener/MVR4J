@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
+import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -119,6 +120,8 @@ public class Station {
 			}
 			//Add Station when connection is established
 			XChange.instance.addStation(this);
+			//send Join Packet
+			connection.sendPacket(new C01PacketJoin());
 		});
 		
 		

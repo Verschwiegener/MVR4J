@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.util;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;

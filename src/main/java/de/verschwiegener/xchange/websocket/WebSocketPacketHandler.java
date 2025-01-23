@@ -1,6 +1,5 @@
 package de.verschwiegener.xchange.websocket;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -17,7 +16,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.ContinuationWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -26,6 +24,10 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
 	private ChannelHandlerContext ctx;
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -38,8 +40,8 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 		// Handle MVRPackets
 		if (frame instanceof TextWebSocketFrame) {
 			ByteBuf packet = frame.content();
-
 			JsonObject mainObject = Util.byteBufToJson(packet);
+			
 			if (mainObject == null)
 				return;
 			try {

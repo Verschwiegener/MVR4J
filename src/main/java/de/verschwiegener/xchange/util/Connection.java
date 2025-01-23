@@ -31,6 +31,8 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
@@ -47,7 +49,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 public class Connection {
 
 	private final InetSocketAddress remoteAddress;
-	
+
 	/**
 	 * Netty Connection Channel
 	 */
@@ -68,24 +70,30 @@ public class Connection {
 	 */
 	public CompletableFuture<Void> connectTo() throws InterruptedException {
 		CompletableFuture<Void> connectionFuture = new CompletableFuture<Void>();
+		if (connected) {
+			connectionFuture.complete(null);
+			return connectionFuture;
+		}
 
 		if (XChange.instance.mode == ProtocolMode.mDNS) {
 			handler = new NetPacketHandler();
 		} else {
 			handler = new WebSocketPacketHandler();
 		}
-
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
-				.option(ChannelOption.SO_KEEPALIVE, true).handler(new ChannelInitializer<SocketChannel>() {
+				.option(ChannelOption.SO_KEEPALIVE, true).handler(new LoggingHandler(LogLevel.INFO))
+				.handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
 						if (XChange.instance.mode == ProtocolMode.WEBSOCKET_CLIENT) {
-							// SslHandler handler = sslContext.newHandler(ch.alloc());
-							// handler.engine().setEnabledProtocols(new String[] {"TLSv1.2"});
-							// pipeline.addLast(handler);
+
+							if (XChange.instance.sslCtx != null) {
+								pipeline.addLast(XChange.instance.sslCtx.newHandler(ch.alloc(),
+										remoteAddress.getHostString(), remoteAddress.getPort()));
+							}
 
 							pipeline.addLast(new HttpServerCodec());
 							pipeline.addLast(new HttpObjectAggregator(65536));
@@ -108,7 +116,6 @@ public class Connection {
 					// Connection is established
 					connected = true;
 					connectionFuture.complete(null);
-					sendPacket(new C01PacketJoin());
 				} else {
 					channel.close();
 					connectionFuture.completeExceptionally(future.cause());
@@ -135,13 +142,13 @@ public class Connection {
 		if (XChange.instance.mode == ProtocolMode.mDNS) {
 			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		} else {
-			if(packet instanceof S04PacketRequest requestPacket) {
-				if(requestPacket.needsBinaryFrame()) {
+			if (packet instanceof S04PacketRequest requestPacket) {
+				if (requestPacket.needsBinaryFrame()) {
 					future = channel.writeAndFlush(new BinaryWebSocketFrame(packet.writePacket()));
-				}else {
+				} else {
 					future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
 				}
-			}else {
+			} else {
 				future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
 			}
 		}
@@ -169,10 +176,10 @@ public class Connection {
 			return;
 		channel.close();
 	}
-	
+
 	/**
-	 * Set Connection Channel
-	 * Used for WebSocket Server Mode where we dont need to create a new connection to the peer
+	 * Set Connection Channel Used for WebSocket Server Mode where we dont need to
+	 * create a new connection to the peer
 	 * 
 	 * @param channel
 	 */

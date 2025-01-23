@@ -34,10 +34,6 @@ public class C02PacketLeave extends UTF8Packet {
 
 		//Remove Station
 		XChange.instance.removeStation(sourceStation);
-
-		//Send Return Packet
-		//sourceStation.getConnection().sendPacket(new S02PacketLeave());
-
 	}
 
 	@Override

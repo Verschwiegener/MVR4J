@@ -1,13 +1,13 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
-
 
 import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
-import de.verschwiegener.xchange.packet.packets.S02PacketLeave;
+import de.verschwiegener.xchange.packet.packets.C02PacketLeave;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
 import de.verschwiegener.xchange.tcp.TCPServer;
@@ -162,9 +162,9 @@ public class Connection {
 
 	/**
 	 * Shuts down Connection to Peer
+	 * Does not send MVR_LEAVE Packet!
 	 */
 	public void shutdown() {
-		sendPacket(new S02PacketLeave());
 		if (channel == null)
 			return;
 		channel.close();
@@ -177,6 +177,7 @@ public class Connection {
 	 * @param channel
 	 */
 	public void setChannel(Channel channel) {
+		shutdown();
 		this.channel = channel;
 		// Set Connected so we dont create TCP Connection when we need Websocket
 		connected = true;

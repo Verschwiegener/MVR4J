@@ -26,6 +26,11 @@ public class Station {
 	private Connection connection;
 
 	/**
+	 * Fix for when a station does not announce its presence via mDNS
+	 */
+	private boolean mDNS = false;
+
+	/**
 	 * Manually create Station
 	 * 
 	 * @param uuid       UUID of the XChange Station, UUID should be persistent
@@ -94,17 +99,33 @@ public class Station {
 	public Connection getConnection() {
 		return connection;
 	}
-	
+
 	public void setConnection(Connection connection) {
+		// Used for mDNS Fix when station doesnt announce itself via mDNS and we need to
+		// change connection for every packet
+		if (connection != null) {
+			connection.shutdown();
+		}
 		this.connection = connection;
 	}
-	
+
 	public boolean compareUUID(UUID compare) {
 		return uuid.compareTo(compare) == 0;
 	}
-	
+
+	public void setmDNS(boolean mDNS) {
+		this.mDNS = mDNS;
+	}
+
+	public boolean ismDNS() {
+		return mDNS;
+	}
+
+	/**
+	 * Connect to peer
+	 */
 	public void connect() {
-		//Check if a Connection can be established 
+		// Check if a Connection can be established
 		CompletableFuture<Void> future = null;
 		try {
 			future = connection.connectTo();
@@ -112,19 +133,19 @@ public class Station {
 			e.printStackTrace();
 		}
 		future.whenComplete((result, ex) -> {
-			if(ex != null) {
-				XChange.instance.listener.xChangeError("Initial Connection", "Could not Connect to Station:"
-						+ uuid.toString() + "IP: " + connection.getRemoteAddress().getHostString() + " at Port: " + connection.getRemoteAddress().getPort());
+			if (ex != null) {
+				XChange.instance.listener.xChangeError("Initial Connection",
+						"Could not Connect to Station:" + uuid.toString() + "IP: "
+								+ connection.getRemoteAddress().getHostString() + " at Port: "
+								+ connection.getRemoteAddress().getPort());
 				return;
 			}
-			//Add Station when connection is established
+			// Add Station when connection is established
 			XChange.instance.addStation(this);
-			//send Join Packet
+			// send Join Packet
 			connection.sendPacket(new C01PacketJoin());
 		});
-		
-		
-		
+
 	}
 
 }

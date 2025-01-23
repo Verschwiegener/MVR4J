@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import javax.jmdns.JmDNS;
+import javax.jmdns.JmmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 /**
@@ -27,7 +28,11 @@ public class MDNSService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//mDns = JmmDNS.Factory.getInstance();
+		/*try {
+			mDns = JmmDNS.Factory.getInstance();
+		}catch(Exception e) {
+			
+		}*/
 	}
 
 	public static ServiceInfo registerMDNS(MDNSServiceData data) throws IOException {
@@ -36,9 +41,9 @@ public class MDNSService {
 		byte[] hardwareAddress = NetworkInterface.getByInetAddress(netInterface).getHardwareAddress();
 
 		String macAddress = hardwareAddressBytesToString(hardwareAddress);
-
-		ServiceInfo mDNSService = ServiceInfo.create(data.getServiceType(macAddress), data.getName(macAddress),
-				data.getPort(), 1, 1, data.createProperties(macAddress));
+		
+		ServiceInfo mDNSService = ServiceInfo.create(data.getServiceType(macAddress), data.getName(macAddress), "",
+				data.getPort(), 0, 0, data.createProperties(macAddress));
 		mDns.registerService(mDNSService);
 
 		return mDNSService;

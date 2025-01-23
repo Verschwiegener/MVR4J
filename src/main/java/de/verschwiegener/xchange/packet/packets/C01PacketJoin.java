@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.packet.packets;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -35,8 +36,11 @@ public class C01PacketJoin extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		//Create Station for WebSocket Server Mode
-		if (XChange.instance.isWebSocketServer()) {
+		
+		Station testStation = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
+		
+		//Create Station for WebSocket Server Mode or Station didn't announce itself via mDNS
+		if ((XChange.instance.isWebSocketServer() || XChange.instance.isMDNS()) && testStation == null) {
 			Station station = new Station(object);
 			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
 			//Set Station Connection
@@ -47,6 +51,13 @@ public class C01PacketJoin extends UTF8Packet {
 		Station station = Util.checkStation(object.get("StationUUID").getAsString(), packetType);
 		if (station == null)
 			return;
+		
+		/**
+		 * Fix for Stations that don´t announce their presence via mDNS
+		 */
+		if(!station.ismDNS() && XChange.instance.isMDNS()) {
+			station.getConnection().setChannel(ctx.channel());
+		}
 
 		// Check if Version is Compatible
 		Version stationVersion = new Version(object);
@@ -69,6 +80,7 @@ public class C01PacketJoin extends UTF8Packet {
 			// TODO parse MVR_COMMIT
 		});
 
+		System.err.println("Send Return");
 		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
 	}

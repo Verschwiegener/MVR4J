@@ -25,6 +25,7 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		cause.printStackTrace();
 	}
 
 	@Override
@@ -34,13 +35,14 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		int packageVersion = packet.readInt();
 		if (packageVersion != Util.MVR_PACKAGE_VERSION)
 			return;
+		System.out.println("Right Version");
 		
 		// Number that defines what number this package in the complete message has. unsigned Integer
 		int packageNumber = packet.readInt() & 0xff;
 		// Number that defines how many packages the current message consists of. Unsigned Integer
 		int packageCount = packet.readInt() & 0xff;
 		
-		if((packageCount) != multiPacketBuffer.length) {
+		if(packageCount != multiPacketBuffer.length) {
 			multiPacketBuffer = new ByteBuf[packageCount];
 		}
 		
@@ -60,6 +62,7 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			if(packetType == 1)
 				new MVRFilePacket().parsePacket(data);
 			else {
+				//System.out.println("JSon: " + data.toString(StandardCharsets.UTF_8));
 				JsonObject mainObject = Util.byteBufToJson(data);
 				if(mainObject == null)
 					return;

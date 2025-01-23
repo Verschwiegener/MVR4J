@@ -1,5 +1,6 @@
 package de.verschwiegener.xchange.websocket;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -34,6 +35,8 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 		if (frame instanceof TextWebSocketFrame) {
 			ByteBuf packet = frame.content();
 			JsonObject mainObject = Util.byteBufToJson(packet);
+			
+			//System.out.println("JSon: " + packet.toString(StandardCharsets.UTF_8));
 			
 			if (mainObject == null)
 				return;

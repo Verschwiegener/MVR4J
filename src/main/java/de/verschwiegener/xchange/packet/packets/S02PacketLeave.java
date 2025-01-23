@@ -16,6 +16,8 @@ public class S02PacketLeave extends UTF8Packet{
 	
 	public S02PacketLeave(boolean ok, String message) {
 		super(PacketType.MVR_LEAVE_RET);
+		this.ok = ok;
+		this.message = message;
 	}
 	
 	public S02PacketLeave() {

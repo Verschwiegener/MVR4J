@@ -19,29 +19,30 @@ import io.netty.handler.logging.LoggingHandler;
  * 
  * @author julius
  */
-public class TCPServer implements XChangeServer{
+public class TCPServer implements XChangeServer {
 
 	private final EventLoopGroup bossEventLoopGroup = new NioEventLoopGroup(1);
 
 	public static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup(6);
 
 	public static final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup(1);
-	
+
 	private ChannelFuture bindFuture;
 
 	public TCPServer() {
 	}
-	
+
 	/**
 	 * Starts Netty TCP Server
 	 * 
 	 * @throws InterruptedException
 	 */
+	@Override
 	public void start() throws InterruptedException {
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(bossEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-				.option(ChannelOption.SO_BACKLOG, 100).option(ChannelOption.SO_REUSEADDR, true).handler(new LoggingHandler(LogLevel.INFO))
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000).option(ChannelOption.SO_BACKLOG, 100)
+				.option(ChannelOption.SO_REUSEADDR, true).handler(new LoggingHandler(LogLevel.INFO))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
@@ -50,20 +51,18 @@ public class TCPServer implements XChangeServer{
 						pipeline.addLast(peerEventLoopGroup, new NetPacketHandler());
 					}
 				});
-
+		System.out.println("Bind");
 		bindFuture = peerBootstrap.bind(XChange.instance.serverPort).sync();
 	}
-	
+
 	/**
 	 * Shutdown Server and all EventLoopGroups
 	 */
-	public void shutdown() {
-		bindFuture.channel().close();
-		networkEventLoopGroup.shutdownGracefully();
-		bossEventLoopGroup.shutdownGracefully();
-		peerEventLoopGroup.shutdownGracefully();
+	public void shutdown() throws InterruptedException {
+		bindFuture.channel().close().sync();
+		networkEventLoopGroup.shutdownGracefully().sync();
+		bossEventLoopGroup.shutdownGracefully().sync();
+		peerEventLoopGroup.shutdownGracefully().sync();
 	}
-	
-	
 
 }

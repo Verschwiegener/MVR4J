@@ -73,11 +73,11 @@ public class WebsocketServer implements XChangeServer {
 	}
 
 	@Override
-	public void shutdown() {
-		bindFuture.channel().close();
-		networkEventLoopGroup.shutdownGracefully();
-		bossEventLoopGroup.shutdownGracefully();
-		peerEventLoopGroup.shutdownGracefully();
+	public void shutdown() throws InterruptedException{
+		bindFuture.channel().close().sync();
+		networkEventLoopGroup.shutdownGracefully().sync();
+		bossEventLoopGroup.shutdownGracefully().sync();
+		peerEventLoopGroup.shutdownGracefully().sync();
 	}
 
 }

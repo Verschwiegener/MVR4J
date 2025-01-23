@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.UTF8Packet;
@@ -98,7 +97,7 @@ public class C04PacketRequest extends UTF8Packet {
 		}
 		
 		//Send Data
-		if(XChange.instance.mode == ProtocolMode.mDNS) {
+		if(XChange.instance.isMDNS()) {
 			ctx.writeAndFlush(Util.packetBuilder( data, 1, 1, 0));
 		} else {
 			ctx.writeAndFlush(new BinaryWebSocketFrame(data));

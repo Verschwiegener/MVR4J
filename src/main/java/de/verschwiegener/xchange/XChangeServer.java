@@ -14,6 +14,6 @@ public interface XChangeServer {
 	
 	public void start() throws InterruptedException, SSLException, CertificateException;
 	
-	public void shutdown();
+	public void shutdown() throws InterruptedException;
 
 }

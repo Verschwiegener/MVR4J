@@ -208,14 +208,18 @@ public class XChange {
 		// TODO Catch all errors and shut down Server and MDNS if the error is severe
 		// enough
 		this.listener = xchangeListener;
-		if (mode == ProtocolMode.mDNS) {
-
+		System.out.println("Mode: " + mode);
+		switch (mode) {
+		case mDNS: {
 			// Throws Interrupt Exception
 			server = new TCPServer();
 			try {
 				server.start();
 			} catch (InterruptedException | SSLException | CertificateException e) {
-				server.shutdown();
+				try {
+					server.shutdown();
+				} catch (InterruptedException e2) {
+				}
 				e.printStackTrace();
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
@@ -312,8 +316,9 @@ public class XChange {
 			};
 
 			MDNSService.addServiceListener(getServiceString(), listener);
+			break;
 		}
-		if (mode == ProtocolMode.WEBSOCKET_CLIENT) {
+		case WEBSOCKET_CLIENT: {
 			URI uri;
 			String host;
 			int port;
@@ -363,17 +368,24 @@ public class XChange {
 				// only have a connection and not a full station because we only get the uuid
 				// stationName etc from the first MVR_JOIN_RET
 			});
-		} else {
+			break;
+		}
+		case WEBSOCKET_SERVER: {
 			// WebSocket Server
 			server = new WebsocketServer();
 			try {
 				server.start();
 			} catch (InterruptedException | SSLException | CertificateException e) {
 				e.printStackTrace();
-				server.shutdown();
+				try {
+					server.shutdown();
+				} catch (InterruptedException e2) {
+				}
 				listener.xChangeError("SERVER_STARTUP", "Could not start " + mode + " Server");
 				return;
 			}
+			break;
+		}
 		}
 	}
 
@@ -390,8 +402,12 @@ public class XChange {
 			e.printStackTrace();
 		}
 		stations.forEach(station -> station.getConnection().shutdown());
-		if (server != null)
-			server.shutdown();
+		if (server != null) {
+			try {
+				server.shutdown();
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 	/**
@@ -450,9 +466,9 @@ public class XChange {
 	}
 
 	/**
-	 * Commits new File to all Connected XChange Clients
+	 * Commits new Local File to all Connected XChange Clients
 	 * 
-	 * @param file
+	 * @param file local MVRFile File to commit to other Stations
 	 */
 	public void commitFile(MVRFile file) {
 		file.setLocal();
@@ -461,10 +477,10 @@ public class XChange {
 	}
 
 	/**
-	 * Checks if File is already known, if not add to known files. Calls newMVRFile
-	 * listener if File is new
+	 * Checks if File from other Stations is already known, adds and calls
+	 * MVRFileAvailable listener if it is
 	 * 
-	 * @param file
+	 * @param file MVRFile commited by Stations
 	 */
 	public void registerFile(MVRFile file) {
 		MVRFile existingFile = getFileByUUID(file.getUuid());
@@ -495,6 +511,10 @@ public class XChange {
 		return mode == ProtocolMode.WEBSOCKET_CLIENT;
 	}
 
+	public boolean isMDNS() {
+		return mode == ProtocolMode.mDNS;
+	}
+
 	private String getServiceString() {
 		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
 	}
@@ -505,11 +525,15 @@ public class XChange {
 		// XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange",
 		// new File(new File("").getAbsolutePath() + "/MVRReceive"));
 
-		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"),
-				"wss://41d8f0e2-7e95-45f6-8852-fcfde596f0ae.mvr.blenderdmx.eu");
+		File mvrWorkingDirectory = new File(new File("").getAbsolutePath() + "/MVRReceive");
 
-		// xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
-		// "/basic_gdtf.mvr"), "MA Demostage"));
+		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory);
+
+		// XChange xchange = new XChange("MVR4J", new File(new
+		// File("").getAbsolutePath() + "/MVRReceive"),
+		// "wss://41d8f0e2-7e95-45f6-8852-fcfde596f0ae.mvr.blenderdmx.eu");
+
+		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
@@ -546,7 +570,7 @@ public class XChange {
 		});
 
 		Thread.sleep(100000);
-
+		System.out.println("Shutdown");
 		xchange.shutdown();
 	}
 

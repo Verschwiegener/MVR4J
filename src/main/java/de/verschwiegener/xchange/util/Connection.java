@@ -88,7 +88,7 @@ public class Connection {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
-						if (XChange.instance.mode == ProtocolMode.WEBSOCKET_CLIENT) {
+						if (XChange.instance.isWebSocketClient()) {
 
 							if (XChange.instance.sslCtx != null) {
 								pipeline.addLast(XChange.instance.sslCtx.newHandler(ch.alloc(),
@@ -139,7 +139,7 @@ public class Connection {
 		}
 
 		ChannelFuture future;
-		if (XChange.instance.mode == ProtocolMode.mDNS) {
+		if (XChange.instance.isMDNS()) {
 			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		} else {
 			if (packet instanceof S04PacketRequest requestPacket) {

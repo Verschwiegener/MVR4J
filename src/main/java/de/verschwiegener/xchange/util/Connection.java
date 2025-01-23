@@ -142,7 +142,8 @@ public class Connection {
 		if (XChange.instance.isMDNS()) {
 			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		} else {
-			if (packet instanceof S04PacketRequest requestPacket) {
+			if (packet instanceof S04PacketRequest) {
+				S04PacketRequest requestPacket = (S04PacketRequest)packet;
 				if (requestPacket.needsBinaryFrame()) {
 					future = channel.writeAndFlush(new BinaryWebSocketFrame(packet.writePacket()));
 				} else {

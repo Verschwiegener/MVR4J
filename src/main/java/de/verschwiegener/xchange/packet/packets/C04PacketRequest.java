@@ -2,8 +2,10 @@ package de.verschwiegener.xchange.packet.packets;
 
 import java.io.RandomAccessFile;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
@@ -45,60 +47,65 @@ public class C04PacketRequest extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		UUID retrieveUUID = UUID.fromString(object.get("FromStationUUID").getAsString());
-		
-		//If File should not be retrieved from this Station ignore
-		if (!XChange.instance.station.compareUUID(retrieveUUID))
-			return;
+		JsonArray retriveUUIDs = object.get("FromStationUUID").getAsJsonArray();
 
-		//Get File
+		if (!retriveUUIDs.isEmpty()) {
+			// If File should not be retrieved from this Station ignore
+			JsonElement e = retriveUUIDs.asList().stream().filter(j -> XChange.instance.station.getUUID().toString().equals(j.getAsString()))
+					.findFirst().orElse(null);
+			if(e == null)
+				return;
+		}
+
+		// Get File
 		MVRFile file = null;
 		if (object.get("FileUUID") != null && !object.get("FileUUID").getAsString().isEmpty()) {
 			file = XChange.instance.getFileByUUID(UUID.fromString(object.get("FileUUID").getAsString()));
-		}else {
-			//Get Latest File if FileUUID is empty
+		} else {
+			// Get Latest File if FileUUID is empty
 			file = XChange.instance.getFiles().get(XChange.instance.getFiles().size() - 1);
 		}
-		
-		
-		//TODO When new MVR Version is out check for Version and send File via S04 Packet
-		//Because the MVR_REQUEST Packet does not have a StationUUID Attribute in MVR 1.6 we need to send it directly to the Context
-		
-		//File was not found or this Station has no Files, Send File Not available Packet
-		if(file == null || !file.existLocal()) {
-			if(XChange.instance.isWebSocketServer()) {
+
+		// TODO When new MVR Version is out check for Version and send File via S04
+		// Packet
+		// Because the MVR_REQUEST Packet does not have a StationUUID Attribute in MVR
+		// 1.6 we need to send it directly to the Context
+
+		// File was not found or this Station has no Files, Send File Not available
+		// Packet
+		if (file == null || !file.existLocal()) {
+			if (XChange.instance.isWebSocketServer()) {
 				file.requestFile();
-			}else {
+			} else {
 				Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
 				ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 			}
 			return;
 		}
-		
+
 		ByteBuf data;
-		//Send MVRFile to requesting station
+		// Send MVRFile to requesting station
 		try {
 			RandomAccessFile stream = new RandomAccessFile(file.getFilesystemLocation(), "r");
-			//Read to Buffer
+			// Read to Buffer
 			byte[] array = new byte[(int) stream.length()];
 			stream.read(array);
 			stream.close();
 			data = Unpooled.wrappedBuffer(array);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			//Send File Not available Packet
+			// Send File Not available Packet
 			Packet packet = new S04PacketRequest(false, "The MVR is not available on this client");
 			ctx.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
-			
-			//Call Error Listener
-			XChange.instance.listener.xChangeError(packetType.toString(),
-					"Could not send File: " + file.getFileName());
+
+			// Call Error Listener
+			XChange.instance.listener.xChangeError(packetType.toString(), "Could not send File: " + file.getFileName());
 			return;
 		}
-		
-		//Send Data
-		if(XChange.instance.isMDNS()) {
-			ctx.writeAndFlush(Util.packetBuilder( data, 1, 1, 0));
+
+		// Send Data
+		if (XChange.instance.isMDNS()) {
+			ctx.writeAndFlush(Util.packetBuilder(data, 1, 1, 0));
 		} else {
 			ctx.writeAndFlush(new BinaryWebSocketFrame(data));
 		}

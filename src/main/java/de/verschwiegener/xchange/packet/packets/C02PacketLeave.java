@@ -1,7 +1,5 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.util.UUID;
-
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;

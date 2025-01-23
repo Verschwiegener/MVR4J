@@ -23,16 +23,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 
 public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
-	private ChannelHandlerContext ctx;
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-	}
-
-	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		super.channelActive(ctx);
-		this.ctx = ctx;
 	}
 
 	@Override

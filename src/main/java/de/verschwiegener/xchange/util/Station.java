@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
-import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Wrapper Class for Peers

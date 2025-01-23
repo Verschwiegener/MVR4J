@@ -3,7 +3,6 @@ package de.verschwiegener.xchange.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
 

@@ -54,10 +54,6 @@ public class WebSocketClientXChange {
 
 			@Override
 			public void stationDiscovered(Station station) {
-				// New mDNS XChange Station has been discovered
-
-				// Connect to selected Station Group
-				station.connect();
 			}
 
 			@Override

@@ -163,6 +163,10 @@ public class MVRFile {
 		return fileSize;
 	}
 	
+	public String getComment() {
+		return comment;
+	}
+	
 	/**
 	 * Sets the file name used to store file on disk, only works when fileName is Blank
 	 * 

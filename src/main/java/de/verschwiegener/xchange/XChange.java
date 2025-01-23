@@ -129,7 +129,7 @@ public class XChange {
 	 * @param mvrGroup
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, int serverPort, UUID stationUUID, String provider) {
-		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, "", stationUUID, mvrWorkingDirectory);
+		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, "Default", stationUUID, mvrWorkingDirectory);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class XChange {
 	 * @param address
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, String uri, UUID stationUUID, String provider) {
-		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, "", stationUUID, mvrWorkingDirectory);
+		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, "Default", stationUUID, mvrWorkingDirectory);
 		webSocketServer = uri;
 	}
 
@@ -167,7 +167,7 @@ public class XChange {
 	 * @param mvrWOrkingDirectory
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory) {
-		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "");
+		this(stationName, mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "Default");
 	}
 
 	/**
@@ -268,70 +268,8 @@ public class XChange {
 				return;
 			}
 
-			ServiceListener listener = new ServiceListener() {
-
-				@Override
-				public void serviceResolved(ServiceEvent event) {
-					ServiceInfo info = event.getInfo();
-
-					String stationUUID = info.getPropertyString("StationUUID");
-					String stationName = info.getPropertyString("StationName");
-
-					if (stationUUID == null || stationName == null)
-						return;
-
-					UUID uuid = UUID.fromString(stationUUID);
-					// Check if station is known, or is this instance
-					if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUUID()) == 0)
-						return;
-					
-					// UUID has been discovered
-					if (discoveredStations.stream().filter(du -> du.equals(uuid)).findFirst().orElse(null) != null)
-						return;
-
-					discoveredStations.add(uuid);
-
-					InetAddress address = null;
-
-					for (InetAddress ipv4 : info.getInet4Addresses()) {
-						if (!ipv4.isLoopbackAddress())
-							address = ipv4;
-					}
-
-					// If mDNS Entry does not have a valid IPv4 Address
-					if (address == null)
-						return;
-
-					// Create Connection
-					Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
-
-					Station s = new Station(uuid, stationName, null, null, connection);
-					s.setmDNS(true);
-					// Call Listener
-					XChange.instance.listener.stationDiscovered(s);
-				}
-
-				@Override
-				public void serviceRemoved(ServiceEvent event) {
-					String stationUUID = event.getInfo().getPropertyString("StationUUID");
-					if (stationUUID == null)
-						return;
-
-					// Potential Station to remove, if not connected
-					Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
-
-					// Remove Station only if no connection to Station exists, otherwise it would be
-					// removed when the Station Leaves
-					if (stationToRemove.getConnection().isConnected()) {
-						removeStation(stationToRemove);
-					}
-				}
-
-				@Override
-				public void serviceAdded(ServiceEvent event) {
-				}
-			};
-			MDNSService.addServiceListener(getServiceString(), listener);
+			ServiceListener listener = createServiceListener();
+			MDNSService.addServiceListener(mDnsService, listener);
 			break;
 		}
 		case WEBSOCKET_CLIENT: {
@@ -339,6 +277,7 @@ public class XChange {
 			String host;
 			int port;
 			try {
+				//Parse WebSocket String
 				uri = new URI(webSocketServer);
 				String scheme = uri.getScheme() == null ? "ws" : uri.getScheme();
 				host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
@@ -381,14 +320,13 @@ public class XChange {
 				}
 				connection.sendPacket(new C01PacketJoin());
 				// Can´t call stationConnect listener because as a WebSocket Client we first
-				// only have a connection and not a full station because we only get the uuid
+				// only have a connection and not a full station because we only get the UUID
 				// stationName etc from the first MVR_JOIN_RET
 			});
 			break;
 		}
 		case WEBSOCKET_SERVER: {
 			// WebSocket Server
-
 			try {
 				// Create Server SSL Context
 				SslContext sslContext = null;
@@ -540,7 +478,6 @@ public class XChange {
 			return;
 		}
 		files.add(file);
-		// Call Listener
 		listener.MVRFileAvailable(file);
 	}
 
@@ -575,20 +512,88 @@ public class XChange {
 		this.privateKey = privateKey;
 		ssl = true;
 	}
+	
+	private ServiceListener createServiceListener() {
+		return new ServiceListener() {
 
-	private String getServiceString() {
-		return (mvrGroup == null || mvrGroup.isEmpty()) ? mDnsService : mvrGroup + "." + mDnsService;
+			@Override
+			public void serviceResolved(ServiceEvent event) {
+				ServiceInfo info = event.getInfo();
+
+				String stationUUID = info.getPropertyString("StationUUID");
+				String stationName = info.getPropertyString("StationName");
+				
+				//Check if Station is in Group
+				if(!event.getName().equals(mvrGroup)) {
+					String testGroup = event.getName().substring(stationName.length() + 1);
+					if(!testGroup.equals(mvrGroup)) {
+						return;
+					}
+				}
+
+				if (stationUUID == null || stationName == null)
+					return;
+
+				UUID uuid = UUID.fromString(stationUUID);
+				// Check if station is known, or is this instance
+				if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUUID()) == 0)
+					return;
+				
+				// UUID has been discovered
+				if (discoveredStations.stream().filter(du -> du.equals(uuid)).findFirst().orElse(null) != null)
+					return;
+
+				discoveredStations.add(uuid);
+
+				InetAddress address = null;
+
+				for (InetAddress ipv4 : info.getInet4Addresses()) {
+					if (!ipv4.isLoopbackAddress())
+						address = ipv4;
+				}
+
+				// If mDNS Entry does not have a valid IPv4 Address
+				if (address == null)
+					return;
+
+				// Create Connection
+				Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
+
+				Station s = new Station(uuid, stationName, null, null, connection);
+				s.setmDNS(true);
+				// Call Listener
+				XChange.instance.listener.stationDiscovered(s);
+			}
+
+			@Override
+			public void serviceRemoved(ServiceEvent event) {
+				String stationUUID = event.getInfo().getPropertyString("StationUUID");
+				if (stationUUID == null)
+					return;
+
+				// Potential Station to remove, if not connected
+				Station stationToRemove = getStationByUUID(UUID.fromString(stationUUID));
+
+				// Remove Station only if no connection to Station exists, otherwise it would be
+				// removed when the Station Leaves
+				if (stationToRemove.getConnection().isConnected()) {
+					removeStation(stationToRemove);
+				}
+			}
+
+			@Override
+			public void serviceAdded(ServiceEvent event) {
+			}
+		};
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException, CertificateException {
 
 		MVRParser.mvrExtractFolder = new File(new File("").getAbsolutePath() + "/MVRExport");
-		// XChange xchange = new XChange(ProtocolMode.WEBSOCKET_SERVER, "MVR4J XChange",
-		// new File(new File("").getAbsolutePath() + "/MVRReceive"));
 
 		File mvrWorkingDirectory = new File(new File("").getAbsolutePath() + "/MVRReceive");
 
-		XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "");
+		XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "Default");
 
 		// XChange xchange = new XChange("MVR4J", new File(new
 		// File("").getAbsolutePath() + "/MVRReceive"),
@@ -603,6 +608,7 @@ public class XChange {
 			@Override
 			public void stationDiscovered(Station station) {
 				// Connect to TCP Mode Client
+				System.err.println("Discovered: " + station.getName());
 				station.connect();
 			}
 

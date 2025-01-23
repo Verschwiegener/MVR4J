@@ -1,6 +1,8 @@
 package de.verschwiegener.xchange.tcp;
 
 
+import java.nio.charset.StandardCharsets;
+
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.PacketRegistry;
@@ -36,9 +38,9 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		// Number that defines what number this package in the complete message has. unsigned Integer
 		int packageNumber = packet.readInt() & 0xff;
 		// Number that defines how many packages the current message consists of. Unsigned Integer
-		int packageCount = (packet.readInt() & 0xff) - 1;
+		int packageCount = packet.readInt() & 0xff;
 		
-		if(packageCount != multiPacketBuffer.length) {
+		if((packageCount) != multiPacketBuffer.length) {
 			multiPacketBuffer = new ByteBuf[packageCount];
 		}
 		
@@ -47,8 +49,8 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		
 		multiPacketBuffer[packageNumber] = packet;
 		
-		
-		if (packageCount == packageNumber) {
+		//PackageCount is 0 based
+		if ((packageCount - 1) == packageNumber) {
 			//TODO Test MultiPacket Code
 			ByteBuf data = Unpooled.buffer(0);
 			for(int i = 0; i < multiPacketBuffer.length;i++) {

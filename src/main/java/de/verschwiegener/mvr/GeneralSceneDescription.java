@@ -17,10 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import de.verschwiegener.mvr.nodes.UserData;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-
 
 /**
  * <p>Java-Klasse für anonymous complex type.

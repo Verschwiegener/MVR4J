@@ -36,7 +36,7 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<WebSocke
 			ByteBuf packet = frame.content();
 			JsonObject mainObject = Util.byteBufToJson(packet);
 			
-			//System.out.println("JSon: " + packet.toString(StandardCharsets.UTF_8));
+			System.out.println("JSon: " + packet.toString(StandardCharsets.UTF_8));
 			
 			if (mainObject == null)
 				return;

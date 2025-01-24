@@ -43,6 +43,7 @@ public class C01PacketJoin extends UTF8Packet {
 		if ((XChange.instance.isWebSocketServer() || XChange.instance.isMDNS()) && testStation == null) {
 			Station station = new Station(object);
 			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
+			//station.connect();
 			//Set Station Connection
 			station.getConnection().setChannel(ctx.channel());
 			XChange.instance.addStation(station);
@@ -80,7 +81,6 @@ public class C01PacketJoin extends UTF8Packet {
 			// TODO parse MVR_COMMIT
 		});
 
-		System.err.println("Send Return");
 		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
 	}

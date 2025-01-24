@@ -33,9 +33,11 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 		if (packet.readInt() != Util.MVR_PACKAGE_HEADER)
 			return;
 		int packageVersion = packet.readInt();
-		if (packageVersion != Util.MVR_PACKAGE_VERSION)
-			return;
-		System.out.println("Right Version");
+		//Quick Fix for PA because their version is 0
+		if(packageVersion != 0) {
+			if (packageVersion != Util.MVR_PACKAGE_VERSION)
+				return;
+		}
 		
 		// Number that defines what number this package in the complete message has. unsigned Integer
 		int packageNumber = packet.readInt() & 0xff;
@@ -62,7 +64,7 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			if(packetType == 1)
 				new MVRFilePacket().parsePacket(data);
 			else {
-				//System.out.println("JSon: " + data.toString(StandardCharsets.UTF_8));
+				System.out.println("JSon: " + data.toString(StandardCharsets.UTF_8));
 				JsonObject mainObject = Util.byteBufToJson(data);
 				if(mainObject == null)
 					return;

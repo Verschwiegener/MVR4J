@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -129,7 +131,8 @@ public class XChange {
 	 * @param mvrGroup
 	 */
 	public XChange(String stationName, File mvrWorkingDirectory, int serverPort, UUID stationUUID, String provider) {
-		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, "Default", stationUUID, mvrWorkingDirectory);
+		this(ProtocolMode.WEBSOCKET_SERVER, serverPort, stationName, provider, "Default", stationUUID,
+				mvrWorkingDirectory);
 	}
 
 	/**
@@ -268,8 +271,7 @@ public class XChange {
 				return;
 			}
 
-			ServiceListener listener = createServiceListener();
-			MDNSService.addServiceListener(mDnsService, listener);
+			MDNSService.addServiceListener(mDnsService, createServiceListener());
 			break;
 		}
 		case WEBSOCKET_CLIENT: {
@@ -277,7 +279,7 @@ public class XChange {
 			String host;
 			int port;
 			try {
-				//Parse WebSocket String
+				// Parse WebSocket String
 				uri = new URI(webSocketServer);
 				String scheme = uri.getScheme() == null ? "ws" : uri.getScheme();
 				host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
@@ -388,7 +390,7 @@ public class XChange {
 	 * @param station
 	 */
 	public void addStation(Station station) {
-		//Remove from Discovered UUIDs
+		// Remove from Discovered UUIDs
 		discoveredStations
 				.remove(discoveredStations.stream().filter(d -> d.equals(station.getUUID())).findFirst().orElse(null));
 		Station stationOld = getStationByUUID(station.getUUID());
@@ -401,7 +403,8 @@ public class XChange {
 	}
 
 	/**
-	 * Shuts down Station Connection, Removes it, send MVR_LEAVE and Calls stationLeave Listener
+	 * Shuts down Station Connection, Removes it, send MVR_LEAVE and Calls
+	 * stationLeave Listener
 	 * 
 	 * @param station
 	 */
@@ -409,11 +412,12 @@ public class XChange {
 		station.getConnection().sendPacket(new C02PacketLeave());
 		removeStationInternal(station);
 	}
-	
+
 	/**
 	 * For internal use only!!!
 	 * 
 	 * Removes station from internal Lists
+	 * 
 	 * @param station
 	 */
 	public void removeStationInternal(Station station) {
@@ -512,21 +516,22 @@ public class XChange {
 		this.privateKey = privateKey;
 		ssl = true;
 	}
-	
+
 	private ServiceListener createServiceListener() {
 		return new ServiceListener() {
 
 			@Override
 			public void serviceResolved(ServiceEvent event) {
+				System.out.println("Resolved: " + event);
 				ServiceInfo info = event.getInfo();
 
 				String stationUUID = info.getPropertyString("StationUUID");
 				String stationName = info.getPropertyString("StationName");
-				
-				//Check if Station is in Group
-				if(!event.getName().equals(mvrGroup)) {
+
+				// Check if Station is in Group
+				if (!event.getName().equals(mvrGroup)) {
 					String testGroup = event.getName().substring(stationName.length() + 1);
-					if(!testGroup.equals(mvrGroup)) {
+					if (!testGroup.equals(mvrGroup)) {
 						return;
 					}
 				}
@@ -538,7 +543,7 @@ public class XChange {
 				// Check if station is known, or is this instance
 				if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUUID()) == 0)
 					return;
-				
+
 				// UUID has been discovered
 				if (discoveredStations.stream().filter(du -> du.equals(uuid)).findFirst().orElse(null) != null)
 					return;
@@ -583,6 +588,25 @@ public class XChange {
 
 			@Override
 			public void serviceAdded(ServiceEvent event) {
+				ServiceInfo info = event.getInfo();
+				System.out.println("Added XChange: " + info);
+				System.out.println("Info: " + info.getDomain() + " / " + info.getName() + " / " + info.getKey() + " / "
+						+ info.getPort() + " / " + info.getQualifiedName() + " / " + info.getServer() + " / "
+						+ Arrays.toString(info.getHostAddresses()));
+				
+
+
+				/*System.err.println("Info: " + event.getDNS().getServiceInfo(event.getType(), event.getName()));
+				
+				System.out.println("Byte0: " + info.getTextBytes()[0]);
+				
+				System.out.println("Bytes_ " + new String(info.getTextBytes(), StandardCharsets.UTF_8));
+				
+				System.err.println("Type: " + event.getInfo().getPort());*/
+				
+				info.getPropertyNames().asIterator().forEachRemaining(key -> {
+					//System.out.println("Key: " + key + " / " + info.getPropertyString(key));
+				});
 			}
 		};
 	}
@@ -638,7 +662,7 @@ public class XChange {
 
 		});
 
-		Thread.sleep(100000);
+		Thread.sleep(50000);
 		System.out.println("Shutdown");
 		xchange.shutdown();
 	}

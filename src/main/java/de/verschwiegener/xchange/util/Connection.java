@@ -153,6 +153,7 @@ public class Connection {
 				if (future.isSuccess()) {
 					futureToNotify.complete(null);
 				} else {
+					future.cause().printStackTrace();
 					futureToNotify.completeExceptionally(future.cause());
 				}
 			}
@@ -181,6 +182,14 @@ public class Connection {
 		this.channel = channel;
 		// Set Connected so we dont create TCP Connection when we need Websocket
 		connected = true;
+	}
+	
+	/**
+	 * TODO remove before publishing, only for testing
+	 * @return
+	 */
+	public Channel getChannel() {
+		return channel;
 	}
 
 	public InetSocketAddress getRemoteAddress() {

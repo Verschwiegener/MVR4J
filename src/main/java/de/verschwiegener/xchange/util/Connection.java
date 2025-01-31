@@ -30,6 +30,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -88,6 +89,7 @@ public class Connection {
 							}
 
 							pipeline.addLast(new HttpClientCodec());
+							pipeline.addLast(new ChunkedWriteHandler());
 							pipeline.addLast(new HttpObjectAggregator(65536));
 							pipeline.addLast(WebSocketClientCompressionHandler.INSTANCE);
 						}

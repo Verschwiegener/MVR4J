@@ -63,7 +63,7 @@ public class WebsocketServer implements XChangeServer {
 						}
 						
 						pipeline.addLast(new HttpServerCodec());
-						ch.pipeline().addLast(new ChunkedWriteHandler());
+						pipeline.addLast(new ChunkedWriteHandler());
 						pipeline.addLast(new HttpObjectAggregator(65536));
 						pipeline.addLast(new WebSocketServerCompressionHandler());
 						pipeline.addLast(new WebSocketServerProtocolHandler("/"));

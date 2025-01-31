@@ -70,8 +70,6 @@ public class S01PacketJoin extends UTF8Packet {
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(jsarray -> {
 			JsonObject jsobject = (JsonObject) jsarray;
-			
-			System.err.println("jsObject: " + jsobject.get("FileSize"));
 
 			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
 

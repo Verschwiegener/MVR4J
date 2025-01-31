@@ -1,13 +1,10 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-import de.verschwiegener.xchange.ProtocolMode;
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
-import de.verschwiegener.xchange.packet.packets.C02PacketLeave;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
 import de.verschwiegener.xchange.tcp.TCPServer;
@@ -22,14 +19,17 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -67,10 +67,11 @@ public class Connection {
 			return connectionFuture;
 		}
 
-		if (XChange.instance.mode == ProtocolMode.mDNS) {
+		if (XChange.instance.isMDNS()) {
 			handler = new NetPacketHandler();
 		} else {
-			handler = new WebSocketPacketHandler();
+			handler = new WebSocketPacketHandler(WebSocketClientHandshakerFactory.newHandshaker(
+					XChange.instance.websocketURI, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
 		}
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
@@ -81,24 +82,24 @@ public class Connection {
 					protected void initChannel(SocketChannel ch) throws Exception {
 						final ChannelPipeline pipeline = ch.pipeline();
 						if (XChange.instance.isWebSocketClient()) {
-
 							if (XChange.instance.sslCtx != null) {
 								pipeline.addLast(XChange.instance.sslCtx.newHandler(ch.alloc(),
 										remoteAddress.getHostString(), remoteAddress.getPort()));
 							}
 
-							pipeline.addLast(new HttpServerCodec());
+							pipeline.addLast(new HttpClientCodec());
 							pipeline.addLast(new HttpObjectAggregator(65536));
-							// pipeline.addLast(new WebSocketServerCompressionHandler());
-							pipeline.addLast(new ChunkedWriteHandler());
-							pipeline.addLast(new WebSocketServerProtocolHandler("/websocket"));
+							pipeline.addLast(WebSocketClientCompressionHandler.INSTANCE);
 						}
 						pipeline.addLast(TCPServer.peerEventLoopGroup, handler);
 
 					}
 				});
 
-		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress);
+		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
+		if (XChange.instance.isWebSocketClient()) {
+			((WebSocketPacketHandler) handler).handshakeFuture().sync();
+		}
 
 		channel = connectFuture.channel();
 
@@ -135,14 +136,14 @@ public class Connection {
 			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
 		} else {
 			if (packet instanceof S04PacketRequest) {
-				S04PacketRequest requestPacket = (S04PacketRequest)packet;
+				S04PacketRequest requestPacket = (S04PacketRequest) packet;
 				if (requestPacket.needsBinaryFrame()) {
-					future = channel.writeAndFlush(new BinaryWebSocketFrame(packet.writePacket()));
+					future = channel.writeAndFlush((WebSocketFrame) new BinaryWebSocketFrame(packet.writePacket()));
 				} else {
-					future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
+					future = channel.writeAndFlush((WebSocketFrame) new TextWebSocketFrame(packet.writePacket()));
 				}
 			} else {
-				future = channel.writeAndFlush(new TextWebSocketFrame(packet.writePacket()));
+				future = channel.writeAndFlush((WebSocketFrame) new TextWebSocketFrame(packet.writePacket()));
 			}
 		}
 
@@ -162,8 +163,7 @@ public class Connection {
 	}
 
 	/**
-	 * Shuts down Connection to Peer
-	 * Does not send MVR_LEAVE Packet!
+	 * Shuts down Connection to Peer Does not send MVR_LEAVE Packet!
 	 */
 	public void shutdown() {
 		if (channel == null)
@@ -183,9 +183,10 @@ public class Connection {
 		// Set Connected so we dont create TCP Connection when we need Websocket
 		connected = true;
 	}
-	
+
 	/**
 	 * TODO remove before publishing, only for testing
+	 * 
 	 * @return
 	 */
 	public Channel getChannel() {

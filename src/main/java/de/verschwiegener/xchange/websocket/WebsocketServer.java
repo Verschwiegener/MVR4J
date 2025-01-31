@@ -17,6 +17,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
@@ -57,13 +58,13 @@ public class WebsocketServer implements XChangeServer {
 
 						// SslHandler handler = sslContext.newHandler(ch.alloc());
 						if (ssl && sslCtx != null) {
-							pipeline.addLast(sslCtx.newHandler(ch.alloc()));
+							pipeline.addFirst(sslCtx.newHandler(ch.alloc()));
 						}
-
+						
 						pipeline.addLast(new HttpServerCodec());
+						ch.pipeline().addLast(new ChunkedWriteHandler());
 						pipeline.addLast(new HttpObjectAggregator(65536));
-						// pipeline.addLast(new WebSocketServerCompressionHandler());
-						pipeline.addLast(new ChunkedWriteHandler());
+						pipeline.addLast(new WebSocketServerCompressionHandler());
 						pipeline.addLast(new WebSocketServerProtocolHandler("/"));
 						pipeline.addLast(peerEventLoopGroup, new WebSocketPacketHandler());
 					}

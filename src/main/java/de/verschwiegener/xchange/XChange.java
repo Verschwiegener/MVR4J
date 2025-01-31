@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +73,8 @@ public class XChange {
 	 * Websocket Client SSL Context
 	 */
 	public SslContext sslCtx = null;
+	
+	public URI websocketURI;
 
 	/**
 	 * List holding all Discovered UUIDs where the connection is not yet
@@ -275,15 +276,14 @@ public class XChange {
 			break;
 		}
 		case WEBSOCKET_CLIENT: {
-			URI uri;
 			String host;
 			int port;
 			try {
 				// Parse WebSocket String
-				uri = new URI(webSocketServer);
-				String scheme = uri.getScheme() == null ? "ws" : uri.getScheme();
-				host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
-				if (uri.getPort() == -1) {
+				websocketURI = new URI(webSocketServer);
+				String scheme = websocketURI.getScheme() == null ? "ws" : websocketURI.getScheme();
+				host = websocketURI.getHost() == null ? "127.0.0.1" : websocketURI.getHost();
+				if (websocketURI.getPort() == -1) {
 					if ("ws".equalsIgnoreCase(scheme)) {
 						port = 80;
 					} else if ("wss".equalsIgnoreCase(scheme)) {
@@ -292,7 +292,7 @@ public class XChange {
 						port = -1;
 					}
 				} else {
-					port = uri.getPort();
+					port = websocketURI.getPort();
 				}
 				if (!"ws".equalsIgnoreCase(scheme) && !"wss".equalsIgnoreCase(scheme)) {
 					listener.xChangeError("SERVER_STARTUP", "Invalid Address: " + webSocketServer);
@@ -617,11 +617,10 @@ public class XChange {
 
 		File mvrWorkingDirectory = new File(new File("").getAbsolutePath() + "/MVRReceive");
 
-		XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "Default");
+		//XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "Default");
 
-		// XChange xchange = new XChange("MVR4J", new File(new
-		// File("").getAbsolutePath() + "/MVRReceive"),
-		// "wss://41d8f0e2-7e95-45f6-8852-fcfde596f0ae.mvr.blenderdmx.eu");
+		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"),
+				"");
 
 		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
 		xchange.commitFile(
@@ -647,6 +646,7 @@ public class XChange {
 
 			@Override
 			public void MVRFileAvailable(MVRFile file) {
+				System.out.println("File Available");
 				file.requestFile();
 			}
 

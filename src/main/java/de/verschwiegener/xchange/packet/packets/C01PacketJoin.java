@@ -2,6 +2,7 @@ package de.verschwiegener.xchange.packet.packets;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -77,8 +78,31 @@ public class C01PacketJoin extends UTF8Packet {
 		station.updateValues(object);
 
 		JsonArray files = object.get("Commits").getAsJsonArray();
-		files.forEach(element -> {
-			// TODO parse MVR_COMMIT
+		files.forEach(jsarray -> {
+			JsonObject jsobject = (JsonObject) jsarray;
+
+			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
+
+			// Get File and add Station
+			MVRFile file = new MVRFile(jsobject);
+			file.getStationUUIDs().add(sourceStation.getUUID());
+
+			// Get Target Stations, if this instance isn't a target ignore
+			JsonArray targetStations = jsobject.get("ForStationsUUID").getAsJsonArray();
+			// If target is empty everyone is target
+			if (!targetStations.isEmpty()) {
+				// TargetStations contains clients uuid
+				boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
+						.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) != null;
+
+				// If this Station is not the Target return
+				if (!isTarget)
+					return;
+
+			}
+
+			// Register File
+			XChange.instance.registerFile(file);
 		});
 
 		// Send return packet

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.mvr.util.MVRParser;
@@ -74,7 +75,9 @@ public class MVRFile {
 	public MVRFile(JsonObject object) {
 		fileSize = object.get("FileSize").getAsInt();
 		uuid = UUID.fromString(object.get("FileUUID").getAsString());
-		fileName = object.get("FileName").getAsString();
+		JsonElement jsfileName = object.get("FileName");
+		if(jsfileName != null)
+			fileName = jsfileName.getAsString();
 		comment = object.get("Comment").getAsString();
 	}
 

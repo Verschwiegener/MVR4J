@@ -58,6 +58,7 @@ public class WebsocketServer implements XChangeServer {
 
 						// SslHandler handler = sslContext.newHandler(ch.alloc());
 						if (ssl && sslCtx != null) {
+							//Force SSL Connection
 							pipeline.addFirst(sslCtx.newHandler(ch.alloc()));
 						}
 						

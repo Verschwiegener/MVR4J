@@ -16,7 +16,9 @@ import java.util.concurrent.CompletableFuture;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManagerFactory;
 
 import de.verschwiegener.mvr.util.MVRParser;
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
@@ -300,7 +302,8 @@ public class XChange {
 				}
 				final boolean ssl = "wss".equalsIgnoreCase(scheme);
 				if (ssl) {
-					sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+					//TODO Secure SSLContext
+					sslCtx = SslContextBuilder.forClient().build();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -622,9 +625,9 @@ public class XChange {
 		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"),
 				"");
 
-		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
-		xchange.commitFile(
-				new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"), "MA Demostage"));
+		//xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
+		//xchange.commitFile(
+			//	new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"), "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
@@ -638,6 +641,7 @@ public class XChange {
 			@Override
 			public void stationConnected(Station station) {
 				System.out.println("Connected to Station: " + station.getName());
+				xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
 			}
 
 			@Override

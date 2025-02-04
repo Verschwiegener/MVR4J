@@ -45,11 +45,13 @@ public class S01PacketJoin extends UTF8Packet {
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 		// Create Station for WebSocket Client Mode
 		if (XChange.instance.isWebSocketClient()) {
+			System.out.println("WebSocket Client");
 			Station station = new Station(object);
 			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
 			// Set Station Connection
 			station.getConnection().setChannel(ctx.channel());
 			XChange.instance.addStation(station);
+			System.out.println("AddStation: " + station.getUUID());
 		}
 
 		// Check if Packet contains error
@@ -70,8 +72,11 @@ public class S01PacketJoin extends UTF8Packet {
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(jsarray -> {
 			JsonObject jsobject = (JsonObject) jsarray;
-
+			
+			//TODO in WebSocket Mode the Commit Station can be new
 			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
+			
+			System.out.println("SourceStation: " + sourceStation + " / " + jsobject.get("StationUUID").getAsString());
 
 			// Get File and add Station
 			MVRFile file = new MVRFile(jsobject);

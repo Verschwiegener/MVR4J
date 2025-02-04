@@ -1,7 +1,10 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+
+import javax.net.ssl.SSLEngine;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
@@ -84,6 +87,7 @@ public class Connection {
 						final ChannelPipeline pipeline = ch.pipeline();
 						if (XChange.instance.isWebSocketClient()) {
 							if (XChange.instance.sslCtx != null) {
+								System.out.println("Host: " + remoteAddress.getHostString() + " / " + remoteAddress.getPort());
 								pipeline.addLast(XChange.instance.sslCtx.newHandler(ch.alloc(),
 										remoteAddress.getHostString(), remoteAddress.getPort()));
 							}
@@ -112,6 +116,7 @@ public class Connection {
 					connected = true;
 					connectionFuture.complete(null);
 				} else {
+					System.out.println("Closed Connection");
 					channel.close();
 					connectionFuture.completeExceptionally(future.cause());
 					connected = false;
@@ -127,6 +132,7 @@ public class Connection {
 	 * @param packet
 	 */
 	public CompletableFuture<Void> sendPacket(Packet packet) {
+		System.out.println("SendPacket: " + packet.writePacket().toString(StandardCharsets.UTF_8));
 		CompletableFuture<Void> futureToNotify = new CompletableFuture<Void>();
 		if (!connected) {
 			futureToNotify.completeExceptionally(new Throwable());

@@ -117,7 +117,8 @@ public class C01PacketJoin extends UTF8Packet {
 		// Create Commits Array with all local Files
 		JsonArray array = new JsonArray();
 		for (MVRFile file : XChange.instance.getFiles()) {
-			array.add(new C03PacketCommit(file, null, new Version(0, 0)).writeJson());
+			//TODO Crashes BlenderDMX Server
+			array.add(new C03PacketCommit(file, null, XChange.instance.station.getVersion()).writeJson());
 		}
 		object.add("Commits", array);
 		return object;

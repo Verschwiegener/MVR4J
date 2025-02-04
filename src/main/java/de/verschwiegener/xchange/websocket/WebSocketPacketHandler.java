@@ -70,6 +70,7 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+		System.out.println("REad: " + msg);
 		if(handshaker != null) {
 			Channel ch = ctx.channel();
 			if (!handshaker.isHandshakeComplete()) {
@@ -114,6 +115,7 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<Object> 
 				XChange.instance.currentReceiveFile = null;
 			}
 		} else if (frame instanceof CloseWebSocketFrame) {
+			System.out.println("Close WebSocket Frame: " + ((CloseWebSocketFrame)frame).reasonText());
 			ctx.channel().close();
 		} else if (frame instanceof PingWebSocketFrame) {
 			ctx.channel().writeAndFlush(new PongWebSocketFrame(frame.content().retain()));

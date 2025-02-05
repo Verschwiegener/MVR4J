@@ -43,27 +43,24 @@ public class S01PacketJoin extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		// Create Station for WebSocket Client Mode
-		if (XChange.instance.isWebSocketClient()) {
-			System.out.println("WebSocket Client");
-			Station station = new Station(object);
-			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
-			// Set Station Connection
-			station.getConnection().setChannel(ctx.channel());
-			XChange.instance.addStation(station);
-			System.out.println("AddStation: " + station.getUUID());
-		}
-
 		// Check if Packet contains error
 		if (!parseError(object))
 			return;
 
-		// Get Station
-		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
+		Station station = Util.checkStationJoin(object, getPacketType(), ctx);
 
-		if (station == null) {
+		if (station == null)
+			return;
+
+		if (!XChange.instance.station.getVersion().checkVersion(station.getVersion())) {
+			station.getConnection()
+					.sendPacket(new S01PacketJoin(false, "Version is not Compatible With Server, Server Version: "
+							+ XChange.instance.station.getVersion().toString()));
+
+			// Send Error
 			XChange.instance.listener.xChangeError(packetType.toString(),
-					packetType + " Station " + object.get("StationUUID").getAsString() + " not known");
+					"Station " + object.get("StationUUID").getAsString() + " Version: " + station.getVersion()
+							+ " is not Compatible With Server Version");
 			return;
 		}
 
@@ -72,32 +69,22 @@ public class S01PacketJoin extends UTF8Packet {
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(jsarray -> {
 			JsonObject jsobject = (JsonObject) jsarray;
-			
-			//TODO in WebSocket Mode the Commit Station can be new
-			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
-			
-			System.out.println("SourceStation: " + sourceStation + " / " + jsobject.get("StationUUID").getAsString());
 
-			// Get File and add Station
-			MVRFile file = new MVRFile(jsobject);
-			file.getStationUUIDs().add(sourceStation.getUUID());
-
-			// Get Target Stations, if this instance isn't a target ignore
-			JsonArray targetStations = jsobject.get("ForStationsUUID").getAsJsonArray();
-			// If target is empty everyone is target
-			if (!targetStations.isEmpty()) {
-				// TargetStations contains clients uuid
-				boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
-						.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) != null;
-
-				// If this Station is not the Target return
-				if (!isTarget)
-					return;
-
+			Station sourceStation;
+			if (XChange.instance.isWebSocketClient()) {
+				/**
+				 * Dirty Fix because the StationUUID in WebSocket Mode points to a Station we
+				 * can´t directly access, so we create a new Station only for the file with a
+				 * Connection to the WebSocket Server
+				 */
+				sourceStation = new Station(UUID.fromString(jsobject.get("StationUUID").getAsString()), "", "",
+						station.getVersion(), new Connection(station.getConnection().getRemoteAddress()));
+			} else {
+				sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
 			}
 
-			// Register File
-			XChange.instance.registerFile(file);
+			// Handles File Parsing
+			handleFile(jsobject, station);
 		});
 
 	}

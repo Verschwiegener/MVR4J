@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.util;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +15,7 @@ import com.google.gson.JsonObject;
 import de.verschwiegener.xchange.XChange;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * 
@@ -61,13 +63,57 @@ public class Util {
 	}
 	
 	/**
+	 * Checks if Station exists, if not and we are in WebSocket Mode create a new
+	 * one. Only used in MVR_JOIN or MVR_JOIN_RET because that are the only 2 Packets where we a new station would occur
+	 * 
+	 * @param object
+	 * @param packetType
+	 * @param ctx
+	 * @return
+	 */
+	public static Station checkStationJoin(JsonObject object, PacketType packetType, ChannelHandlerContext ctx) {
+		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
+
+		if (station == null) {
+			// If we are in WebSocket Mode a new station can be added
+			if (XChange.instance.isWebSocketServer() || XChange.instance.isWebSocketClient()) {
+				Station newStation = new Station(object);
+				newStation.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
+				
+				//We need to directly connect to the station to prevent from sending a new MVR_JOIN Packet
+				try {
+					newStation.getConnection().connectTo();
+				}catch(InterruptedException ie) {
+					return null;
+				}
+				// Set Station Connection
+				// newStation.getConnection().setChannel(ctx.channel());
+				XChange.instance.addStation(newStation);
+				return newStation;
+			} else {
+				// mDNS Mode
+				XChange.instance.listener.xChangeError(packetType.toString(),
+						packetType + " Station " + object + " not known");
+			}
+		}
+		return station;
+	}
+	
+	/**
 	 * Checks if Station is known
 	 * @param object
 	 * @param packetType
 	 * @return
 	 */
 	public static Station checkStation(String object, PacketType packetType) {
-		Station station = XChange.instance.getStationByUUID(UUID.fromString(object));
+		UUID uuid = UUID.fromString(object);
+		
+		//FIX for BlenderDMX WebSocket Server
+		//Check if UUID is local station, then ignore packet
+		if(uuid.equals(XChange.instance.station.getUUID()))
+			return null;
+		
+		Station station = XChange.instance.getStationByUUID(uuid);
 		
 		//Check if Station exists
 		if (station == null) {

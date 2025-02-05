@@ -74,58 +74,27 @@ public class C03PacketCommit extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		Station sourceStation = Util.checkStation(object.get("StationUUID").getAsString(), packetType);
-		if(sourceStation == null)
+		
+		Station station = Util.checkStation(object.get("StationUUID").getAsString(), getPacketType());
+
+		if (station == null)
 			return;
 		
-		//Check if Version is compatible
-		Version stationVersion = new Version(object);
-		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
-			sourceStation.getConnection()
-					.sendPacket(new S03PacketCommit(false, "Version is not Compatible With Server, Server Version: "
-							+ XChange.instance.station.getVersion().toString()));
-
-			// Send Error
-			XChange.instance.listener.xChangeError(packetType.toString(), "Station " + object.get("StationUUID").getAsString()
-					+ " Version: " + stationVersion + " is not Compatible With Server Version");
+		if (!checkVersion(object, station))
 			return;
-		}
-		
-		
-		//Get File and add Station
-		MVRFile file = new MVRFile(object);
-		file.getStationUUIDs().add(sourceStation.getUUID());
-		
 
-		//Get Target Stations, if this instance isn't a target ignore
-		JsonArray targetStations = object.get("ForStationsUUID").getAsJsonArray();
-		// If target is empty everyone is target
-		if (!targetStations.isEmpty()) {
-			//TargetStations contains clients uuid
-			boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
-					.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) != null;
-			
-			//If this Station is not the Target return
-			if (!isTarget)
-				return;
-			
-		}
+		// Handles File Parsing
+		handleFile(object, station);
 
-		//Register File
-		XChange.instance.registerFile(file);
-		
-		
-		//Send Return packet
-		sourceStation.getConnection().sendPacket(new S03PacketCommit());
-		
-		//Websocket Server Commit File to all other known Station
-		if(XChange.instance.isWebSocketServer()) {
-			XChange.instance.getStations().forEach(station -> {
-				if(!station.getUUID().equals(sourceStation.getUUID())) {
-					station.getConnection().sendPacket(new C03PacketCommit(file, station));
-				}
-			});
+		// Send Return packet
+		station.getConnection().sendPacket(new S03PacketCommit());
+
+		// Websocket Server Commit File to all other known Station
+		if (XChange.instance.isWebSocketServer()) {
+			XChange.instance.getStations().stream().filter(s -> !s.getUUID().equals(station.getUUID()))
+					.forEach(target -> target.getConnection().sendPacket(new C03PacketCommit(file, target)));
 		}
+		
 	}
 
 	@Override

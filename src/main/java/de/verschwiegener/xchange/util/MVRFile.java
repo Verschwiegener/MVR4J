@@ -72,6 +72,11 @@ public class MVRFile {
 		uuid = UUID.nameUUIDFromBytes(mvrFile.getName().getBytes());
 	}
 
+	/**
+	 * Parses MVRFile out of JsonObject 
+	 * 
+	 * @param object
+	 */
 	public MVRFile(JsonObject object) {
 		fileSize = object.get("FileSize").getAsInt();
 		uuid = UUID.fromString(object.get("FileUUID").getAsString());

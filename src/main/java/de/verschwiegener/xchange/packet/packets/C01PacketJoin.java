@@ -37,76 +37,61 @@ public class C01PacketJoin extends UTF8Packet {
 
 	@Override
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
-		
-		Station testStation = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
-		
-		//Create Station for WebSocket Server Mode or Station didn't announce itself via mDNS
-		if ((XChange.instance.isWebSocketServer() || XChange.instance.isMDNS()) && testStation == null) {
-			Station station = new Station(object);
-			station.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
-			//station.connect();
-			//Set Station Connection
-			station.getConnection().setChannel(ctx.channel());
-			XChange.instance.addStation(station);
-		}
 
-		Station station = Util.checkStation(object.get("StationUUID").getAsString(), packetType);
+		Station station = Util.checkStationJoin(object, getPacketType(), ctx);
+
 		if (station == null)
 			return;
-		
+
 		/**
 		 * Fix for Stations that don´t announce their presence via mDNS
 		 */
-		if(!station.ismDNS() && XChange.instance.isMDNS()) {
-			station.getConnection().setChannel(ctx.channel());
-		}
+		// Maybe not needed anymore
+		/*
+		 * if(!station.ismDNS() && XChange.instance.isMDNS()) {
+		 * station.getConnection().setChannel(ctx.channel()); }
+		 */
 
-		// Check if Version is Compatible
-		Version stationVersion = new Version(object);
-		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
+		// Check Server Version is valid
+		if (!XChange.instance.station.getVersion().checkVersion(station.getVersion())) {
 			station.getConnection()
 					.sendPacket(new S01PacketJoin(false, "Version is not Compatible With Server, Server Version: "
 							+ XChange.instance.station.getVersion().toString()));
 
 			// Send Error
 			XChange.instance.listener.xChangeError(packetType.toString(),
-					"Station " + object.get("StationUUID").getAsString() + " Version: " + stationVersion
+					"Station " + object.get("StationUUID").getAsString() + " Version: " + station.getVersion()
 							+ " is not Compatible With Server Version");
 			return;
 		}
 
+		// Update Station Name, Provider and Version
 		station.updateValues(object);
 
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(jsarray -> {
 			JsonObject jsobject = (JsonObject) jsarray;
 
-			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
-
-			// Get File and add Station
-			MVRFile file = new MVRFile(jsobject);
-			file.getStationUUIDs().add(sourceStation.getUUID());
-
-			// Get Target Stations, if this instance isn't a target ignore
-			JsonArray targetStations = jsobject.get("ForStationsUUID").getAsJsonArray();
-			// If target is empty everyone is target
-			if (!targetStations.isEmpty()) {
-				// TargetStations contains clients uuid
-				boolean isTarget = StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
-						.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) != null;
-
-				// If this Station is not the Target return
-				if (!isTarget)
-					return;
-
+			Station sourceStation;
+			if (XChange.instance.isWebSocketClient()) {
+				/**
+				 * Dirty Fix because the StationUUID in WebSocket Mode points to a Station we
+				 * can´t directly access, so we create a new Station only for the file with a
+				 * Connection to the WebSocket Server
+				 */
+				sourceStation = new Station(UUID.fromString(jsobject.get("StationUUID").getAsString()), "", "",
+						station.getVersion(), new Connection(station.getConnection().getRemoteAddress()));
+			} else {
+				sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
 			}
 
-			// Register File
-			XChange.instance.registerFile(file);
+			// Handles File Parsing
+			handleFile(jsobject, station);
 		});
 
 		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
+
 	}
 
 	@Override
@@ -117,7 +102,6 @@ public class C01PacketJoin extends UTF8Packet {
 		// Create Commits Array with all local Files
 		JsonArray array = new JsonArray();
 		for (MVRFile file : XChange.instance.getFiles()) {
-			//TODO Crashes BlenderDMX Server
 			array.add(new C03PacketCommit(file, null, XChange.instance.station.getVersion()).writeJson());
 		}
 		object.add("Commits", array);

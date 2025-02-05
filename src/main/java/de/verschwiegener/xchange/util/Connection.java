@@ -4,8 +4,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-import javax.net.ssl.SSLEngine;
-
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
@@ -19,7 +17,9 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
@@ -44,6 +44,12 @@ import io.netty.util.concurrent.GenericFutureListener;
  */
 public class Connection {
 
+	public static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
+
+	public static final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup();
+	
+	
+
 	private final InetSocketAddress remoteAddress;
 
 	/**
@@ -51,8 +57,6 @@ public class Connection {
 	 */
 	private Channel channel;
 	private boolean connected = false;
-
-	private SimpleChannelInboundHandler<?> handler;
 
 	public Connection(InetSocketAddress address) {
 		this.remoteAddress = address;
@@ -71,14 +75,13 @@ public class Connection {
 			return connectionFuture;
 		}
 
-		if (XChange.instance.isMDNS()) {
-			handler = new NetPacketHandler();
-		} else {
-			handler = new WebSocketPacketHandler(WebSocketClientHandshakerFactory.newHandshaker(
-					XChange.instance.websocketURI, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
-		}
+		SimpleChannelInboundHandler<?> handler = XChange.instance.isMDNS() ? new NetPacketHandler()
+				: new WebSocketPacketHandler(WebSocketClientHandshakerFactory.newHandshaker(
+						XChange.instance.websocketURI, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));	
+
+		
 		final Bootstrap clientBootstrap = new Bootstrap();
-		clientBootstrap.group(TCPServer.networkEventLoopGroup).channel(NioSocketChannel.class)
+		clientBootstrap.group(networkEventLoopGroup).channel(NioSocketChannel.class)
 				.option(ChannelOption.SO_KEEPALIVE, true).handler(new LoggingHandler(LogLevel.INFO))
 				.handler(new ChannelInitializer<SocketChannel>() {
 
@@ -87,7 +90,6 @@ public class Connection {
 						final ChannelPipeline pipeline = ch.pipeline();
 						if (XChange.instance.isWebSocketClient()) {
 							if (XChange.instance.sslCtx != null) {
-								System.out.println("Host: " + remoteAddress.getHostString() + " / " + remoteAddress.getPort());
 								pipeline.addLast(XChange.instance.sslCtx.newHandler(ch.alloc(),
 										remoteAddress.getHostString(), remoteAddress.getPort()));
 							}
@@ -97,12 +99,12 @@ public class Connection {
 							pipeline.addLast(new HttpObjectAggregator(65536));
 							pipeline.addLast(WebSocketClientCompressionHandler.INSTANCE);
 						}
-						pipeline.addLast(TCPServer.peerEventLoopGroup, handler);
-
+						pipeline.addLast(peerEventLoopGroup, handler);
 					}
 				});
 
 		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
+		
 		if (XChange.instance.isWebSocketClient()) {
 			((WebSocketPacketHandler) handler).handshakeFuture().sync();
 		}
@@ -112,11 +114,9 @@ public class Connection {
 		connectFuture.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
-					// Connection is established
 					connected = true;
 					connectionFuture.complete(null);
 				} else {
-					System.out.println("Closed Connection");
 					channel.close();
 					connectionFuture.completeExceptionally(future.cause());
 					connected = false;
@@ -132,30 +132,32 @@ public class Connection {
 	 * @param packet
 	 */
 	public CompletableFuture<Void> sendPacket(Packet packet) {
-		System.out.println("SendPacket: " + packet.writePacket().toString(StandardCharsets.UTF_8));
+		//System.out.println("SendPacket: " + packet.writePacket().toString(StandardCharsets.UTF_8));
 		CompletableFuture<Void> futureToNotify = new CompletableFuture<Void>();
 		if (!connected) {
-			futureToNotify.completeExceptionally(new Throwable());
-			return futureToNotify;
-		}
-
-		ChannelFuture future;
-		if (XChange.instance.isMDNS()) {
-			future = channel.writeAndFlush(Util.packetBuilder(packet.writePacket(), packet.getPackageType()));
-		} else {
-			if (packet instanceof S04PacketRequest) {
-				S04PacketRequest requestPacket = (S04PacketRequest) packet;
-				if (requestPacket.needsBinaryFrame()) {
-					future = channel.writeAndFlush((WebSocketFrame) new BinaryWebSocketFrame(packet.writePacket()));
-				} else {
-					future = channel.writeAndFlush((WebSocketFrame) new TextWebSocketFrame(packet.writePacket()));
-				}
-			} else {
-				future = channel.writeAndFlush((WebSocketFrame) new TextWebSocketFrame(packet.writePacket()));
+			try {
+				connectTo();
+			}catch(InterruptedException ie) {
+				futureToNotify.completeExceptionally(ie);
+				return futureToNotify;
 			}
 		}
 
-		future.addListener(new GenericFutureListener<Future<? super Void>>() {
+		
+		Object data = null;
+		
+		if (XChange.instance.isMDNS()) {
+			data = Util.packetBuilder(packet.writePacket(), packet.getPackageType());
+		} else {
+			if (packet instanceof S04PacketRequest request) {
+				data = request.needsBinaryFrame() ? new BinaryWebSocketFrame(packet.writePacket())
+						: new TextWebSocketFrame(packet.writePacket());
+			} else {
+				data = new TextWebSocketFrame(packet.writePacket());
+			}
+		}
+		
+		channel.writeAndFlush(data).addListener(new GenericFutureListener<Future<? super Void>>() {
 
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
@@ -192,21 +194,20 @@ public class Connection {
 		connected = true;
 	}
 
-	/**
-	 * TODO remove before publishing, only for testing
-	 * 
-	 * @return
-	 */
-	public Channel getChannel() {
-		return channel;
-	}
-
 	public InetSocketAddress getRemoteAddress() {
 		return remoteAddress;
 	}
 
 	public boolean isConnected() {
 		return connected;
+	}
+	
+	public static void shutdownNetty() {
+		try {
+			networkEventLoopGroup.shutdownGracefully().sync();
+			peerEventLoopGroup.shutdownGracefully().sync();
+		}catch(InterruptedException ie) {	
+		}
 	}
 
 }

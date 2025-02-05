@@ -75,7 +75,11 @@ public class XChange {
 	 * Websocket Client SSL Context
 	 */
 	public SslContext sslCtx = null;
-	
+
+	/**
+	 * WebSocketServer Address to connect to when launching xChange as WebSocket
+	 * Client
+	 */
 	public URI websocketURI;
 
 	/**
@@ -103,12 +107,6 @@ public class XChange {
 	private File certificate;
 
 	private File privateKey;
-
-	/**
-	 * WebSocketServer Address to connect to when launching xChange as WebSocket
-	 * Client
-	 */
-	private String webSocketServer;
 
 	private final String mDnsService = "_mvrxchange._tcp.local.";
 
@@ -146,7 +144,7 @@ public class XChange {
 	 * @param stationUUID
 	 * @param address
 	 */
-	public XChange(String stationName, File mvrWorkingDirectory, String uri) {
+	public XChange(String stationName, File mvrWorkingDirectory, URI uri) {
 		this(stationName, mvrWorkingDirectory, uri, UUID.randomUUID(), "MVR4J");
 	}
 
@@ -161,9 +159,9 @@ public class XChange {
 	 * @param mvrGroup
 	 * @param address
 	 */
-	public XChange(String stationName, File mvrWorkingDirectory, String uri, UUID stationUUID, String provider) {
+	public XChange(String stationName, File mvrWorkingDirectory, URI uri, UUID stationUUID, String provider) {
 		this(ProtocolMode.WEBSOCKET_CLIENT, 4568, stationName, provider, "Default", stationUUID, mvrWorkingDirectory);
-		webSocketServer = uri;
+		this.websocketURI = uri;
 	}
 
 	/**
@@ -282,7 +280,6 @@ public class XChange {
 			int port;
 			try {
 				// Parse WebSocket String
-				websocketURI = new URI(webSocketServer);
 				String scheme = websocketURI.getScheme() == null ? "ws" : websocketURI.getScheme();
 				host = websocketURI.getHost() == null ? "127.0.0.1" : websocketURI.getHost();
 				if (websocketURI.getPort() == -1) {
@@ -297,12 +294,12 @@ public class XChange {
 					port = websocketURI.getPort();
 				}
 				if (!"ws".equalsIgnoreCase(scheme) && !"wss".equalsIgnoreCase(scheme)) {
-					listener.xChangeError("SERVER_STARTUP", "Invalid Address: " + webSocketServer);
+					listener.xChangeError("SERVER_STARTUP", "Invalid Address: " + websocketURI);
 					return;
 				}
 				final boolean ssl = "wss".equalsIgnoreCase(scheme);
 				if (ssl) {
-					//TODO Secure SSLContext
+					// TODO Secure SSLContext
 					sslCtx = SslContextBuilder.forClient().build();
 				}
 			} catch (Exception e) {
@@ -377,6 +374,7 @@ public class XChange {
 			station.getConnection().sendPacket(new C02PacketLeave());
 			station.getConnection().shutdown();
 		});
+		Connection.shutdownNetty();
 		if (server != null) {
 			try {
 				server.shutdown();
@@ -386,9 +384,10 @@ public class XChange {
 	}
 
 	/**
-	 * For internal use only!!!
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 * 
-	 * Adds new Station, overwrites old one if it exist
+	 *           Adds new Station, overwrites old one if it exist
 	 * 
 	 * @param station
 	 */
@@ -438,7 +437,10 @@ public class XChange {
 	}
 
 	/**
-	 * Return Station by UUID, null if non found
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
+	 * 
+	 *           Return Station by UUID, null if non found
 	 * 
 	 * @param uuid UUID of Station
 	 * @return
@@ -448,10 +450,12 @@ public class XChange {
 	}
 
 	/**
-	 * Returns MVRFile by UUID, null if non found
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
+	 * 
+	 *           Returns MVRFile by UUID, null if non found
 	 * 
 	 * @param uuid UUID of the MVRFile
-	 * @return
 	 */
 	public MVRFile getFileByUUID(UUID uuid) {
 		return files.stream().filter(files -> files.getUuid().equals(uuid)).findFirst().orElse(null);
@@ -469,10 +473,11 @@ public class XChange {
 	}
 
 	/**
-	 * For internal use only!!!
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 * 
-	 * Checks if File from other Stations is already known, adds and calls
-	 * MVRFileAvailable listener if it is
+	 *           Checks if File from other Stations is already known, adds and calls
+	 *           MVRFileAvailable listener if it is
 	 * 
 	 * @param file MVRFile commited by Stations
 	 */
@@ -596,19 +601,21 @@ public class XChange {
 				System.out.println("Info: " + info.getDomain() + " / " + info.getName() + " / " + info.getKey() + " / "
 						+ info.getPort() + " / " + info.getQualifiedName() + " / " + info.getServer() + " / "
 						+ Arrays.toString(info.getHostAddresses()));
-				
 
+				/*
+				 * System.err.println("Info: " + event.getDNS().getServiceInfo(event.getType(),
+				 * event.getName()));
+				 * 
+				 * System.out.println("Byte0: " + info.getTextBytes()[0]);
+				 * 
+				 * System.out.println("Bytes_ " + new String(info.getTextBytes(),
+				 * StandardCharsets.UTF_8));
+				 * 
+				 * System.err.println("Type: " + event.getInfo().getPort());
+				 */
 
-				/*System.err.println("Info: " + event.getDNS().getServiceInfo(event.getType(), event.getName()));
-				
-				System.out.println("Byte0: " + info.getTextBytes()[0]);
-				
-				System.out.println("Bytes_ " + new String(info.getTextBytes(), StandardCharsets.UTF_8));
-				
-				System.err.println("Type: " + event.getInfo().getPort());*/
-				
 				info.getPropertyNames().asIterator().forEachRemaining(key -> {
-					//System.out.println("Key: " + key + " / " + info.getPropertyString(key));
+					// System.out.println("Key: " + key + " / " + info.getPropertyString(key));
 				});
 			}
 		};
@@ -620,14 +627,23 @@ public class XChange {
 
 		File mvrWorkingDirectory = new File(new File("").getAbsolutePath() + "/MVRReceive");
 
-		//XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory, UUID.randomUUID(), "MVR4J", "Default");
+		// XChange xchange = new XChange("MVR4J TestClient", mvrWorkingDirectory,
+		// UUID.randomUUID(), "MVR4J", "Default");
 
-		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"),
-				"");
+		URI uri = null;
+		try {
+			uri = new URI("wss://8985d00d-ccbc-42b0-ae18-deac95da3630.mvr.blenderdmx.eu");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-		//xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
-		//xchange.commitFile(
-			//	new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"), "MA Demostage"));
+		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"), uri);
+
+		// xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
+		// "/basic_gdtf.mvr"), "Test Demostage"));
+		// xchange.commitFile(
+		// new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"),
+		// "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
@@ -641,7 +657,8 @@ public class XChange {
 			@Override
 			public void stationConnected(Station station) {
 				System.out.println("Connected to Station: " + station.getName());
-				xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
+				xchange.commitFile(
+						new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
 			}
 
 			@Override
@@ -656,7 +673,7 @@ public class XChange {
 
 			@Override
 			public void xChangeError(String packet, String message) {
-				System.out.println("Error: " + packet + " / " + message);
+				System.err.println("Error: " + packet + " / " + message);
 			}
 
 			@Override

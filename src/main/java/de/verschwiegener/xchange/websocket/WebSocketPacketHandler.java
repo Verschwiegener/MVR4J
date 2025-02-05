@@ -70,16 +70,13 @@ public class WebSocketPacketHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-		System.out.println("REad: " + msg);
 		if(handshaker != null) {
 			Channel ch = ctx.channel();
 			if (!handshaker.isHandshakeComplete()) {
 				try {
 					handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-					System.out.println("WebSocket Client connected!");
 					handshakeFuture.setSuccess();
 				} catch (WebSocketHandshakeException e) {
-					System.out.println("WebSocket Client failed to connect");
 					handshakeFuture.setFailure(e);
 				}
 				return;

@@ -1,9 +1,17 @@
 package de.verschwiegener.xchange.packet;
 
+import java.util.UUID;
+import java.util.stream.StreamSupport;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
+import de.verschwiegener.xchange.packet.packets.S03PacketCommit;
+import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.PacketType;
+import de.verschwiegener.xchange.util.Station;
+import de.verschwiegener.xchange.util.Version;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -68,6 +76,42 @@ public abstract class UTF8Packet implements Packet {
 	
 	public PacketType getPacketType() {
 		return packetType;
+	}
+	
+	protected boolean checkVersion(JsonObject object, Station source) {
+		Version stationVersion = new Version(object);
+		if (!XChange.instance.station.getVersion().checkVersion(stationVersion)) {
+			source.getConnection()
+					.sendPacket(new S03PacketCommit(false, "Version is not Compatible With Server, Server Version: "
+							+ XChange.instance.station.getVersion().toString()));
+
+			// Send Error
+			XChange.instance.listener.xChangeError(packetType.toString(),
+					"Station " + object.get("StationUUID").getAsString() + " Version: " + stationVersion
+							+ " is not Compatible With Server Version");
+			return false;
+		}
+		return true;
+	}
+	
+	protected void handleFile(JsonObject object, Station station) {
+		// Get File and add Station
+		MVRFile file = new MVRFile(object);
+		file.getStationUUIDs().add(station.getUUID());
+
+		// Get Target Stations, if this instance isn't a target ignore
+		JsonArray targetStations = object.get("ForStationsUUID").getAsJsonArray();
+		// If target is empty everyone is target
+		if (!targetStations.isEmpty()) {
+			// TargetStations contains clients uuid
+			if (StreamSupport.stream(targetStations.spliterator(), false).filter(element -> UUID
+					.fromString(element.getAsString()).equals(XChange.instance.station.getUUID())) == null) {
+				return;
+			}
+		}
+
+		// Register File
+		XChange.instance.registerFile(file);
 	}
 
 }

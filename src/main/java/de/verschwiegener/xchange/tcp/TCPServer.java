@@ -21,11 +21,11 @@ import io.netty.handler.logging.LoggingHandler;
  */
 public class TCPServer implements XChangeServer {
 
-	private final EventLoopGroup bossEventLoopGroup = new NioEventLoopGroup(1);
+	private final EventLoopGroup bossEventLoopGroup = new NioEventLoopGroup();
 
-	public static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup(6);
+	public static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
 
-	public static final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup(1);
+	public static final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup();
 
 	private ChannelFuture bindFuture;
 

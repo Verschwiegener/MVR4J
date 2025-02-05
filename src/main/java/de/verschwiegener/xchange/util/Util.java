@@ -74,9 +74,9 @@ public class Util {
 	public static Station checkStationJoin(JsonObject object, PacketType packetType, ChannelHandlerContext ctx) {
 		Station station = XChange.instance.getStationByUUID(UUID.fromString(object.get("StationUUID").getAsString()));
 
-		if (station == null) {
+		if (station == null || !station.isValid()) {
 			// If we are in WebSocket Mode a new station can be added
-			if (XChange.instance.isWebSocketServer() || XChange.instance.isWebSocketClient()) {
+			if (XChange.instance.isWebSocketServer()) {
 				Station newStation = new Station(object);
 				newStation.setConnection(new Connection(((InetSocketAddress) ctx.channel().remoteAddress())));
 				
@@ -90,6 +90,12 @@ public class Util {
 				// newStation.getConnection().setChannel(ctx.channel());
 				XChange.instance.addStation(newStation);
 				return newStation;
+			} else if(XChange.instance.isWebSocketClient()) {
+				//Create WebSocket Server Station
+				Station wsServer = new Station(object);
+				wsServer.setConnection(XChange.instance.webSocketStation.getConnection());
+				XChange.instance.webSocketStation = wsServer;
+				return wsServer;
 			} else {
 				// mDNS Mode
 				XChange.instance.listener.xChangeError(packetType.toString(),

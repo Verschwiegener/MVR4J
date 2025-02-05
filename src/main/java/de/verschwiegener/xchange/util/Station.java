@@ -15,7 +15,7 @@ import de.verschwiegener.xchange.packet.packets.C01PacketJoin;
  */
 public class Station {
 
-	private final UUID uuid;
+	private UUID uuid;
 	private String name;
 	private String provider;
 	private Version version;
@@ -24,11 +24,6 @@ public class Station {
 	 * TCP Connection to Station
 	 */
 	private Connection connection;
-
-	/**
-	 * Fix for when a station does not announce its presence via mDNS
-	 */
-	private boolean mDNS = false;
 
 	/**
 	 * Manually create Station
@@ -59,6 +54,13 @@ public class Station {
 		provider = object.get("Provider").getAsString();
 		name = object.get("StationName").getAsString();
 		version = new Version(object);
+	}
+
+	/**
+	 * Creates Empty Station
+	 */
+	public Station() {
+
 	}
 
 	/**
@@ -103,22 +105,19 @@ public class Station {
 	public void setConnection(Connection connection) {
 		// Used for mDNS Fix when station doesnt announce itself via mDNS and we need to
 		// change connection for every packet
-		if (connection != null) {
-			connection.shutdown();
+		if (this.connection != null) {
+			this.connection.shutdown();
 		}
 		this.connection = connection;
 	}
 
-	public boolean compareUUID(UUID compare) {
-		return uuid.compareTo(compare) == 0;
-	}
-
-	public void setmDNS(boolean mDNS) {
-		this.mDNS = mDNS;
-	}
-
-	public boolean ismDNS() {
-		return mDNS;
+	/**
+	 * Checks if station has uuid
+	 * 
+	 * @return
+	 */
+	public boolean isValid() {
+		return uuid != null;
 	}
 
 	/**

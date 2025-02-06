@@ -37,6 +37,8 @@ public class MVRFilePacket extends FilePacket{
 		} catch (IOException e) {
 			e.printStackTrace();
 			//TODO Send S04 Error packet
+			
+			//TODO Chunked Packets
 		}
 	}
 

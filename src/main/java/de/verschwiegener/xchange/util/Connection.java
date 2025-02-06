@@ -8,7 +8,6 @@ import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.Packet;
 import de.verschwiegener.xchange.packet.packets.S04PacketRequest;
 import de.verschwiegener.xchange.tcp.NetPacketHandler;
-import de.verschwiegener.xchange.tcp.TCPServer;
 import de.verschwiegener.xchange.websocket.WebSocketPacketHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -28,7 +27,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.logging.LogLevel;
@@ -47,8 +45,6 @@ public class Connection {
 	public static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
 
 	public static final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup();
-	
-	
 
 	private final InetSocketAddress remoteAddress;
 

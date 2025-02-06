@@ -72,21 +72,13 @@ public class C01PacketJoin extends UTF8Packet {
 		files.forEach(jsarray -> {
 			JsonObject jsobject = (JsonObject) jsarray;
 
-			Station sourceStation;
-			if (XChange.instance.isWebSocketClient()) {
-				/**
-				 * Dirty Fix because the StationUUID in WebSocket Mode points to a Station we
-				 * can´t directly access, so we create a new Station only for the file with a
-				 * Connection to the WebSocket Server
-				 */
-				sourceStation = new Station(UUID.fromString(jsobject.get("StationUUID").getAsString()), "", "",
-						station.getVersion(), new Connection(station.getConnection().getRemoteAddress()));
-			} else {
-				sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
-			}
+			Station sourceStation = Util.checkStation(jsobject.get("StationUUID").getAsString(), packetType);
+
+			if (sourceStation == null)
+				return;
 
 			// Handles File Parsing
-			handleFile(jsobject, station);
+			handleFile(jsobject, sourceStation);
 		});
 
 		// Send return packet

@@ -16,9 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManagerFactory;
 
 import de.verschwiegener.mvr.util.MVRParser;
 import de.verschwiegener.xchange.MDNSService.MDNSServiceData;
@@ -33,7 +31,6 @@ import de.verschwiegener.xchange.util.Version;
 import de.verschwiegener.xchange.websocket.WebsocketServer;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 /**
@@ -49,17 +46,22 @@ public class XChange {
 	/**
 	 * Parent Folder into which all received MVR Files get saved
 	 */
-	public File mvrWorkingDirectory;
+	public final File mvrWorkingDirectory;
 
 	/**
 	 * Describes local Station
 	 */
-	public Station station;
+	public final Station station;
+
+	/**
+	 * WebSocket Server Station
+	 */
+	public Station webSocketStation;
 
 	/**
 	 * Mode which Protocol is used for MVR-xchange
 	 */
-	public ProtocolMode mode;
+	public final ProtocolMode mode;
 
 	/**
 	 * Metadata of the File currently being received, is being set in MVR_REQUEST
@@ -67,7 +69,7 @@ public class XChange {
 	 */
 	public MVRFile currentReceiveFile;
 
-	public int serverPort;
+	public final int serverPort;
 
 	public XChangeListener listener;
 
@@ -307,6 +309,7 @@ public class XChange {
 				return;
 			}
 
+			webSocketStation = new Station();
 			// Connect to WebSocket Server
 			Connection connection = new Connection(new InetSocketAddress(host, port));
 			CompletableFuture<Void> future = null;
@@ -321,6 +324,7 @@ public class XChange {
 					return;
 				}
 				connection.sendPacket(new C01PacketJoin());
+				webSocketStation.setConnection(connection);
 				// Can´t call stationConnect listener because as a WebSocket Client we first
 				// only have a connection and not a full station because we only get the UUID
 				// stationName etc from the first MVR_JOIN_RET
@@ -384,12 +388,12 @@ public class XChange {
 	}
 
 	/**
-	 * @implNote This method is for internal use only and may change in future
-	 *           versions.
 	 * 
-	 *           Adds new Station, overwrites old one if it exist
+	 * Adds new Station, overwrites old one if it exist
 	 * 
 	 * @param station
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 */
 	public void addStation(Station station) {
 		// Remove from Discovered UUIDs
@@ -437,25 +441,27 @@ public class XChange {
 	}
 
 	/**
-	 * @implNote This method is for internal use only and may change in future
-	 *           versions.
-	 * 
-	 *           Return Station by UUID, null if non found
+	 * Return Station by UUID, null if non found
 	 * 
 	 * @param uuid UUID of Station
 	 * @return
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 */
 	public Station getStationByUUID(UUID uuid) {
+		// In WebSocket Mode every Message goes to webSocketStation
+		if (isWebSocketClient())
+			return webSocketStation;
 		return stations.stream().filter(station -> station.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
 	}
 
 	/**
-	 * @implNote This method is for internal use only and may change in future
-	 *           versions.
 	 * 
-	 *           Returns MVRFile by UUID, null if non found
+	 * Returns MVRFile by UUID, null if non found
 	 * 
 	 * @param uuid UUID of the MVRFile
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 */
 	public MVRFile getFileByUUID(UUID uuid) {
 		return files.stream().filter(files -> files.getUuid().equals(uuid)).findFirst().orElse(null);
@@ -473,13 +479,13 @@ public class XChange {
 	}
 
 	/**
-	 * @implNote This method is for internal use only and may change in future
-	 *           versions.
 	 * 
-	 *           Checks if File from other Stations is already known, adds and calls
-	 *           MVRFileAvailable listener if it is
+	 * Checks if File from other Stations is already known, adds and calls
+	 * MVRFileAvailable listener if it is
 	 * 
 	 * @param file MVRFile commited by Stations
+	 * @implNote This method is for internal use only and may change in future
+	 *           versions.
 	 */
 	public void registerFile(MVRFile file) {
 		MVRFile existingFile = getFileByUUID(file.getUuid());
@@ -573,7 +579,6 @@ public class XChange {
 				Connection connection = new Connection(new InetSocketAddress(address, info.getPort()));
 
 				Station s = new Station(uuid, stationName, null, null, connection);
-				s.setmDNS(true);
 				// Call Listener
 				XChange.instance.listener.stationDiscovered(s);
 			}
@@ -637,7 +642,7 @@ public class XChange {
 			e.printStackTrace();
 		}
 
-		XChange xchange = new XChange("MVR4J", new File(new File("").getAbsolutePath() + "/MVRReceive"), uri);
+		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory, uri);
 
 		// xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
 		// "/basic_gdtf.mvr"), "Test Demostage"));

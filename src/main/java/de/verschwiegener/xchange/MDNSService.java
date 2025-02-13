@@ -42,8 +42,11 @@ public class MDNSService {
 
 		String macAddress = hardwareAddressBytesToString(hardwareAddress);
 		
-		ServiceInfo mDNSService = ServiceInfo.create(data.getServiceType(macAddress), data.getName(macAddress), "",
-				data.getPort(), 0, 0, data.createProperties(macAddress));
+		ServiceInfo mDNSService = ServiceInfo.create(data.getServiceType(macAddress), data.getName(macAddress),
+				data.getPort(), 1, 1, data.createProperties(macAddress));
+		
+		//ServiceInfo mDNSService = ServiceInfo.create(data.getServiceType(macAddress), data.getName(macAddress), "",
+			///	data.getPort(), 0, 0, data.createProperties(macAddress));
 		mDns.registerService(mDNSService);
 
 		return mDNSService;

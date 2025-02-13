@@ -51,7 +51,6 @@ public class TCPServer implements XChangeServer {
 						pipeline.addLast(peerEventLoopGroup, new NetPacketHandler());
 					}
 				});
-		System.out.println("Bind");
 		bindFuture = peerBootstrap.bind(XChange.instance.serverPort).sync();
 	}
 

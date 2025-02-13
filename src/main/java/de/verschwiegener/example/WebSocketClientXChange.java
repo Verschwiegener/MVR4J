@@ -1,6 +1,7 @@
 package de.verschwiegener.example;
 
 import java.io.File;
+import java.net.URI;
 import java.util.UUID;
 
 import de.verschwiegener.xchange.XChange;
@@ -10,7 +11,7 @@ import de.verschwiegener.xchange.util.Station;
 
 public class WebSocketClientXChange {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		// Name of this Station for other XChange Stations
 		String stationName = "WebSocketClient";
 		// Folder into which all received MVRs will be saved
@@ -23,11 +24,13 @@ public class WebSocketClientXChange {
 		// The application name providing MVR Import & Export
 		String provider = "MVR4J";
 
+		URI webSocketURL = new URI(webSocketServerURL);
+		
 		// Create WebSocket XChange with random UUID and default provider
-		XChange xchange = new XChange(stationName, mvrReceiveFolder, webSocketServerURL);
+		XChange xchange = new XChange(stationName, mvrReceiveFolder, webSocketURL);
 		
 		//Create WebSocket XChange with custom UUID and provider
-		new XChange(stationName, mvrReceiveFolder, webSocketServerURL, uuid, provider);
+		new XChange(stationName, mvrReceiveFolder, webSocketURL, uuid, provider);
 
 		// Commit File to all other connected Stations
 		xchange.commitFile(new MVRFile(new File(""), "File Changes Comment"));

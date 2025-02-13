@@ -1,20 +1,14 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.net.InetSocketAddress;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
-import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;
 import de.verschwiegener.xchange.util.Util;
-import de.verschwiegener.xchange.util.Version;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -52,6 +46,9 @@ public class C01PacketJoin extends UTF8Packet {
 		 * station.getConnection().setChannel(ctx.channel()); }
 		 */
 
+		// Update Station Name, Provider and Version
+		station.updateValues(object);
+
 		// Check Server Version is valid
 		if (!XChange.instance.station.getVersion().checkVersion(station.getVersion())) {
 			station.getConnection()
@@ -64,9 +61,6 @@ public class C01PacketJoin extends UTF8Packet {
 							+ " is not Compatible With Server Version");
 			return;
 		}
-
-		// Update Station Name, Provider and Version
-		station.updateValues(object);
 
 		JsonArray files = object.get("Commits").getAsJsonArray();
 		files.forEach(jsarray -> {

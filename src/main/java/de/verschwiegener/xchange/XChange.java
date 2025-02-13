@@ -7,7 +7,6 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -452,7 +451,7 @@ public class XChange {
 		// In WebSocket Mode every Message goes to webSocketStation
 		if (isWebSocketClient())
 			return webSocketStation;
-		return stations.stream().filter(station -> station.getUUID().compareTo(uuid) == 0).findFirst().orElse(null);
+		return stations.stream().filter(station -> station.getUUID().equals(uuid)).findFirst().orElse(null);
 	}
 
 	/**
@@ -536,7 +535,6 @@ public class XChange {
 
 			@Override
 			public void serviceResolved(ServiceEvent event) {
-				System.out.println("Resolved: " + event);
 				ServiceInfo info = event.getInfo();
 
 				String stationUUID = info.getPropertyString("StationUUID");
@@ -557,6 +555,7 @@ public class XChange {
 				// Check if station is known, or is this instance
 				if (getStationByUUID(uuid) != null || uuid.compareTo(station.getUUID()) == 0)
 					return;
+				
 
 				// UUID has been discovered
 				if (discoveredStations.stream().filter(du -> du.equals(uuid)).findFirst().orElse(null) != null)
@@ -601,7 +600,7 @@ public class XChange {
 
 			@Override
 			public void serviceAdded(ServiceEvent event) {
-				ServiceInfo info = event.getInfo();
+				/*ServiceInfo info = event.getInfo();
 				System.out.println("Added XChange: " + info);
 				System.out.println("Info: " + info.getDomain() + " / " + info.getName() + " / " + info.getKey() + " / "
 						+ info.getPort() + " / " + info.getQualifiedName() + " / " + info.getServer() + " / "
@@ -619,9 +618,9 @@ public class XChange {
 				 * System.err.println("Type: " + event.getInfo().getPort());
 				 */
 
-				info.getPropertyNames().asIterator().forEachRemaining(key -> {
+				/*info.getPropertyNames().asIterator().forEachRemaining(key -> {
 					// System.out.println("Key: " + key + " / " + info.getPropertyString(key));
-				});
+				});*/
 			}
 		};
 	}
@@ -637,13 +636,15 @@ public class XChange {
 
 		URI uri = null;
 		try {
-			uri = new URI("wss://8985d00d-ccbc-42b0-ae18-deac95da3630.mvr.blenderdmx.eu");
+			uri = new URI("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory, uri);
+		//XChange xchange = new XChange("MVR4J", mvrWorkingDirectory, uri);
 
+		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory);
+		
 		// xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
 		// "/basic_gdtf.mvr"), "Test Demostage"));
 		// xchange.commitFile(

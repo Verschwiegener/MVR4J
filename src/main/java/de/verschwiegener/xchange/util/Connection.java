@@ -1,7 +1,6 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import de.verschwiegener.xchange.XChange;

@@ -72,7 +72,7 @@ public class MVRParser {
 	 */
 	public void parse() throws JAXBException, IOException {
 		mvrOutputFolder.mkdirs();
-		//unzipFile(mvrFile, mvrOutputFolder);
+		unzipFile(mvrFile, mvrOutputFolder);
 
 		// https://bugs.openjdk.org/browse/JDK-8204933
 		Locale.setDefault(Locale.ENGLISH);

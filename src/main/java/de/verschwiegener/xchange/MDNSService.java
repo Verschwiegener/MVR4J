@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import javax.jmdns.JmDNS;
-import javax.jmdns.JmmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 /**

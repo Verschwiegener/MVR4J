@@ -27,7 +27,6 @@ import de.verschwiegener.mvr.layer.type.SceneObject;
 import de.verschwiegener.mvr.layer.type.Support;
 import de.verschwiegener.mvr.layer.type.Truss;
 import de.verschwiegener.mvr.layer.type.VideoScreen;
-import de.verschwiegener.mvr.nodes.Projections;
 import de.verschwiegener.mvr.util.MVRUtils;
 
 

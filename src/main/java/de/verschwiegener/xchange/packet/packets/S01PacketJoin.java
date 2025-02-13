@@ -1,16 +1,10 @@
 package de.verschwiegener.xchange.packet.packets;
 
-import java.net.InetSocketAddress;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import de.verschwiegener.xchange.XChange;
 import de.verschwiegener.xchange.packet.UTF8Packet;
-import de.verschwiegener.xchange.util.Connection;
 import de.verschwiegener.xchange.util.MVRFile;
 import de.verschwiegener.xchange.util.PacketType;
 import de.verschwiegener.xchange.util.Station;

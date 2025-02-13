@@ -16,8 +16,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.nodes.Protocol.ProtocolType;
-
 
 /**
  * <p>Java-Klasse für Network complex type.

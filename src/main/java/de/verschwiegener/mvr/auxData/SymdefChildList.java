@@ -9,19 +9,12 @@ package de.verschwiegener.mvr.auxData;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.verschwiegener.mvr.layer.type.Fixture;
-import de.verschwiegener.mvr.layer.type.FocusPoint;
-import de.verschwiegener.mvr.layer.type.GroupObject;
-import de.verschwiegener.mvr.layer.type.Projector;
-import de.verschwiegener.mvr.layer.type.SceneObject;
-import de.verschwiegener.mvr.layer.type.Support;
-import de.verschwiegener.mvr.layer.type.Truss;
-import de.verschwiegener.mvr.layer.type.VideoScreen;
 import de.verschwiegener.mvr.nodes.Geometry3D;
 import de.verschwiegener.mvr.nodes.Symbol;
 

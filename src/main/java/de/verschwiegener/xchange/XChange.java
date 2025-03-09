@@ -223,6 +223,7 @@ public class XChange {
 	 * @throws CertificateException
 	 */
 	public void start(XChangeListener xchangeListener) {
+		System.out.println("Start: " + station.getUUID());
 		this.listener = xchangeListener;
 		switch (mode) {
 		case mDNS: {
@@ -256,7 +257,10 @@ public class XChange {
 
 					@Override
 					public String getName(String macAddress) {
-						return station.getName().replace(" ", "_") + "." + mvrGroup;
+						//TODO FIx MDNS Name and XChange Group
+						//return station.getName().replace(" ", "_") + "." + mvrGroup;
+						//return station.getName();
+						return mvrGroup;
 					}
 
 					@Override
@@ -535,6 +539,7 @@ public class XChange {
 
 			@Override
 			public void serviceResolved(ServiceEvent event) {
+				//System.out.println("Resolved: " + event);
 				ServiceInfo info = event.getInfo();
 
 				String stationUUID = info.getPropertyString("StationUUID");
@@ -600,6 +605,7 @@ public class XChange {
 
 			@Override
 			public void serviceAdded(ServiceEvent event) {
+				//System.out.println("Event: " + event);
 				/*ServiceInfo info = event.getInfo();
 				System.out.println("Added XChange: " + info);
 				System.out.println("Info: " + info.getDomain() + " / " + info.getName() + " / " + info.getKey() + " / "
@@ -645,11 +651,11 @@ public class XChange {
 
 		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory);
 		
-		// xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
-		// "/basic_gdtf.mvr"), "Test Demostage"));
-		// xchange.commitFile(
-		// new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"),
-		// "MA Demostage"));
+		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
+		 "/basic_gdtf.mvr"), "Test Demostage"));
+		 xchange.commitFile(
+		 new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"),
+		 "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
@@ -662,7 +668,7 @@ public class XChange {
 
 			@Override
 			public void stationConnected(Station station) {
-				System.out.println("Connected to Station: " + station.getName());
+				System.out.println("Connected to Station: " + station.getName() + " / " + station.getUUID());
 				xchange.commitFile(
 						new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
 			}
@@ -689,9 +695,9 @@ public class XChange {
 
 		});
 
-		Thread.sleep(50000);
-		System.out.println("Shutdown");
-		xchange.shutdown();
+		//Thread.sleep(50000);
+		//System.out.println("Shutdown");
+		//xchange.shutdown();
 	}
 
 }

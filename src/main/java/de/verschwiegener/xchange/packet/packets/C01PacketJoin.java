@@ -33,18 +33,20 @@ public class C01PacketJoin extends UTF8Packet {
 	public void parsePacket(JsonObject object, ChannelHandlerContext ctx) {
 
 		Station station = Util.checkStationJoin(object, getPacketType(), ctx);
-
-		if (station == null)
-			return;
-
+		
 		/**
 		 * Fix for Stations that don´t announce their presence via mDNS
 		 */
 		// Maybe not needed anymore
-		/*
-		 * if(!station.ismDNS() && XChange.instance.isMDNS()) {
-		 * station.getConnection().setChannel(ctx.channel()); }
-		 */
+		
+		/*if (XChange.instance.isMDNS()) {
+			station.getConnection().setChannel(ctx.channel());
+		}*/
+		 
+		System.out.println("Station: " + station);
+
+		if (station == null)
+			return;
 
 		// Update Station Name, Provider and Version
 		station.updateValues(object);
@@ -75,6 +77,7 @@ public class C01PacketJoin extends UTF8Packet {
 			handleFile(jsobject, sourceStation);
 		});
 
+		System.out.println("Send Return: " + station.getConnection().getRemoteAddress());
 		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
 
@@ -91,6 +94,7 @@ public class C01PacketJoin extends UTF8Packet {
 			array.add(new C03PacketCommit(file, null, XChange.instance.station.getVersion()).writeJson());
 		}
 		object.add("Commits", array);
+		System.out.println("Send C01");
 		return object;
 	}
 

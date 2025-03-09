@@ -32,7 +32,7 @@ public class Version {
 	 * @return
 	 */
 	public boolean checkVersion(Version version) {
-		if(version.major == 0 && version.minor == 0)
+		if(version == null || version.major == 0 && version.minor == 0)
 			return true;
 		return version.major == major &&  version.minor == minor;
 	}

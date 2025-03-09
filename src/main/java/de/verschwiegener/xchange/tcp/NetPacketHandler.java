@@ -59,19 +59,23 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 			if (packetType == 1)
 				new MVRFilePacket().parsePacket(multiPacketBuffer);
 			else {
-				//System.out.println("JSon: " + multiPacketBuffer.toString(StandardCharsets.UTF_8));
+				// System.out.println("JSon: " +
+				// multiPacketBuffer.toString(StandardCharsets.UTF_8));
 				JsonObject mainObject = Util.byteBufToJson(multiPacketBuffer);
 				if (mainObject == null)
 					return;
 				try {
 					UTF8Packet p = PacketRegistry.JSON.getPacket(mainObject.get("Type").getAsString());
+					System.out.println("Got Packet: " + p + ctx.channel().remoteAddress());
 					p.parsePacket(mainObject, ctx);
 				} catch (Exception e) {
 					e.printStackTrace();
 
 				}
 			}
+			System.out.println("Done");
 			multiPacketBuffer.clear();
+			ctx.channel().close();
 		}
 	}
 }

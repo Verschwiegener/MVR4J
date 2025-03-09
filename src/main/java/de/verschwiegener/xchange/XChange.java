@@ -258,9 +258,9 @@ public class XChange {
 					@Override
 					public String getName(String macAddress) {
 						//TODO FIx MDNS Name and XChange Group
-						//return station.getName().replace(" ", "_") + "." + mvrGroup;
+						return station.getName().replace(" ", "_") + "." + mvrGroup;
 						//return station.getName();
-						return mvrGroup;
+						//return mvrGroup;
 					}
 
 					@Override
@@ -379,7 +379,6 @@ public class XChange {
 		}
 		stations.forEach(station -> {
 			station.getConnection().sendPacket(new C02PacketLeave());
-			station.getConnection().shutdown();
 		});
 		Connection.shutdownNetty();
 		if (server != null) {
@@ -391,7 +390,6 @@ public class XChange {
 	}
 
 	/**
-	 * 
 	 * Adds new Station, overwrites old one if it exist
 	 * 
 	 * @param station
@@ -410,6 +408,8 @@ public class XChange {
 		stations.add(station);
 		listener.stationConnected(station);
 	}
+	
+	
 
 	/**
 	 * Shuts down Station Connection, Removes it, send MVR_LEAVE and Calls
@@ -419,18 +419,16 @@ public class XChange {
 	 */
 	public void removeStation(Station station) {
 		station.getConnection().sendPacket(new C02PacketLeave());
-		removeStationInternal(station);
+		removeStationReferences(station);
 	}
 
 	/**
-	 * For internal use only!!!
 	 * 
-	 * Removes station from internal Lists
+	 * Removes station from internal Lists does not send any form of MVR_LEAVE
 	 * 
 	 * @param station
 	 */
-	public void removeStationInternal(Station station) {
-		station.getConnection().shutdown();
+	public void removeStationReferences(Station station) {
 		stations.remove(station);
 
 		listener.stationLeave(station);
@@ -482,7 +480,6 @@ public class XChange {
 	}
 
 	/**
-	 * 
 	 * Checks if File from other Stations is already known, adds and calls
 	 * MVRFileAvailable listener if it is
 	 * 
@@ -589,7 +586,8 @@ public class XChange {
 
 			@Override
 			public void serviceRemoved(ServiceEvent event) {
-				String stationUUID = event.getInfo().getPropertyString("StationUUID");
+				//Not necessary, Stations must send MVR_LEAVE
+				/**String stationUUID = event.getInfo().getPropertyString("StationUUID");
 				if (stationUUID == null)
 					return;
 
@@ -600,7 +598,7 @@ public class XChange {
 				// removed when the Station Leaves
 				if (stationToRemove.getConnection().isConnected()) {
 					removeStation(stationToRemove);
-				}
+				}*/
 			}
 
 			@Override
@@ -651,26 +649,24 @@ public class XChange {
 
 		XChange xchange = new XChange("MVR4J", mvrWorkingDirectory);
 		
-		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() +
-		 "/basic_gdtf.mvr"), "Test Demostage"));
-		 xchange.commitFile(
-		 new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"),
-		 "MA Demostage"));
+		xchange.commitFile(new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
+		xchange.commitFile(
+				new MVRFile(new File(new File("").getAbsolutePath() + "/DemoStage_MVR.mvr"), "MA Demostage"));
 
 		xchange.start(new XChangeListener() {
 
 			@Override
 			public void stationDiscovered(Station station) {
 				// Connect to TCP Mode Client
-				System.err.println("Discovered: " + station.getName());
+				System.out.println("Discovered: " + station.getName());
 				station.connect();
 			}
 
 			@Override
 			public void stationConnected(Station station) {
 				System.out.println("Connected to Station: " + station.getName() + " / " + station.getUUID());
-				xchange.commitFile(
-						new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
+				//xchange.commitFile(
+					//	new MVRFile(new File(new File("").getAbsolutePath() + "/basic_gdtf.mvr"), "Test Demostage"));
 			}
 
 			@Override

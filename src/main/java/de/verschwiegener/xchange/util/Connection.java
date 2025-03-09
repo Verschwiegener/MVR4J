@@ -1,6 +1,7 @@
 package de.verschwiegener.xchange.util;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import de.verschwiegener.xchange.XChange;
@@ -51,7 +52,6 @@ public class Connection {
 	 * Netty Connection Channel
 	 */
 	private Channel channel;
-	private boolean connected = false;
 
 	public Connection(InetSocketAddress address) {
 		this.remoteAddress = address;
@@ -65,19 +65,21 @@ public class Connection {
 	 */
 	public CompletableFuture<Void> connectTo() throws InterruptedException {
 		CompletableFuture<Void> connectionFuture = new CompletableFuture<Void>();
-		if (connected) {
+		/*if (connected) {
+			connectionFuture.complete(null);
+			return connectionFuture;
+		}*/
+		if(channel != null && channel.isActive()) {
 			connectionFuture.complete(null);
 			return connectionFuture;
 		}
-
 		SimpleChannelInboundHandler<?> handler = XChange.instance.isMDNS() ? new NetPacketHandler()
 				: new WebSocketPacketHandler(WebSocketClientHandshakerFactory.newHandshaker(
 						XChange.instance.websocketURI, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));	
 
-		
 		final Bootstrap clientBootstrap = new Bootstrap();
 		clientBootstrap.group(networkEventLoopGroup).channel(NioSocketChannel.class)
-				.option(ChannelOption.SO_KEEPALIVE, true).handler(new LoggingHandler(LogLevel.INFO))
+				.handler(new LoggingHandler(LogLevel.INFO))
 				.handler(new ChannelInitializer<SocketChannel>() {
 
 					@Override
@@ -97,9 +99,9 @@ public class Connection {
 						pipeline.addLast(peerEventLoopGroup, handler);
 					}
 				});
-
-		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
 		
+		ChannelFuture connectFuture = clientBootstrap.connect(remoteAddress).sync();
+
 		if (XChange.instance.isWebSocketClient()) {
 			((WebSocketPacketHandler) handler).handshakeFuture().sync();
 		}
@@ -109,12 +111,11 @@ public class Connection {
 		connectFuture.addListener(new ChannelFutureListener() {
 			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
-					connected = true;
+					System.out.println("Connected");
 					connectionFuture.complete(null);
 				} else {
 					channel.close();
 					connectionFuture.completeExceptionally(future.cause());
-					connected = false;
 				}
 			}
 		});
@@ -126,19 +127,15 @@ public class Connection {
 	 * 
 	 * @param packet
 	 */
-	public CompletableFuture<Void> sendPacket(Packet packet) {
-		//System.out.println("SendPacket: " + packet.writePacket().toString(StandardCharsets.UTF_8));
-		CompletableFuture<Void> futureToNotify = new CompletableFuture<Void>();
-		if (!connected) {
-			try {
-				connectTo();
-			}catch(InterruptedException ie) {
-				futureToNotify.completeExceptionally(ie);
-				return futureToNotify;
-			}
+	public void sendPacket(Packet packet) {
+		//writePacket().toString(StandardCharsets.UTF_8)
+		System.out.println("SendPacket: " + packet + " / " + remoteAddress);
+		try {
+			connectTo();
+		} catch (InterruptedException ie) {
+			return;
 		}
 
-		
 		Object data = null;
 		
 		if (XChange.instance.isMDNS()) {
@@ -156,46 +153,35 @@ public class Connection {
 
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
-				if (future.isSuccess()) {
-					futureToNotify.complete(null);
-				} else {
+				if (!future.isSuccess()) {
 					future.cause().printStackTrace();
-					futureToNotify.completeExceptionally(future.cause());
 				}
+				//Close connection once data was send
+				channel.close().sync();
 			}
 		});
-		return futureToNotify;
 	}
 
 	/**
-	 * Shuts down Connection to Peer Does not send MVR_LEAVE Packet!
-	 */
-	public void shutdown() {
-		if (channel == null)
-			return;
-		channel.close();
-	}
-
-	/**
+	 * TODO just for testing
+	 * 
 	 * Set Connection Channel Used for WebSocket Server Mode where we dont need to
 	 * create a new connection to the peer
 	 * 
 	 * @param channel
 	 */
 	public void setChannel(Channel channel) {
-		shutdown();
 		this.channel = channel;
 		// Set Connected so we dont create TCP Connection when we need Websocket
-		connected = true;
 	}
-
+	//TODO only for testing
 	public InetSocketAddress getRemoteAddress() {
 		return remoteAddress;
 	}
-
 	public boolean isConnected() {
-		return connected;
+		return channel.isActive();
 	}
+
 	
 	public static void shutdownNetty() {
 		try {

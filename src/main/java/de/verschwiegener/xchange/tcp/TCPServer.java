@@ -13,6 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * TCP Server receiving all Packets
@@ -41,8 +42,8 @@ public class TCPServer implements XChangeServer {
 	public void start() throws InterruptedException {
 		final ServerBootstrap peerBootstrap = new ServerBootstrap();
 		peerBootstrap.group(bossEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000).option(ChannelOption.SO_BACKLOG, 100)
-				.option(ChannelOption.SO_REUSEADDR, true).handler(new LoggingHandler(LogLevel.INFO))
+				/*.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000).option(ChannelOption.SO_BACKLOG, 100)
+				.option(ChannelOption.SO_REUSEADDR, true)*/.handler(new LoggingHandler(LogLevel.INFO))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 
 					@Override

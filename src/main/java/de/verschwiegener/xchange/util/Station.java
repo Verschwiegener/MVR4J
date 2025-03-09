@@ -103,11 +103,6 @@ public class Station {
 	}
 
 	public void setConnection(Connection connection) {
-		// Used for mDNS Fix when station doesnt announce itself via mDNS and we need to
-		// change connection for every packet
-		if (this.connection != null) {
-			this.connection.shutdown();
-		}
 		this.connection = connection;
 	}
 
@@ -139,10 +134,10 @@ public class Station {
 								+ connection.getRemoteAddress().getPort());
 				return;
 			}
-			// Add Station when connection is established
-			XChange.instance.addStation(this);
 			// send Join Packet
 			connection.sendPacket(new C01PacketJoin());
+			// Add Station when connection is established
+			XChange.instance.addStation(this);
 		});
 
 	}

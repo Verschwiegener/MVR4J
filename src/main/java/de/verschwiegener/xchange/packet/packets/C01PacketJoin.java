@@ -77,7 +77,7 @@ public class C01PacketJoin extends UTF8Packet {
 			handleFile(jsobject, sourceStation);
 		});
 
-		System.out.println("Send Return: " + station.getConnection().getRemoteAddress());
+		System.out.println("Send Return: " + station.getConnection().getRemoteAddress() + " / " + station.getName() + " / " + ctx.channel().remoteAddress());
 		// Send return packet
 		station.getConnection().sendPacket(new S01PacketJoin());
 

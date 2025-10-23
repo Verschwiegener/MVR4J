@@ -217,6 +217,15 @@ public class Truss {
     public Geometries getGeometries() {
         return geometries;
     }
+    
+    /**
+     * Checks if Truss has Geometries Attribute, and the Geometries Attribute has Children
+     * 
+     * @return
+     */
+    public boolean hasGeometries() {
+    	return getGeometries() != null && getGeometries().hasChildren();
+    }
 
     /**
      * Legt den Wert der geometries-Eigenschaft fest.

@@ -10,6 +10,7 @@ package de.verschwiegener.mvr.layer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -167,6 +168,15 @@ public class ChildList {
             focusPoint = new ArrayList<FocusPoint>();
         }
         return this.focusPoint;
+    }
+    
+    /**
+     * Gets FocusPoint with given UUID
+     * @param uuid UUID of FocusPoint
+     * @return
+     */
+    public FocusPoint getFocusPointFromUUID(UUID uuid) {
+    	return getFocusPoint().stream().filter(fp -> fp.getUUID().equals(uuid)).findFirst().orElse(null);
     }
 
     /**

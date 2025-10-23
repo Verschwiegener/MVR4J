@@ -242,11 +242,13 @@ public class Fixture {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public String getFocus() {
-        return focus;
+    public UUID getFocus() {
+    	if(focus == null)
+    		return null;
+        return UUID.fromString(focus);
     }
 
     /**
@@ -254,11 +256,11 @@ public class Fixture {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link UUID }
      *     
      */
-    public void setFocus(String value) {
-        this.focus = value;
+    public void setFocus(UUID value) {
+        this.focus = value.toString();
     }
 
     /**
@@ -341,8 +343,8 @@ public class Fixture {
      *     {@link String }
      *     
      */
-    public String getPosition() {
-        return position;
+    public UUID getPosition() {
+        return UUID.fromString(position);
     }
 
     /**
@@ -353,8 +355,8 @@ public class Fixture {
      *     {@link String }
      *     
      */
-    public void setPosition(String value) {
-        this.position = value;
+    public void setPosition(UUID value) {
+        this.position = value.toString();
     }
 
     /**

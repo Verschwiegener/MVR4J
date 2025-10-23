@@ -46,6 +46,8 @@ public class MVRParser {
 
 	private static SchemaFactory schemaFactory;
 	private static Schema schema;
+	
+	private boolean validparse;
 
 	static {
 		try {
@@ -64,13 +66,25 @@ public class MVRParser {
 				mvrFile.getName().substring(0, mvrFile.getName().lastIndexOf(".")));
 	}
 	
+	public void parse() throws JAXBException, IOException {
+		if(description != null) {
+			return;
+		}
+		parseMVR();
+		validparse = true;
+	}
+	
+	public boolean isParsed() {
+		return validparse;
+	}
+	
 	/**
 	 * Parses the MVR File
 	 * 
 	 * @throws JAXBException
 	 * @throws IOException 
 	 */
-	public void parse() throws JAXBException, IOException {
+	private void parseMVR() throws JAXBException, IOException {
 		mvrOutputFolder.mkdirs();
 		unzipFile(mvrFile, mvrOutputFolder);
 

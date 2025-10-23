@@ -73,7 +73,6 @@ public class NetPacketHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
 				}
 			}
-			System.out.println("Done");
 			multiPacketBuffer.clear();
 			ctx.channel().close();
 		}

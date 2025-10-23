@@ -257,7 +257,6 @@ public class XChange {
 
 					@Override
 					public String getName(String macAddress) {
-						//TODO FIx MDNS Name and XChange Group
 						return station.getName().replace(" ", "_") + "." + mvrGroup;
 						//return station.getName();
 						//return mvrGroup;
@@ -304,7 +303,6 @@ public class XChange {
 				}
 				final boolean ssl = "wss".equalsIgnoreCase(scheme);
 				if (ssl) {
-					// TODO Secure SSLContext
 					sslCtx = SslContextBuilder.forClient().build();
 				}
 			} catch (Exception e) {
@@ -483,7 +481,7 @@ public class XChange {
 	 * Checks if File from other Stations is already known, adds and calls
 	 * MVRFileAvailable listener if it is
 	 * 
-	 * @param file MVRFile commited by Stations
+	 * @param file MVRFile committed by Stations
 	 * @implNote This method is for internal use only and may change in future
 	 *           versions.
 	 */
